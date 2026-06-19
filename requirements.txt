@@ -1,0 +1,6 @@
+pydantic
+pydantic-settings
+aiogram==3.25.0
+loguru
+pytest
+markdown
