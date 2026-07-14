@@ -33,7 +33,7 @@ class BotLog:
         self.logger.level("BOT START", no=25, color="<white>", icon="🏁")
         self.logger.level("BOT STOP", no=26, color="<white>", icon="🛑")
  
-    def decor(self, timer: bool = False, arg: bool = False, is_msg: bool = False, logger_kwargs: dict = {}):
+    def decor(self, timer: bool = False, arg: bool = False, logger_kwargs: dict = {}):
         def decorator(func):
             is_async = inspect.iscoroutinefunction(func)
             logger = self.logger.bind(**logger_kwargs, module=func.__module__)
@@ -43,10 +43,6 @@ class BotLog:
                 async def async_wrapped(*args, **kwargs):
                     start_time = time()
                     try:
-                        if is_msg:
-                            message = kwargs.get('message')
-                            if message:
-                                self.message(message.text, message.from_user.id, message.chat.id)
 
                         result = await func(*args, **kwargs)
                         end_time = time()

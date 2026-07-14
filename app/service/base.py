@@ -1,45 +1,59 @@
+import asyncio, datetime, functools
 from aiogram.fsm.context import FSMContext
+from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.filters import CommandStart, Command, CommandObject
 from app.aio.cls.buttons.base import BotIKB
 from config import settings, bot
 from app.aio.cls.fsm.utils import FSMUtils
-from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
-import asyncio
 from app.service.utils import is_natural_int
-import datetime
+from app.validate.service import Purpose
+from app.validate.base import BaseValidate
 
 NOT_NEW_STATE = object()
 
 class BaseService:
     def __init__(self, 
-                 message: Message | None = None, 
+                 message: Message, 
                  state: FSMContext | None = None, 
                  callback: CallbackQuery | None = None, 
-                 purpose_tg_id: int | None = None,
+                 command: CommandObject | None = None, 
+                 logic_kwargs: dict = {}, 
                  **kwargs):
         self.settings = settings
         self.bot = bot
         self.message = message
         self.callback = callback
         self.kwargs = kwargs
+        self.command = command
+        self.logic_kwargs = logic_kwargs
 
         self.user = self.callback.from_user if self.callback else self.message.from_user
         self.tg_id = self.user.id
-        self.purpose_message = message.reply_to_message
-        self.purpose = self.purpose_message.from_user if self.purpose_message else self.user
-        self.purpose_tg_id = purpose_tg_id or self.purpose.id or self.tg_id
         
         self.state: FSMUtils = FSMUtils(state)
         self.IKB = BotIKB(self.tg_id)
+        self.text = None
         self.logic = None
         self.asyncio = asyncio
         self.datetime = datetime
-    
+        self.msg_to_json: bool = self.kwargs.get('to_json', False)
+        self.enter_args: bool = self.command.args != None
+
+    @property
+    def purpose(self):
+        if self.message.is_topic_message and self.kwargs.get('is_reply') and self.message.reply_to_message:
+            return self.message.reply_to_message.from_user
+        elif self.message.reply_to_message:
+            return self.message.reply_to_message.from_user
+        else:
+            return self.user
+
     @classmethod
     def is_natural_int(self, value, **kwargs):
         return is_natural_int(value, **kwargs)
 
     async def get_news_channel_info(self):
-        channel = await self.bot.get_chat(self.settings.news_group_ids)
+        channel = await self.bot.get_chat(self.settings.news_group_id)
         return channel
     
     async def get_chat_member(self, tg_id: int | None = None):
@@ -71,4 +85,5 @@ class BaseService:
                 await asyncio.sleep(2)
         return True
 
-
+    def to_json(self, msgs: list[tuple[str, BaseValidate, InlineKeyboardButton | InlineKeyboardMarkup | None]]):
+        return [((str(v.model_dump()) if self.msg_to_json else m), i) for m, v, i in msgs]

@@ -4,8 +4,8 @@ Use it as a space to store configuration and constants.
 """
 
 from pydantic import Field
-
-from clientele import api as clientele_api
+from clientele import api as clientele_api 
+from tg.config import settings
 
 class Config(clientele_api.BaseConfig):
     """
@@ -28,7 +28,7 @@ class Config(clientele_api.BaseConfig):
         )
     """
 
-    base_url: str = "http://127.0.0.1:8000"
+    base_url: str = settings.api_url
     headers: dict[str, str] = Field(default_factory=dict)
     timeout: float | None = 5.0
     follow_redirects: bool = False

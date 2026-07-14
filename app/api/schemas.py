@@ -26,21 +26,22 @@ class AnswerAllSeqInfo(pydantic.BaseModel):
 
 
 class AnswerBaseInfo(pydantic.BaseModel):
-    tg_id: int
-    name: typing.Optional[str | None] = None
-    username: typing.Optional[str | None] = None
-    path_name: typing.Optional[str | None] = None
-    seq: typing.Optional[int | None] = None
-    seq_name: typing.Optional[str | None] = None
-    titul: typing.Optional[str | None] = None
-    organ_name: typing.Optional[str | None] = None
-    rank: typing.Optional[int | None] = None
-    rank_name: typing.Optional[str | None] = None
+    user: "QueryBody"
+    beyonder: typing.Optional[typing.Union["AnswerBeyonderInfo", None]] = None
+    member: typing.Optional[typing.Union["AnswerMemberInfo", None]] = None
+
+
+class AnswerBeyonderInfo(pydantic.BaseModel):
+    path_name: str | None
+    seq: int | None
+    seq_name: str | None
 
 
 class AnswerGAFullInfo(pydantic.BaseModel):
-    ga_name: str | None
-    paths: list["AnswerPathInfo"] | None
+    group: str
+    name: str
+    ga_id: int
+    paths: list["AnswerPathInfo"]
 
 
 class AnswerGAInfo(pydantic.BaseModel):
@@ -55,14 +56,23 @@ class AnswerGASearchInfo(pydantic.BaseModel):
 
 
 class AnswerGroupInfo(pydantic.BaseModel):
-    group_name: str | None
-    gas: list["AnswerGAInfo"] | None
+    group_name: str
+    gas: list["AnswerGAInfo"]
+
+
+class AnswerMemberInfo(pydantic.BaseModel):
+    titul: str | None
+    organ_name: str | None
+    rank: int | None
+    rank_name: str | None
 
 
 class AnswerPathFullInfo(pydantic.BaseModel):
-    ga_name: str | None
-    seqs: list["AnswerSeqInfo"] | None
-    name: str | None
+    group: str
+    name: str
+    path_id: int
+    ga: "AnswerGAInfo"
+    seqs: list["AnswerSeqInfo"]
 
 
 class AnswerPathInfo(pydantic.BaseModel):
@@ -77,14 +87,22 @@ class AnswerPathSearchInfo(pydantic.BaseModel):
 
 
 class AnswerRedactSeq(pydantic.BaseModel):
-    tg_id: int
+    user: "QueryBody"
     old: typing.Optional[typing.Union["Data", None]] = None
     new: typing.Optional[typing.Union["Data", None]] = None
     operation: str
 
 
+class AnswerSeqFullInfo(pydantic.BaseModel):
+    number: int
+    name: str
+    path_id: int
+    seq_id: int
+    path_name: typing.Optional[str | None] = None
+
+
 class AnswerSeqInfo(pydantic.BaseModel):
-    seq: int
+    number: int
     name: str
     path_id: int
     seq_id: int
@@ -96,14 +114,14 @@ class AnswerSeqSearchInfo(pydantic.BaseModel):
 
 
 class AnswerTimeInfo(pydantic.BaseModel):
-    tg_id: int
+    user: "QueryBody"
     next_upseq: str | None
     last_upseq: str
     upseq_days: int | None
 
 
 class AnswerTimeRedact(pydantic.BaseModel):
-    tg_id: int
+    user: "QueryBody"
     old_time: str
     new_time: str
     seconds: int
@@ -111,13 +129,13 @@ class AnswerTimeRedact(pydantic.BaseModel):
 
 
 class AnswerTimeReplace(pydantic.BaseModel):
-    tg_id: int
+    user: "QueryBody"
     old_time: str
     new_time: str
 
 
 class AnswerUserBody(pydantic.BaseModel):
-    tg_id: int
+    user: "QueryBody"
 
 
 class BaseExceptionResponse(pydantic.BaseModel):

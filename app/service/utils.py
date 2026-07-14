@@ -39,7 +39,7 @@ def is_natural_int(string: str | None,
         raise error_no_int(f'This user(tg_id={tg_id}) enter no int')
     if quan <= 0:
         raise error_less_one(f'This user(tg_id={tg_id}) enter int, but int <=0: {string}')
-    if quan.is_integer() == False:
+    if not quan.is_integer():
         raise error_float(f'This user(tg_id={tg_id}) enter float')
     return int(quan)
 

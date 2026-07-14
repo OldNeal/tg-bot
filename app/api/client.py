@@ -57,10 +57,9 @@ async def time_redact(result: schemas.AnswerTimeRedact | schemas.BaseExceptionRe
     return result
 
 
+@client.post("/beyonder/kill", response_map={200: schemas.AnswerUserBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse})
 
-@client.delete("/beyonder/kill", response_map={200: schemas.AnswerUserBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse})
-
-async def kill(result: schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, tg_id: typing.Optional[int] = None) -> schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+async def kill(result: schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None) -> schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Kill
     """
     return result
@@ -80,6 +79,17 @@ async def search_seq(result: schemas.AnswerSeqSearchInfo | schemas.BaseException
 
 async def get_seqs(result: schemas.AnswerAllSeqInfo | schemas.BaseExceptionResponse) -> schemas.AnswerAllSeqInfo | schemas.BaseExceptionResponse:
     """Get Seqs
+
+    Возвращает список всех Последовательностей
+    """
+    return result
+
+
+
+@client.get("/wiki/seq", response_map={200: schemas.AnswerSeqFullInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+
+async def get_seq(result: schemas.AnswerSeqFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, name: typing.Optional[str] = None, id: typing.Optional[int] = None) -> schemas.AnswerSeqFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Get Seq
     """
     return result
 
@@ -98,6 +108,8 @@ async def search_path(result: schemas.AnswerPathSearchInfo | schemas.BaseExcepti
 
 async def get_paths(result: schemas.AnswerAllPathInfo | schemas.BaseExceptionResponse) -> schemas.AnswerAllPathInfo | schemas.BaseExceptionResponse:
     """Get Paths
+
+    Возвращает список всех Путей
     """
     return result
 
@@ -107,6 +119,24 @@ async def get_paths(result: schemas.AnswerAllPathInfo | schemas.BaseExceptionRes
 
 async def get_path(result: schemas.AnswerPathFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, name: typing.Optional[str] = None, id: typing.Optional[int] = None) -> schemas.AnswerPathFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Path
+    """
+    return result
+
+
+
+@client.get("/wiki/path/seq", response_map={200: schemas.AnswerSeqFullInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+
+async def get_seq_by_path_id(result: schemas.AnswerSeqFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, path_id: int, seq_number: int) -> schemas.AnswerSeqFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Get Seq By Path Id
+    """
+    return result
+
+
+
+@client.get("/wiki/path/seqs", response_map={200: schemas.AnswerAllSeqInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+
+async def get_seqs_by_path_id(result: schemas.AnswerAllSeqInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, path_id: int) -> schemas.AnswerAllSeqInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Get Seqs By Path Id
     """
     return result
 
@@ -125,6 +155,8 @@ async def search_ga(result: schemas.AnswerGASearchInfo | schemas.BaseExceptionRe
 
 async def get_gas(result: schemas.AnswerAllGAInfo | schemas.BaseExceptionResponse) -> schemas.AnswerAllGAInfo | schemas.BaseExceptionResponse:
     """Get Gas
+
+    Возвращает список всех Великих Древних
     """
     return result
 
@@ -139,10 +171,21 @@ async def get_ga(result: schemas.AnswerGAFullInfo | schemas.BaseExceptionRespons
 
 
 
+@client.get("/wiki/ga/paths", response_map={200: schemas.AnswerAllPathInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+
+async def get_path_by_ga_id(result: schemas.AnswerAllPathInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, ga_id: int) -> schemas.AnswerAllPathInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Get Path By Ga Id
+    """
+    return result
+
+
+
 @client.get("/wiki/group/all", response_map={200: schemas.AnswerAllGroupInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
 
 async def get_groups(result: schemas.AnswerAllGroupInfo | schemas.BaseExceptionResponse) -> schemas.AnswerAllGroupInfo | schemas.BaseExceptionResponse:
     """Get Groups
+
+    Возвращает все группы Путей
     """
     return result
 

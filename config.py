@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import os
 from pathlib import Path
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -9,8 +9,7 @@ from aiogram.types import BotCommand, BotCommandScopeChat, BotCommandScopeAllPri
 from aiogram import Bot, Dispatcher, Router, F, flags
 from aiogram.filters import CommandStart, Command, CommandObject
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
-from ass_tg import types as ass_tg
+from aiogram.types import Message, CallbackQuery, User
 from datetime import timedelta 
 from app.logging.base import botlog, log
 

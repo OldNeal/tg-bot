@@ -1,3 +1,7 @@
+# Временно
+app/service/parsers/
+test*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -8,7 +12,7 @@ __pycache__/
 scripts.py
 alembic.ini
 alembic/
-.env
+.env*
 Dockerfile
 .dockerignore
 # Distribution / packaging
