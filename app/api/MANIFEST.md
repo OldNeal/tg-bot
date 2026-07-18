@@ -14,7 +14,7 @@ Or with uv:
 uv add clientele
 ```
 
-API VERSION: 0.1
+API VERSION: 0.4
 OPENAPI VERSION: 3.1.0
 CLIENTELE VERSION: 2.2.2
 

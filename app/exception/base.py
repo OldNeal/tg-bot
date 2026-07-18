@@ -16,7 +16,7 @@ class BotError(Exception):
         self.is_error = is_error
         if is_error:
             super().__init__(*args)
-            getattr(log, level)(f'{self.__class__.__name__}, msg: {' '.join([self.args])}, kwargs: {self.kwargs}')
+            getattr(log, level)(f'{self.__class__.__name__}, msg: {' '.join(self.args)}, kwargs: {self.kwargs}')
 
     def __str__(self):
         return super().__str__()
@@ -42,11 +42,15 @@ class ApiError(BotError):
 
     def __init__(self, *args, level = 'warning', is_error = True, **kwargs):
         super().__init__(*args, level=level, is_error=is_error, **kwargs)
-        self.msg = ' '.join([self.args])
+        self.msg = ' '.join(self.args)
 
     @property
     def to_msg(self):
         return self.msg
+
+class ApiTimeoutError(BotError):
+    msg = 'API не работает'
+    emodzi = '❌'
 
 def msg_error(bot_error: BotError | list[BotError]) -> str | list[str]:
     if type(bot_error) == BotError: return bot_error.to_msg()

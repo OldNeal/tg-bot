@@ -12,43 +12,43 @@ class BeyonderService(BaseService):
 
     async def drink(self):
         data = await self.logic.drink(**DrinkArg.model_validate(self.kwargs).model_dump())
-        return [
-            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)).drink, None]
-            ]
+        return self.to_json([
+            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)).drink, data, None]
+            ])
 
     async def upseq(self):
         data = await self.logic.upseq(**UpDownSeqArg.model_validate(self.kwargs).model_dump())
-        return [
-            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)).upseq, None]
-            ]
+        return self.to_json([
+            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)).upseq, data, None]
+            ])
 
     async def dowseq(self):
         data = await self.logic.dowseq(**UpDownSeqArg.model_validate(self.kwargs).model_dump())
-        return [
-            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)).downseq, None]
-            ]
+        return self.to_json([
+            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)).downseq, data, None]
+            ])
 
     async def kill(self):
         data = await self.logic.kill(**UserArg.model_validate(self.kwargs).model_dump())
-        return [
-            [self.text(UserTextValidate(name=data.user.fullname)).kill, None]
-            ]
+        return self.to_json([
+            [self.text(UserTextValidate(name=data.user.fullname)).kill, data, None]
+            ])
 
     async def time_info(self):
         data = await self.logic.time_info(**UserArg.model_validate(self.kwargs).model_dump())
-        return [
-            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)), None]
-            ]
+        return self.to_json([
+            [self.text(data).time_info, data, None]
+            ])
 
     async def time_redact(self):
         data = await self.logic.time_redact(**TimeRedactArg.model_validate(self.kwargs).model_dump())
-        return [
-            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)), None]
-            ]
+        return self.to_json([
+            [data.model_dump_json(), data, None]
+            ])
     
     async def time_replace(self):
         data = await self.logic.time_replace(**TimeReplaceArg.model_validate(self.kwargs).model_dump())
-        return [
-            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)), None]
-            ]
+        return self.to_json([
+            [data.model_dump_json(), data, None]
+            ])
     

@@ -1,5 +1,7 @@
 from app.logic.base import BaseLogic
+from app.logic.utils import class_decor
 
+@class_decor
 class WikiLogic(BaseLogic):
     async def all_seqs(self):
         return await self.client.get_seqs()

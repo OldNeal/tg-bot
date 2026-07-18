@@ -5,12 +5,19 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import BotCommand, BotCommandScopeChat, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats, BotCommandScopeAllChatAdministrators
+from aiogram.types import (BotCommand, 
+                           BotCommandScopeChat, 
+                           BotCommandScopeAllPrivateChats, 
+                           BotCommandScopeAllGroupChats, 
+                           BotCommandScopeAllChatAdministrators,
+                           InputRichMessage, 
+                           Message, 
+                           CallbackQuery, 
+                           User)
 from aiogram import Bot, Dispatcher, Router, F, flags
 from aiogram.filters import CommandStart, Command, CommandObject
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, User
-from datetime import timedelta 
+from datetime import timedelta, datetime
 from app.logging.base import botlog, log
 
 load_dotenv(Path(__file__).parent / '.env')
@@ -49,6 +56,7 @@ cmds = {
     'path':'📜 Информация о путях',
     'stats':'📊 Получить статистику',
     'help':'📚 Получить справку',
+    'ping':'⌛ Проверить задержку API',
 }
 
 admin_cmds = cmds | {

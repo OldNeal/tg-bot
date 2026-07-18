@@ -11,4 +11,5 @@ tg_id = Argument(
 
 to_json = Flag(['to_json', 'json', 'j'], 'Показать в формате json')
 is_reply = Flag(['is_reply', 'r'], 'Команда выполняется с учетом ответа (явно)')
+is_admin = Flag(['is_admin', 'a'], 'Команда выполняется от лица админа (явно)')
 

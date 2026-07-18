@@ -18,12 +18,11 @@ class HTMLStripper(HTMLParser):
         return ''.join(self.text)
 
 class TextHTMLBase(str):
-    def blockquote(self, expandable: bool = False) -> "TextHTML":
+    def blockquote(self, expandable: bool = False, cite: str | None = None) -> "TextHTML":
         """ Цитата
-            - expandable: Позволяет сделать цитату разворачиваемой"""
-        if expandable:
-            return TextHTML('<blockquote expandable>' + self + '</blockquote>')
-        return TextHTML('<blockquote>' + self + '</blockquote>')
+            - expandable: Позволяет сделать цитату разворачиваемой
+            - cite: Автор цитаты"""
+        return TextHTML(f'<blockquote {'expandable' if expandable else ''}>{self}{f'<cite>{cite}</cite>' if cite else ''}</blockquote>')
 
     def escape(self) -> "TextHTML":
         ''' Экранирование HTML '''
@@ -89,10 +88,10 @@ class TextHTMLBase(str):
     
     @staticmethod
     def json_format(json_data: dict, indent: int = 2) -> "TextHTML":
-        """Форматирует json с отступами\
+        """Форматирует json с отступами
             - json_data: Данные для форматирования
             - indent: Количество отступов"""
-        return TextHTML(json.dumps(json_data, indent=indent))
+        return TextHTML(json.dumps(json_data, ensure_ascii=False, indent=indent).encode('utf-8').decode('utf-8'))
 
     def pre(self, language: str = 'python') -> "TextHTML":
         """Преобразует текст в блок кода
@@ -102,7 +101,7 @@ class TextHTMLBase(str):
     def openmessage(self, user_id: int) -> "TextHTML":
         """Ссылку на чат с пользователем
             - user_id: Telegram ID пользователя"""
-        return TextHTML(f'<a href="tg://openmessage?user_id={user_id}">{self}</a>')
+        return TextHTML(f'<a href="tg://user?id={user_id}">{self}</a>')
     
     def to_html(self) -> "TextHTML":
         """Преобразует markdown в html"""
@@ -113,6 +112,75 @@ class TextHTMLBase(str):
         stripper = HTMLStripper()
         stripper.feed(self)
         return stripper.get_data()
+    
+    @classmethod
+    def example(cls) -> "TextHTML":
+        return cls(open('.\\app\\aio\\cls\\msg\\rich_example.html', 'r', encoding='UTF-8').read())
+
+    def details(self, title: str = 'Открыть', is_close: bool = True) -> "TextHTML":
+        """ Сворачиваемый блок 
+            - title: Заголовок 
+            - is_close: Изначально закрытый"""
+        return TextHTML(f'<details {'close' if is_close else 'open'}><summary>{title}</summary>{self}</details>')
+
+    def headers(self, num: int = 1) -> "TextHTML":
+        """ Заголовок
+            - num: Уровень заголовка """
+        return TextHTML(f'<h{num}>{self}</h{num}>')
+
+    @property
+    def h1(self):
+        return self.headers(1)
+    
+    @property
+    def h2(self):
+        return self.headers(2)
+    
+    @property
+    def h3(self):
+        return self.headers(3)
+    
+    @property
+    def h4(self):
+        return self.headers(4)
+    
+    @property
+    def h5(self):
+        return self.headers(5)
+    
+    @property
+    def h6(self):
+        return self.headers(6)
+
+    def paragraf(self) -> "TextHTML":
+        """Параграф"""
+        return TextHTML(f'<p>{self}</p>')
+
+    def mark(self) -> "TextHTML":
+        """Выделить"""
+        return TextHTML(f'<mark>{self}</mark>')
+    
+    def aside(self, cite: str | None = None) -> "TextHTML":
+        """ Выделенная Цитата 
+            - cite: Автор цитаты"""
+        return TextHTML(f'<aside>{self}{f'<cite>{cite}</cite>' if cite else ''}</aside>')
+    
+    def hr(self, to_front: bool = False) -> "TextHTML":
+        """ Разделитель 
+            - to_front: Спереди текста"""
+        return TextHTML(f'<hr>{self}') if to_front else TextHTML(f'{self}<hr>')
+    
+    @classmethod
+    def anchor(cls, name: str):
+        return cls(f'<a name="{name}"></a>')
+    
+    @property
+    def br(self):
+        return TextHTML(f'{self}<br>')
+
+    @classmethod
+    def joined(cls, iter: list, sep: str = '<br>'):
+        return cls(sep.join(iter))
 
 class TextHTML(TextHTMLBase):
     # ─── Методы изменения регистра ──────────────────────────────────

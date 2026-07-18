@@ -80,7 +80,7 @@ async def search_seq(result: schemas.AnswerSeqSearchInfo | schemas.BaseException
 async def get_seqs(result: schemas.AnswerAllSeqInfo | schemas.BaseExceptionResponse) -> schemas.AnswerAllSeqInfo | schemas.BaseExceptionResponse:
     """Get Seqs
 
-    Возвращает список всех Последовательностей
+       
     """
     return result
 
@@ -109,7 +109,7 @@ async def search_path(result: schemas.AnswerPathSearchInfo | schemas.BaseExcepti
 async def get_paths(result: schemas.AnswerAllPathInfo | schemas.BaseExceptionResponse) -> schemas.AnswerAllPathInfo | schemas.BaseExceptionResponse:
     """Get Paths
 
-    Возвращает список всех Путей
+       
     """
     return result
 
@@ -156,7 +156,7 @@ async def search_ga(result: schemas.AnswerGASearchInfo | schemas.BaseExceptionRe
 async def get_gas(result: schemas.AnswerAllGAInfo | schemas.BaseExceptionResponse) -> schemas.AnswerAllGAInfo | schemas.BaseExceptionResponse:
     """Get Gas
 
-    Возвращает список всех Великих Древних
+        
     """
     return result
 
@@ -185,7 +185,7 @@ async def get_path_by_ga_id(result: schemas.AnswerAllPathInfo | schemas.BaseExce
 async def get_groups(result: schemas.AnswerAllGroupInfo | schemas.BaseExceptionResponse) -> schemas.AnswerAllGroupInfo | schemas.BaseExceptionResponse:
     """Get Groups
 
-    Возвращает все группы Путей
+       
     """
     return result
 
@@ -218,9 +218,9 @@ async def get_info(result: schemas.AnswerBaseInfo | schemas.BaseExceptionRespons
 
 
 
-@client.get("/", response_map={200: schemas.Main200Response, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse})
+@client.get("/", response_map={200: schemas.AnswerMain, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse})
 
-async def main(result: schemas.BaseExceptionResponse | schemas.Main200Response) -> schemas.BaseExceptionResponse | schemas.Main200Response:
+async def main(result: schemas.AnswerMain | schemas.BaseExceptionResponse) -> schemas.AnswerMain | schemas.BaseExceptionResponse:
     """Main
     """
     return result

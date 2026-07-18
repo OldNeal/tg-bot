@@ -60,6 +60,11 @@ class AnswerGroupInfo(pydantic.BaseModel):
     gas: list["AnswerGAInfo"]
 
 
+class AnswerMain(pydantic.BaseModel):
+    message: str
+    version: str
+
+
 class AnswerMemberInfo(pydantic.BaseModel):
     titul: str | None
     organ_name: str | None
@@ -159,6 +164,7 @@ class QueryBody(pydantic.BaseModel):
     tg_id: int
     username: typing.Optional[str | None] = None
     fullname: typing.Optional[str | None] = None
+    is_admin: bool = False
 
 
 class ValidationError(pydantic.BaseModel):
@@ -172,9 +178,6 @@ class ValidationError(pydantic.BaseModel):
 
 
 class Endpoint200Response(pydantic.BaseModel):
-    pass
-
-class Main200Response(pydantic.BaseModel):
     pass
 
 def get_subclasses_from_same_file() -> list[typing.Type[pydantic.BaseModel]]:

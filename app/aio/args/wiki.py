@@ -1,5 +1,12 @@
 from telegram_click_aio.argument import Argument, Flag, Selection
 
+data_id = Argument(
+            name=['data_id', 'id'],
+            description='id',
+            type=int,
+            example='1',
+            optional=True
+        )
 
 seq_name = Argument(
             name=['seq_name', 'seq'],

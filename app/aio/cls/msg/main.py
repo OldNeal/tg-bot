@@ -25,6 +25,11 @@ class MainText(BaseText):
             elif self.data.beyonder.seq < 0:
                 beyonder = [f'🏵 {self.data.beyonder.seq_name}']
 
-        return self.html(self.data.user.fullname).openmessage(self.data.user.tg_id) + self.html('\n'.join([f'🏷 ID: {self.data.user.tg_id}'] + member + beyonder)).blockquote()
+        return self.html(self.data.user.fullname).openmessage(self.data.user.tg_id) + self.html(self.html.joined([f'🏷 ID: {self.data.user.tg_id}'] + member + beyonder)).blockquote()
 
+    @property
+    def first_msg_by_info(self):
+        return 'Держи карточку'
 
+    def check_ping(api_ping: str | None = None):
+        return f'⌛ Задержка API - {api_ping} мс.'

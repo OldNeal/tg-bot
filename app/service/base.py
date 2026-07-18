@@ -1,13 +1,15 @@
-import asyncio, datetime, functools
+import asyncio, functools
+from datetime import datetime
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputRichMessage
 from aiogram.filters import CommandStart, Command, CommandObject
 from app.aio.cls.buttons.base import BotIKB
-from config import settings, bot
+from config import settings, bot, log, botlog
 from app.aio.cls.fsm.utils import FSMUtils
 from app.service.utils import is_natural_int
 from app.validate.service import Purpose
 from app.validate.base import BaseValidate
+from app.aio.cls.msg.utils import TextHTML
 
 NOT_NEW_STATE = object()
 
@@ -23,12 +25,12 @@ class BaseService:
         self.bot = bot
         self.message = message
         self.callback = callback
-        self.kwargs = kwargs
         self.command = command
-        self.logic_kwargs = logic_kwargs
-
+        self.kwargs = kwargs
         self.user = self.callback.from_user if self.callback else self.message.from_user
         self.tg_id = self.user.id
+        self.logic_kwargs = {'is_admin':self.is_admin} | logic_kwargs
+
         
         self.state: FSMUtils = FSMUtils(state)
         self.IKB = BotIKB(self.tg_id)
@@ -36,8 +38,11 @@ class BaseService:
         self.logic = None
         self.asyncio = asyncio
         self.datetime = datetime
+        self.log = log
+        self.botlog = botlog
         self.msg_to_json: bool = self.kwargs.get('to_json', False)
-        self.enter_args: bool = self.command.args != None
+        self.enter_args: bool = self.command.args != None if command else False
+
 
     @property
     def purpose(self):
@@ -47,6 +52,10 @@ class BaseService:
             return self.message.reply_to_message.from_user
         else:
             return self.user
+
+    @property
+    def is_admin(self):
+        return self.kwargs.get('is_admin', False) and self.tg_id in self.settings.admins
 
     @classmethod
     def is_natural_int(self, value, **kwargs):
@@ -86,4 +95,4 @@ class BaseService:
         return True
 
     def to_json(self, msgs: list[tuple[str, BaseValidate, InlineKeyboardButton | InlineKeyboardMarkup | None]]):
-        return [((str(v.model_dump()) if self.msg_to_json else m), i) for m, v, i in msgs]
+        return [(((TextHTML.anchor('start-json') + TextHTML.json_format(v.model_dump(), 4).pre('json').details('Открыть JSON') + TextHTML('Вверх').href('#start-json')) if self.msg_to_json and v else m), i) for m, v, i in msgs]

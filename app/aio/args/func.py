@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import re
-
+from app.exception.args import DataFormatError, DurationFormatError
 
 def is_datetime(s):
     """Проверяет наличие даты в разных форматах"""
@@ -17,7 +17,7 @@ def is_datetime(s):
         except ValueError:
             continue
     
-    raise (f"Значение не является датой")
+    raise DurationFormatError(f"Значение не является датой")
 
 def parse_date(s):
     """Парсит дату в разных форматах"""
@@ -34,7 +34,7 @@ def parse_date(s):
         except ValueError:
             continue
     
-    raise (f"Неверный формат даты: {s}")
+    raise DurationFormatError(f"Значение не является датой")
 
 def is_time_pattern(arg):
     """
@@ -46,7 +46,7 @@ def is_time_pattern(arg):
     pattern = r'^[\+-]?\d+[ydhms](?:\d+[ydhms])*$'
     if re.match(pattern, arg):
         return True
-    raise (f"Значение не является временным промежутком")
+    raise DataFormatError(f"Значение не является временным промежутком")
 
 def parse_duration(s):
     """
@@ -63,7 +63,7 @@ def parse_duration(s):
     match = re.match(pattern, s)
     
     if not match:
-        raise (f"Неверный формат длительности: {s}")
+        raise DataFormatError(f"Значение не является временным промежутком")
     
     operator = match.group(1)  # Может быть None, '+', или '-'
     units_part = match.group(2)

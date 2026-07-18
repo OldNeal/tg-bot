@@ -10,8 +10,13 @@ class MainService(BaseService):
 
     async def info(self):
         data = await self.logic.info(self.kwargs.get('tg_id'))
-        return [
-            ['Держи карточку', None],
-            [self.text(data).info, None]
-            ]
+        return self.to_json([
+            [self.text(data).first_msg_by_info, None, None],
+            [self.text(data).info, data, None]
+            ])
 
+    async def ping(self):
+        api_ping = await self.logic.test_api_connect()
+        return [
+            [self.text.check_ping(api_ping), None]
+        ]

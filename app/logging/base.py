@@ -1,9 +1,11 @@
 import loguru, sys, inspect
 from functools import wraps
 from datetime import time
+from typing import Literal
 
 class BotLog:
-    def __init__(self):
+    def __init__(self, terminal_level: Literal['trace', 'debug', 'info', 'success', 'warning', 'error', 'critical'] = 'debug'):
+        self.terminal_level = terminal_level.upper()
         self.loguru = loguru
         self.logger = self.loguru.logger
         self.log_format = """{level.icon}  | <green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level}</level> | <cyan>{message}</cyan> | <blue>[{extra}]</blue>"""
@@ -12,13 +14,14 @@ class BotLog:
         self.create_levels()
 
     def handlers(self):
-        return [{
+        return [
+            {
             'sink':sys.stderr,
-            'level':'DEBUG',
+            'level':self.terminal_level,
             'format':self.log_format,
             'enqueue':True,
-        }
-    ]
+            }
+        ]
     
     def create_handlers(self):
         self.logger.remove()

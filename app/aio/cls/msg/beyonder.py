@@ -1,4 +1,5 @@
 from app.aio.cls.msg.base import Templates, BaseText
+from datetime import datetime
 
 class BeyonderText(BaseText):
     drink_template = Templates(templates_file_name='drink.txt')
@@ -22,3 +23,10 @@ class BeyonderText(BaseText):
     def kill(self):
         return self.kill_template.random().format_map(self.data.model_dump())
     
+    @property
+    def time_info(self):
+        return self.html(self.data.user.fullname).openmessage(self.data.user.tg_id) + self.html.joined([
+            f'📅 Послед. продвижение: {datetime.fromisoformat(self.data.last_upseq).date()}',
+            f'⚡ След. продвижение: {datetime.fromisoformat(self.data.next_upseq).date()}',
+            f'⏳ Осталось дней: {self.data.upseq_days}',
+        ]).blockquote()
