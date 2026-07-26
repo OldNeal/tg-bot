@@ -1,4 +1,4 @@
-from app.validate.base import BaseValidate
+from app.validate.base import BaseValidate, Field
 from datetime import datetime, timedelta
 
 class BaseArg(BaseValidate):
@@ -8,7 +8,7 @@ class UserArg(BaseArg):
     purpose_tg_id: int | None = None
 
 class UpDownSeqArg(UserArg):
-    seq: int = 1
+    seq: int | None = None
     path_name: str | None = None
 
 class DrinkArg(UserArg):
@@ -19,7 +19,7 @@ class TimeRedactArg(UserArg):
     duration: timedelta
 
 class TimeReplaceArg(UserArg):
-    date: datetime
+    datetime_arg: datetime
 
 
 

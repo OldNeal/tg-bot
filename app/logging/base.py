@@ -33,6 +33,7 @@ class BotLog:
 
     def create_levels(self):
         self.logger.level("MESSAGE", no=15, color="<blue>", icon="💬")
+        self.logger.level("CALLBACK", no=14, color="<blue>", icon="🌐")
         self.logger.level("BOT START", no=25, color="<white>", icon="🏁")
         self.logger.level("BOT STOP", no=26, color="<white>", icon="🛑")
  
@@ -78,9 +79,13 @@ class BotLog:
                 return sync_wrapped
         return decorator
 
-    def message(self, msg: int, **kwargs):
+    def message(self, msg: str, **kwargs):
         self.logger.log('MESSAGE', f'Text: {msg}', **kwargs)
 
+    def callback(self, callback_data: str, **kwargs):
+        prefix, data = callback_data.split(':', maxsplit=1)
+        self.logger.log('CALLBACK', f'Prefix: {prefix}, Data: {data}', **kwargs)
+        
     def start(self, **kwargs):
         self.logger.log('BOT START', f'Бот запущен', **kwargs)
 

@@ -1,1 +1,1 @@
-from .log import BotLogMessageMiddleware
+from .log import BotLogMessageMiddleware, BotLogCallbackQueryMiddleware

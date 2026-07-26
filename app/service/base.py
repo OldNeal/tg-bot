@@ -95,4 +95,4 @@ class BaseService:
         return True
 
     def to_json(self, msgs: list[tuple[str, BaseValidate, InlineKeyboardButton | InlineKeyboardMarkup | None]]):
-        return [(((TextHTML.anchor('start-json') + TextHTML.json_format(v.model_dump(), 4).pre('json').details('Открыть JSON') + TextHTML('Вверх').href('#start-json')) if self.msg_to_json and v else m), i) for m, v, i in msgs]
+        return [(((TextHTML.anchor('start-json') + TextHTML.json_format((v.model_dump() if type(v) == BaseValidate else v), 4).pre('json').details('Открыть JSON') + TextHTML('Вверх').href('#start-json')) if self.msg_to_json and v else m),None if self.msg_to_json and v else i) for m, v, i in msgs]

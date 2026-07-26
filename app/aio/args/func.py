@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import re
-from app.exception.args import DataFormatError, DurationFormatError
+from app.exception.args import DataFormatError, DurationFormatError, DrinkPathNameError, SeqError
 
 def is_datetime(s):
     """Проверяет наличие даты в разных форматах"""
@@ -10,14 +10,13 @@ def is_datetime(s):
         '%d-%m-%Y',
         '%Y.%m.%d',
     ]
-    
     for fmt in formats:
         try:
             return bool(datetime.strptime(s, fmt))
         except ValueError:
             continue
     
-    raise DurationFormatError(f"Значение не является датой")
+    raise DataFormatError(f"Значение не является датой")
 
 def parse_date(s):
     """Парсит дату в разных форматах"""
@@ -34,7 +33,7 @@ def parse_date(s):
         except ValueError:
             continue
     
-    raise DurationFormatError(f"Значение не является датой")
+    raise DataFormatError(f"Значение не является датой")
 
 def is_time_pattern(arg):
     """
@@ -46,7 +45,7 @@ def is_time_pattern(arg):
     pattern = r'^[\+-]?\d+[ydhms](?:\d+[ydhms])*$'
     if re.match(pattern, arg):
         return True
-    raise DataFormatError(f"Значение не является временным промежутком")
+    raise DurationFormatError(f"Значение не является временным промежутком")
 
 def parse_duration(s):
     """
@@ -59,11 +58,11 @@ def parse_duration(s):
     """
     
     # Проверяем формат: сначала опциональный знак, затем части с единицами
-    pattern = r'^([+-])?((?:\d+[ydhms])+)$'
+    pattern = r'^([+-])?((?:\d+[ydhmws])+)$'
     match = re.match(pattern, s)
     
     if not match:
-        raise DataFormatError(f"Значение не является временным промежутком")
+        raise DurationFormatError(f"Значение не является временным промежутком")
     
     operator = match.group(1)  # Может быть None, '+', или '-'
     units_part = match.group(2)
@@ -94,5 +93,17 @@ def parse_duration(s):
             total += timedelta(days=value)
         elif unit == 'y':
             total += timedelta(days=value * 365)
+        elif unit == 'w':
+            total += timedelta(days=value * 7)
     
     return total
+
+def check_path_name(path: str | None):
+    if path is None:
+        raise DrinkPathNameError('Не указал путь нужного зелья')
+    return bool(path)
+
+def check_seq(seq: int):
+    if not(10 > seq > -2):
+        raise SeqError('Указал несуществующую последовательность')
+    return seq

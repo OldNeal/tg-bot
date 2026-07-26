@@ -1,4 +1,4 @@
-from .base import tg_id, to_json, is_reply, is_admin
+from .base import tg_id, to_json, is_reply, is_admin, is_delay
 from .beyonder import datetime_arg, duration, seq, time_mode, drink_seq, optional_time_mode
 from .wiki import ga_name, seq_name, path_name, group_name, is_all, value
 
@@ -16,10 +16,11 @@ class Optionals:
     is_reply = is_reply
     value = value
     is_admin = is_admin
+    is_delay = is_delay
 
 class Requireds:
     date = datetime_arg
     duration = duration
     time_mode = time_mode
 
-base_args = [Optionals.tg_id, Optionals.to_json, Optionals.is_reply, Optionals.is_admin]
+base_args = [Optionals.tg_id, Optionals.to_json, Optionals.is_reply, Optionals.is_admin, Optionals.is_delay]

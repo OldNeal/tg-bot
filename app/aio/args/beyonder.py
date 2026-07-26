@@ -8,7 +8,6 @@ seq = Selection(
     allowed_values=list(range(-1, 10)),
     type=int,
     optional=True,
-    default=1,
 )
 
 drink_seq = Selection(
@@ -41,16 +40,14 @@ duration = Argument(
             description='Промежуток времени',
             type=timedelta,
             example='+5h7m',
-            converter=parse_duration,
-            validator=is_time_pattern
+            converter=parse_duration
         )
 
 datetime_arg = Argument(
             name=['datetime_arg', 'date'],
             description='Новая дата',
             type=datetime,
-            example='Земные',
-            converter=parse_date,
-            validator=is_datetime
+            example='12-11-2013',
+            converter=parse_date
         )
 

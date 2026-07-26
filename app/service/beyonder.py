@@ -43,12 +43,12 @@ class BeyonderService(BaseService):
     async def time_redact(self):
         data = await self.logic.time_redact(**TimeRedactArg.model_validate(self.kwargs).model_dump())
         return self.to_json([
-            [data.model_dump_json(), data, None]
+            [self.text(data).time_redact, data, None]
             ])
     
     async def time_replace(self):
         data = await self.logic.time_replace(**TimeReplaceArg.model_validate(self.kwargs).model_dump())
         return self.to_json([
-            [data.model_dump_json(), data, None]
+            [self.text(data).time_replace, data, None]
             ])
     

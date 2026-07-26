@@ -1,4 +1,3 @@
-from app.validate.base import BaseValidate
 from app.aio.cls.msg.utils import TextHTML
 import random
 
@@ -24,7 +23,4 @@ class Templates:
 
 class BaseText:
     html = TextHTML
-
-    def __init__(self, data: BaseValidate):
-        self.data = data
 

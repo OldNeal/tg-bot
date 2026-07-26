@@ -1,5 +1,6 @@
 from app.logic.base import BaseLogic
 from app.logic.utils import class_decor
+from datetime import datetime, timedelta
 
 @class_decor
 class BeyonderLogic(BaseLogic):
@@ -18,8 +19,11 @@ class BeyonderLogic(BaseLogic):
     async def time_info(self, purpose_tg_id: int | None = None):
         return await self.client.time_info(purpose_tg_id or self.purpose_tg_id)
     
-    async def time_redact(self, seconds: float, operator: str, purpose_tg_id: int | None = None):
-        return await self.client.time_redact(self.body, seconds, operator, purpose_tg_id)
+    async def time_redact(self, duration: timedelta, operator: str = '+', purpose_tg_id: int | None = None):
+        seconds = duration.total_seconds()
+        if seconds < 0:
+            operator = '-'
+        return await self.client.time_redact(self.body, abs(seconds), operator, purpose_tg_id)
     
-    async def time_replace(self, date: str, purpose_tg_id: int | None = None):
-        return await self.client.time_replace(self.body, date, purpose_tg_id)
+    async def time_replace(self, datetime_arg: datetime, purpose_tg_id: int | None = None):
+        return await self.client.time_replace(self.body, datetime_arg.isoformat(), purpose_tg_id)

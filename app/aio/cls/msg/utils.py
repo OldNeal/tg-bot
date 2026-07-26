@@ -36,6 +36,10 @@ class TextHTMLBase(str):
         ''' Жирный текст '''
         return TextHTML(f'<b>{self}</b>')
 
+    def underline(self) -> "TextHTML":
+        ''' Подчеркнутый текст '''
+        return TextHTML(f'<u>{self}</u>')
+
     def code(self) -> "TextHTML":
         ''' Моноширный (копируемый) текст '''
         return TextHTML(f'<code>{self}</code>')
@@ -66,6 +70,8 @@ class TextHTMLBase(str):
             - sep: Разделитель между элементами списка '''
         if type == 'num':
             return cls(sep.join([f'{i+1}. {item}' for i, item in enumerate(items)]))
+        elif type == 'path':
+            return cls(sep.join([f'{i+1} - {item}' for i, item in enumerate(items)]))
         elif type == 'bullet':
             return cls(sep.join([f'• {item}' for item in items]))
         elif type == 'list' and type_list:
@@ -181,6 +187,9 @@ class TextHTMLBase(str):
     @classmethod
     def joined(cls, iter: list, sep: str = '<br>'):
         return cls(sep.join(iter))
+
+    def to_markered(self, value: str | None):
+        return TextHTML(value).underline().join(self.split(value)) if value else TextHTML(self)
 
 class TextHTML(TextHTMLBase):
     # ─── Методы изменения регистра ──────────────────────────────────

@@ -22,6 +22,12 @@ async def cmd_info(message: Message, state: FSMContext, **kwargs):
 
 @main_router.message(Command('ping'))
 @exept()
-async def cmd_info(message: Message, state: FSMContext, **kwargs):
+async def cmd_ping(message: Message, state: FSMContext, **kwargs):
     msgs = await MainService(message, state).ping()
+    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@main_router.message(Command('mystate'))
+@exept()
+async def cmd_mystate(message: Message, state: FSMContext, **kwargs):
+    msgs = await MainService(message, state).mystate()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]

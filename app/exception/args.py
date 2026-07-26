@@ -17,3 +17,16 @@ class DataFormatError(BotError):
     - 16-06-2011
     - 2034-12-16"""
 
+class DrinkPathNameError(BotError):
+    msg = '❌ Вы не указали путь'
+    faq = """Примеры:
+    - Шут
+    - провидец
+    - Тиран
+    - Мошенник"""
+
+class SeqError(BotError):
+    msg = '❌ Такой последовательности нету'
+    faq = """Примеры:
+    - 1
+    - 7"""

@@ -3,8 +3,7 @@ from app.validate.api import AnswerBaseInfo
 
 class MainText(BaseText):
     def __init__(self, data: AnswerBaseInfo):
-        super().__init__(data)
-        self.data: AnswerBaseInfo = self.data
+        self.data: AnswerBaseInfo = data
 
     @property
     def info(self):
