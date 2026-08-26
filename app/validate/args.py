@@ -27,5 +27,20 @@ class NameArg(BaseArg):
     name: str
 
 class SearchArg(BaseArg):
-    value: str
+    value: str | None = None
+    
+class InfoOrganIdArg(UserArg):
+    organ_id: int | None = None
+
+class OrganIdArg(BaseArg):
+    organ_id: int | None = None
+
+class RankRedactArg(UserArg):   
+    rank: int | None = None
+
+class TitulRedactArg(UserArg):
+    titul: str | None = None
+
+class SettingRedactArg(UserArg):
+    data: dict
 

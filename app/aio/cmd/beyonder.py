@@ -13,7 +13,7 @@ beyonder_router = Router()
     arguments=[Optionals.path_name] + [Optionals.drink_seq] + base_args
 )
 @exept()
-async def cmd_drink(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs).drink()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
@@ -24,7 +24,7 @@ async def cmd_drink(message: Message, state: FSMContext, **kwargs):
     arguments=[Optionals.seq] + [Optionals.path_name] + base_args
 )
 @exept()
-async def cmd_drink(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs).upseq()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
@@ -35,7 +35,7 @@ async def cmd_drink(message: Message, state: FSMContext, **kwargs):
     arguments=[Optionals.seq] + [Optionals.path_name] + base_args
 )
 @exept()
-async def cmd_drink(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs).dowseq()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
@@ -46,7 +46,7 @@ async def cmd_drink(message: Message, state: FSMContext, **kwargs):
     arguments=base_args
 )
 @exept()
-async def cmd_drink(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs).kill()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
@@ -57,7 +57,7 @@ async def cmd_drink(message: Message, state: FSMContext, **kwargs):
     arguments=[Requireds.time_mode] + [Requireds.duration] + base_args
 )
 @exept()
-async def cmd_drink(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs).time_redact()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
@@ -68,7 +68,7 @@ async def cmd_drink(message: Message, state: FSMContext, **kwargs):
     arguments=[Requireds.time_mode] + [Requireds.date] + base_args
 )
 @exept()
-async def cmd_drink(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs).time_replace()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
@@ -79,7 +79,7 @@ async def cmd_drink(message: Message, state: FSMContext, **kwargs):
     arguments=[Optionals.time_mode] + base_args
 )
 @exept()
-async def cmd_drink(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs).time_info()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
@@ -90,7 +90,7 @@ async def cmd_drink(message: Message, state: FSMContext, **kwargs):
     arguments=base_args
 )
 @exept()
-async def cmd_drink(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs | {'time_mode':'info'}).time_info()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 

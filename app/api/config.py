@@ -5,7 +5,7 @@ Use it as a space to store configuration and constants.
 
 from pydantic import Field
 from clientele import api as clientele_api 
-from tg.config import settings
+from config import settings
 
 class Config(clientele_api.BaseConfig):
     """

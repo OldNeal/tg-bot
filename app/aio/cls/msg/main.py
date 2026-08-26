@@ -12,8 +12,9 @@ class MainText(BaseText):
 
         if self.data.member:
             member = [f'🏛 Организация: {self.data.member.organ_name}',
-            f'⚜️ Ранг: {self.data.member.rank_name} ({self.data.member.rank})',
-            f'🎖 Титул: {self.data.member.organ_name}']
+            f'⚜️ Ранг: {self.data.member.rank_name} ({self.data.member.rank})']
+            if self.data.member.titul:
+                member.append(f'🎖 Титул: {self.data.member.titul}')
 
         if self.data.beyonder:
             if self.data.beyonder.seq > 0:

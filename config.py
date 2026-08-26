@@ -19,6 +19,7 @@ from aiogram.filters import CommandStart, Command, CommandObject
 from aiogram.fsm.context import FSMContext
 from datetime import timedelta, datetime
 from app.logging.base import botlog, log
+from aiogram.client.session.aiohttp import AiohttpSession
 
 load_dotenv(Path(__file__).parent / '.env')
 
@@ -31,6 +32,8 @@ class Settings:
     owner = int(os.getenv('owner'))
     news_group_id = int(os.getenv('news_group'))
     logs_group_id = int(os.getenv('logs_group'))
+    proxy_url = os.getenv('proxy_url')
+    use_proxy = os.getenv('use_proxy', 'f')
 
     @property
     def is_dev(self):
@@ -42,26 +45,37 @@ class Settings:
 
 settings = Settings()
 
-bot = Bot(token=settings.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML, link_preview_is_disabled=True))
+if settings.use_proxy in ['t', 'true', '1']:
+    session = AiohttpSession(proxy=settings.proxy_url)
+else:
+    session = AiohttpSession()
+    
+bot = Bot(token=settings.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML, link_preview_is_disabled=True), session=session)
 dp = Dispatcher(storage=MemoryStorage())
 
 cmds = {
-    'info':'💳 Получить карточку персонажа',
+    'info':'💳 Получить свою карточку',
 
     'drink':'🧪 Выпить зелье',
     'upseq':'🔝 Продвинуться',
     'time':'⌛ Узнать время продвижения',
     'kill':'☠️ Потерять контроль',
+    
+    'organ':'🏛️ Меню организаций',
+    'member':'🎎 Меню участника',
+    'uprank':'🔼 Поднять ранг',
+    'downrank':'🔽 Понизить ранг',
+    'titul':'🎖️ Изменить титул участника',
 
     'path':'📜 Информация о путях',
     'ga':'📜 Информация о ВД',
     'stats':'📊 Получить статистику',
     'help':'📚 Получить справку',
-    'ping':'⌛ Проверить задержку API',
 }
 
 admin_cmds = cmds | {
-    'dowseq':'⬇️ Понизить последовательность',
+    'ping':'⌛ Проверить задержку API',
+    'downseq':'⬇️ Понизить последовательность',
     'mystate':'🗂️ Ваши куки',
 }
 

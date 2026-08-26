@@ -52,6 +52,10 @@ class ApiTimeoutError(BotError):
     msg = 'API не работает'
     emodzi = '❌'
 
+class JSONEnterError(BotError):
+    msg = 'Вы ввели невалидный JSON'
+    emodzi = '❌'
+
 def msg_error(bot_error: BotError | list[BotError]) -> str | list[str]:
     if type(bot_error) == BotError: return bot_error.to_msg()
     elif type(bot_error) == list:

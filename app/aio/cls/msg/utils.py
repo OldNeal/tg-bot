@@ -57,6 +57,11 @@ class TextHTMLBase(str):
         ''' Пользовательская эмодзи
             - emoji_id: ID пользовательской эмодзи '''
         return TextHTML(f'<tg-emoji emoji-id="{emoji_id}">{self}</tg-emoji>')
+
+    def emoji(self, emoji_id: str | None = None) -> "TextHTML":
+        ''' Эмодзи
+            - emoji_id: ID пользовательской эмодзи '''
+        return self.custom_emoji(emoji_id) if emoji_id else self
     
     def spoiler(self) -> "TextHTML":
         ''' Скрытый текст (спойлер) '''

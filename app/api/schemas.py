@@ -17,6 +17,11 @@ class AnswerAllGroupInfo(pydantic.BaseModel):
     groups: list[str]
 
 
+class AnswerAllOrganInfo(pydantic.BaseModel):
+    search_value: typing.Optional[str | None] = None
+    organs: list["OrganInfo"]
+
+
 class AnswerAllPathInfo(pydantic.BaseModel):
     paths: list["AnswerPathInfo"] | None
 
@@ -27,20 +32,16 @@ class AnswerAllSeqInfo(pydantic.BaseModel):
 
 class AnswerBaseInfo(pydantic.BaseModel):
     user: "QueryBody"
-    beyonder: typing.Optional[typing.Union["AnswerBeyonderInfo", None]] = None
-    member: typing.Optional[typing.Union["AnswerMemberInfo", None]] = None
-
-
-class AnswerBeyonderInfo(pydantic.BaseModel):
-    path_name: str | None
-    seq: int | None
-    seq_name: str | None
+    beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
+    member: typing.Optional[typing.Union["MemberInfo", None]] = None
 
 
 class AnswerGAFullInfo(pydantic.BaseModel):
     group: str
     name: str
     ga_id: int
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
     paths: list["AnswerPathInfo"]
 
 
@@ -48,6 +49,8 @@ class AnswerGAInfo(pydantic.BaseModel):
     group: str
     name: str
     ga_id: int
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
 
 
 class AnswerGASearchInfo(pydantic.BaseModel):
@@ -66,16 +69,47 @@ class AnswerMain(pydantic.BaseModel):
 
 
 class AnswerMemberInfo(pydantic.BaseModel):
-    titul: str | None
-    organ_name: str | None
-    rank: int | None
-    rank_name: str | None
+    user: "QueryBody"
+    member: typing.Optional[typing.Union["MemberInfo", None]] = None
+    for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
+
+
+class AnswerOrganInfo(pydantic.BaseModel):
+    user: "QueryBody"
+    organ: "OrganInfo"
+    for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
+
+
+class AnswerOrganInfoDescription(pydantic.BaseModel):
+    user: "QueryBody"
+    id: int
+    name: str
+    description: typing.Optional[str | None] = None
+
+
+class AnswerOrganInfoMembers(pydantic.BaseModel):
+    user: "QueryBody"
+    id: int
+    name: str
+    members: list["AnswerMemberInfo"]
+
+
+class AnswerOrganSetting(pydantic.BaseModel):
+    user: "QueryBody"
+    settings: "OrganSettingValidate"
+
+
+class AnswerOrganSettingValues(pydantic.BaseModel):
+    user: "QueryBody"
+    values: dict[str, typing.Any]
 
 
 class AnswerPathFullInfo(pydantic.BaseModel):
     group: str
     name: str
     path_id: int
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
     ga: "AnswerGAInfo"
     seqs: list["AnswerSeqInfo"]
 
@@ -84,6 +118,8 @@ class AnswerPathInfo(pydantic.BaseModel):
     group: str
     name: str
     path_id: int
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
 
 
 class AnswerPathSearchInfo(pydantic.BaseModel):
@@ -91,11 +127,23 @@ class AnswerPathSearchInfo(pydantic.BaseModel):
     paths: list["AnswerPathInfo"] | None
 
 
+class AnswerRedactRank(pydantic.BaseModel):
+    user: "QueryBody"
+    new_rank: int
+    old_rank: int
+
+
 class AnswerRedactSeq(pydantic.BaseModel):
     user: "QueryBody"
-    old: typing.Optional[typing.Union["Data", None]] = None
-    new: typing.Optional[typing.Union["Data", None]] = None
+    old: typing.Optional[typing.Union["Sequence", None]] = None
+    new: typing.Optional[typing.Union["Sequence", None]] = None
     operation: str
+
+
+class AnswerRedactTitul(pydantic.BaseModel):
+    user: "QueryBody"
+    new_titul: typing.Optional[str | None] = None
+    old_titul: typing.Optional[str | None] = None
 
 
 class AnswerSeqFullInfo(pydantic.BaseModel):
@@ -115,7 +163,7 @@ class AnswerSeqInfo(pydantic.BaseModel):
 
 class AnswerSeqSearchInfo(pydantic.BaseModel):
     search_value: str | None
-    seqs: list["AnswerPathInfo"] | None
+    seqs: list["AnswerSeqInfo"] | None
 
 
 class AnswerTimeInfo(pydantic.BaseModel):
@@ -150,14 +198,56 @@ class BaseExceptionResponse(pydantic.BaseModel):
     content: typing.Optional[typing.Any] = None
 
 
-class Data(pydantic.BaseModel):
-    seq: str
-    number: int
-    path: str
+class BeyonderInfo(pydantic.BaseModel):
+    path_name: str | None
+    seq: int | None
+    seq_name: str | None
+    emodzi: str | None
+    custom_emodzi_id: str | None
+
+
+class ForButtons(pydantic.BaseModel):
+    is_member: bool = False
+    organ_id: int | None
+    is_redact_setting: bool = False
+    is_redact_rank: bool = False
+    is_redact_titul: bool = False
+    is_kick: bool = False
+    is_capture: bool = False
+    is_give: bool = False
 
 
 class HTTPValidationError(pydantic.BaseModel):
     detail: list["ValidationError"]
+
+
+class MemberInfo(pydantic.BaseModel):
+    titul: str | None
+    organ_name: str | None
+    organ_id: int | None
+    rank: int | None
+    rank_name: str | None
+    login_at: str | None
+
+
+class OrganInfo(pydantic.BaseModel):
+    id: int
+    name: str
+    owner: typing.Optional[typing.Union["AnswerMemberInfo", None]] = None
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+    member_counts: int = 0
+    created_at: str
+
+
+class OrganSettingDefault(pydantic.BaseModel):
+    parametr: str | None
+    group: str | None
+    is_all: bool = False
+
+
+class OrganSettingValidate(pydantic.BaseModel):
+    groups: list["SettingGroupValidate"]
 
 
 class QueryBody(pydantic.BaseModel):
@@ -165,6 +255,55 @@ class QueryBody(pydantic.BaseModel):
     username: typing.Optional[str | None] = None
     fullname: typing.Optional[str | None] = None
     is_admin: bool = False
+
+
+class QueryOrganSetting(pydantic.BaseModel):
+    tg_id: int
+    username: typing.Optional[str | None] = None
+    fullname: typing.Optional[str | None] = None
+    is_admin: bool = False
+    parametrs: dict[str, typing.Any]
+
+
+class QueryOrganSettingDefault(pydantic.BaseModel):
+    tg_id: int
+    username: typing.Optional[str | None] = None
+    fullname: typing.Optional[str | None] = None
+    is_admin: bool = False
+    to_default: "OrganSettingDefault"
+
+
+class Sequence(pydantic.BaseModel):
+    seq: str
+    number: int
+    path: str
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+
+
+class SettingGroupValidate(pydantic.BaseModel):
+    tag: str
+    name: str
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+    description: typing.Optional[str | None] = None
+    parametrs: list["SettingParametrValidate"]
+
+
+class SettingParametrValidate(pydantic.BaseModel):
+    tag: str
+    name: str
+    group: str
+    type_: str = pydantic.Field(alias="type")
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+    description: typing.Optional[str | None] = None
+    value: typing.Optional[bool | str | int | dict[str, typing.Any] | None] = None
+    is_default_value: bool
+    is_redact: bool = True
+    is_hidden: bool = False
+
+    model_config = pydantic.ConfigDict(populate_by_name=True)
 
 
 class ValidationError(pydantic.BaseModel):

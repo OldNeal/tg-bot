@@ -19,7 +19,7 @@ class FSMUtils:
     
     async def update_data(self, **kwargs):
         state_keys = await self.get_value('state_keys', [])
-        return await self.state.update_data(**{self.prefix + k: v for k, v in kwargs.items()} | {self.prefix + 'state_keys': state_keys + [self.prefix + k for k in kwargs.keys()]})
+        return await self.state.update_data(**{self.prefix + k: v for k, v in kwargs.items()} | {self.prefix + 'state_keys': set(list(state_keys) + [self.prefix + k for k in kwargs.keys()])})
     
     async def set_state(self, new_state = None):
         return await self.state.set_state(new_state)
@@ -38,6 +38,16 @@ class FSMUtils:
         data = await self.get_data()
         new_data = {k:v for k, v in data.items() if k not in data.get(self.prefix + 'state_keys', [])}
         return await self.state.set_data(new_data)
+
+    async def set_data(self, data: dict):
+        return await self.state.set_data({self.prefix + k: v for k, v in data.items()})
+
+    async def remove_value(self, key: str):
+        data = await self.get_data()
+        if key in data:
+            data.pop(key)
+        return await self.set_data({self.prefix + k: v for k, v in data.items()})
+
 
 class MainFSM(FSMUtils):
     prefixs = ['main']

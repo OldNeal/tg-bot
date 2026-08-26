@@ -24,18 +24,18 @@ def exept():
                     pass
                 return result
             except BotError as bote:
-                log.trace(f'AioPartPath: {bote}', tg_id=message.from_user.id, chat_i=message.chat.id)
+                log.trace(f'AioPartPath: {bote}', tg_id=message.from_user.id, chat_id=message.chat.id)
                 #markup = FaqIKB(message.from_user.id).to_error_faq(bote.code) if len(bote.faq) > 0 else None
                 await message.answer((TextHTML(bote.to_msg).escape())[:4000])
             except (TelegramBadRequest, TelegramForbiddenError) as e:
-                log.warning(f'AioPartPath: {e}', tg_id=message.from_user.id, chat_i=message.chat.id)
+                log.warning(f'AioPartPath: {e}', tg_id=message.from_user.id, chat_id=message.chat.id)
             except Exception as e:
                 tb = traceback.extract_tb(e.__traceback__)
                 for frame in tb:
                     print(f"AioPartPath, Файл: {frame.filename}, строка: {frame.lineno}, функция: {frame.name}")
                     print(f"AioPartPath, Код: {frame.line}\n")
                 str_e = str(e)
-                log.error(f'AioPartPath: {e}', tg_id=message.from_user.id, chat_i=message.chat.id)
+                log.error(f'AioPartPath: {e}', tg_id=message.from_user.id, chat_id=message.chat.id)
                 if message.from_user.id == settings.owner:
                     await message.answer(f'{PythonError.msg}: {(TextHTML(str_e).escape())[:4000]}')
                     await message.answer(f'Файл: {frame.filename}, строка: {frame.lineno}, функция: {frame.name}')
@@ -55,7 +55,7 @@ def call_exept(check_is_user: bool = True, tips: list[str] | None = None, rarity
             try:
                 if check_is_user and callback_data.is_check:
                     if callback.from_user.id != callback_data.tg_id:
-                        raise ALienCallbackError(f'This user enter is alien callback keyboard', tg_id=callback.from_user.id, chat_i=callback.message.chat.i)
+                        raise ALienCallbackError(f'This user enter is alien callback keyboard', tg_id=callback.from_user.id, chat_id=callback.message.chat.i)
                 answer_text = ''
                 show_alert=None
                 result = await func(callback, callback_data, **kwargs)
@@ -64,14 +64,14 @@ def call_exept(check_is_user: bool = True, tips: list[str] | None = None, rarity
                         await callback.answer(random.choice(tips))
                 return result, callback
             except BotError as bote:
-                log.trace(f'AioPartPath: {bote}', tg_id=callback.from_user.id, chat_i=callback.message.chat.id)
+                log.trace(f'AioPartPath: {bote}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
                 show_alert=True
                 answer_text = (TextHTML(bote.to_msg).escape())[:4000]
             except (TelegramBadRequest, TelegramForbiddenError) as e:
-                log.warning(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_i=callback.message.chat.id)
+                log.warning(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
             except Exception as e:
                 str_e = str(e)
-                log.error(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_i=callback.message.chat.id)
+                log.error(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
                 show_alert=True
                 if callback.from_user.id == settings.owner:
                     answer_text = f'{PythonError.msg}: {(TextHTML(str_e).escape())[:4000]}'
@@ -82,7 +82,7 @@ def call_exept(check_is_user: bool = True, tips: list[str] | None = None, rarity
                 try:
                     await callback.answer(answer_text, show_alert=show_alert)
                 except Exception as e:
-                    log.error(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_i=callback.message.chat.id)
+                    log.error(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
                     if callback.from_user.id == settings.owner:
                         await callback.message.answer(f'⚠️ {(TextHTML(e).escape())[:4000]} \n \n {answer_text}')
                     else:

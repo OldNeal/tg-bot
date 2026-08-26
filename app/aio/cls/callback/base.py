@@ -10,6 +10,15 @@ class MenuCall(BaseCall, prefix='menu'):
 class BackCall(BaseCall, prefix='back'):
     where: str
 
+class PageCall(BaseCall, prefix='page'):
+    page: int
+
+class CancelCall(BaseCall, prefix='cancel'):
+    pass
+
+class AccertCancelCall(BaseCall, prefix='accert_cancel'):
+    accert: bool = False
+    cancel: bool = False
 
 
     

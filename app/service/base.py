@@ -8,10 +8,12 @@ from config import settings, bot, log, botlog
 from app.aio.cls.fsm.utils import FSMUtils
 from app.service.utils import is_natural_int
 from app.validate.service import Purpose
-from app.validate.base import BaseValidate
+from app.validate.base import BaseValidate, BaseModel
 from app.aio.cls.msg.utils import TextHTML
+from typing import TypeVar
 
 NOT_NEW_STATE = object()
+DATA_PAGE = TypeVar('DATA_PAGE')
 
 class BaseService:
     def __init__(self, 
@@ -31,7 +33,7 @@ class BaseService:
         self.tg_id = self.user.id
         self.logic_kwargs = {'is_admin':self.is_admin} | logic_kwargs
 
-        
+        self.is_bot_message = bool(self.callback)
         self.state: FSMUtils = FSMUtils(state)
         self.IKB = BotIKB(self.tg_id)
         self.text = None
@@ -95,4 +97,17 @@ class BaseService:
         return True
 
     def to_json(self, msgs: list[tuple[str, BaseValidate, InlineKeyboardButton | InlineKeyboardMarkup | None]]):
-        return [(((TextHTML.anchor('start-json') + TextHTML.json_format((v.model_dump() if type(v) == BaseValidate else v), 4).pre('json').details('Открыть JSON') + TextHTML('Вверх').href('#start-json')) if self.msg_to_json and v else m),None if self.msg_to_json and v else i) for m, v, i in msgs]
+        return [(((TextHTML.anchor('start-json') + TextHTML.json_format(self.model_dump(v), 4).pre('json').details('Открыть JSON') + TextHTML('Вверх').href('#start-json')) if self.msg_to_json and v else m),None if self.msg_to_json and v else i) for m, v, i in msgs]
+
+    def model_dump(self, data):
+        if hasattr(data, 'model_dump'):
+            return data.model_dump()
+        elif hasattr(data, '__dict__'):
+            return data.__dict__
+        elif type(data) == dict:
+            return {k:self.model_dump(v) for k, v in data.items()}
+        else:
+            return str(data)
+
+    def to_pages(self, datas: list[DATA_PAGE], value_in_page: int = 5) -> list[tuple[DATA_PAGE, ...]]:
+        return [tuple(datas[i:i+value_in_page]) for i in range(0, len(datas), value_in_page)]
