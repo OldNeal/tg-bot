@@ -1,5 +1,5 @@
 from app.aio.cls.msg.base import Templates, BaseText
-from app.validate.api import AnswerOrganInfo, AnswerMemberInfo, AnswerOrganInfoDescription, SettingGroupValidate, AnswerOrganInfoMembers
+from app.validate.api import AnswerOrganInfo, AnswerMemberInfo, AnswerOrganInfoDescription, SettingGroupValidate, AnswerOrganInfoMembers, AnswerOrganGive
 from datetime import datetime
 
 class OrganText(BaseText):
@@ -27,9 +27,8 @@ class OrganText(BaseText):
     def to_search(self):
         return '✒️ Введите поисковой запрос'
 
-    @property
-    def members(self):
-        return '👥 Все участники'
+    def members(self, page: int, max_page: int):
+        return f'👥 Все участники [{page + 1}/{max_page} стр.]' if max_page > 0 else '❌ Участников нету'
     
     @classmethod
     def list(self, page: int, max_page: int):
@@ -59,7 +58,7 @@ class OrganText(BaseText):
                 member.append(f'🎖 Титул: {user.member.titul}')
             #f'⌛ Состоит в организации дней: {(datetime.now() - datetime.fromisoformat(user.member.login_at)).days}'
 
-        return self.user_name + self.html(self.html.joined([f'🏷 ID: {user.user.tg_id}'] + member)).blockquote()
+        return self.html(user.user.fullname).openmessage(user.user.tg_id) + self.html(self.html.joined([f'🏷 ID: {user.user.tg_id}'] + member)).blockquote()
 
     @classmethod
     def top(self):
@@ -71,7 +70,7 @@ class OrganText(BaseText):
 
     @property
     def login(self):
-        return self.user_name + f' стал участником организации self.data.organ.name'
+        return self.user_name + f' стал участником организации {self.data.organ.name}'
 
     @classmethod
     def to_exit(self):
@@ -144,9 +143,10 @@ class OrganText(BaseText):
         elif old_titul:
             result = f'лишился титула "{old_titul}"'
         return f'{self.user_name} {result}'
-            
-    def give(self, purpose: AnswerMemberInfo):
-        return f'{self.user_name} передал организацию "{self.organ_name}" пользователю {self.html(purpose.user.fullname).openmessage(purpose.user.tg_id)}'
+
+    @classmethod
+    def give(self, data: AnswerOrganGive):
+        return f'{self.html(data.user.fullname).openmessage(data.user.tg_id)} передал организацию "{data.purpose.member.organ_name}" пользователю {self.html(data.purpose.user.fullname).openmessage(data.purpose.user.tg_id)}'
 
     @classmethod
     def to_give(self, purpose: AnswerMemberInfo):        

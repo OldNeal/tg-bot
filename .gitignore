@@ -13,7 +13,6 @@ scripts.py
 alembic.ini
 alembic/
 .env*
-Dockerfile
 .dockerignore
 # Distribution / packaging
 .Python

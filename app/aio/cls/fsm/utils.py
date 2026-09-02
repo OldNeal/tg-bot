@@ -40,13 +40,11 @@ class FSMUtils:
         return await self.state.set_data(new_data)
 
     async def set_data(self, data: dict):
-        return await self.state.set_data({self.prefix + k: v for k, v in data.items()})
+        return await self.state.set_data({self.prefix + k: v for k, v in data.items() if not v is None})
 
     async def remove_value(self, key: str):
         data = await self.get_data()
-        if key in data:
-            data.pop(key)
-        return await self.set_data({self.prefix + k: v for k, v in data.items()})
+        return await self.set_data({self.prefix + k: v for k, v in data.items() if key not in k})
 
 
 class MainFSM(FSMUtils):

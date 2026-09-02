@@ -30,6 +30,15 @@ class AnswerAllSeqInfo(pydantic.BaseModel):
     seqs: list["AnswerSeqInfo"] | None
 
 
+class AnswerAllStats(pydantic.BaseModel):
+    users: int
+    beyonders: int
+    members: int
+    organs: int
+    paths: int
+    gas: int
+
+
 class AnswerBaseInfo(pydantic.BaseModel):
     user: "QueryBody"
     beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
@@ -72,6 +81,11 @@ class AnswerMemberInfo(pydantic.BaseModel):
     user: "QueryBody"
     member: typing.Optional[typing.Union["MemberInfo", None]] = None
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
+
+
+class AnswerOrganGive(pydantic.BaseModel):
+    user: "QueryBody"
+    purpose: "AnswerMemberInfo"
 
 
 class AnswerOrganInfo(pydantic.BaseModel):
@@ -315,9 +329,6 @@ class ValidationError(pydantic.BaseModel):
 
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
-
-class Endpoint200Response(pydantic.BaseModel):
-    pass
 
 def get_subclasses_from_same_file() -> list[typing.Type[pydantic.BaseModel]]:
     """

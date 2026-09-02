@@ -10,7 +10,7 @@ class PathText(BaseText):
         return '📜 Все пути'
 
     def info(self, value: str | None = None):
-        return self.html(f'🏵 {self.data.ga.name}') + self.html.joined([f'{s.number} - {s.name}' for s in sorted(self.data.seqs, key=lambda x: x.number)]).blockquote()
+        return self.html(f'{self.html(self.data.emodzi or '🎗️').emoji(self.data.custom_emodzi_id)} {self.data.ga.name}') + self.html.joined([f'{s.number} - {s.name}' for s in sorted(self.data.seqs, key=lambda x: x.number)]).blockquote()
 
     @classmethod
     def search(cls, value: str, results: int = 0):
@@ -25,7 +25,7 @@ class GAText(BaseText):
         return '📜 Все Великие Древние'
 
     def info(self, value: str | None = None):
-        return self.html(f'🏵 {self.data.name}') 
+        return self.html(f'{self.html(self.data.emodzi or '🏵').emoji(self.data.custom_emodzi_id)} {self.data.name}') 
 
     @classmethod
     def search(cls, value: str, results: int = 0):

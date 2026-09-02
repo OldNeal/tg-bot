@@ -9,11 +9,12 @@ class OrganBackCall(BackCall, prefix='organ_back'):
 class OrganPageCall(PageCall, prefix='organ_page'):
     is_search: bool
 
-
-
 class OrganInfoCall(OrganCall, prefix='organ_info'):
     organ_id: int | None = None
     purpose_tg_id: int | None = None
+
+class OrganMemberPageCall(PageCall, OrganInfoCall, prefix='organ_member_page'):
+    pass
 
 class OrganInfoDescCall(OrganInfoCall, prefix='organ_info_desc'):
     pass
@@ -66,9 +67,11 @@ class OrganTitulDeleteCall(OrganMemberCall, prefix='organ_titul_delete'):
 class OrganLoginCall(OrganInfoCall, prefix='organ_login'):
     pass
 
-class OrganCaptureCall(OrganInfoCall, prefix='organ_capture'):
+class OrganCaptureCall(OrganCall, prefix='organ_capture'):
     pass
 
+class OrganSearchCall(OrganCall, prefix='organ_search'):
+    pass
 
 class OrganExitCall(OrganCall, AccertCancelCall, prefix='organ_exit'):
     pass

@@ -14,8 +14,8 @@ class WikiIKB(BotIKB):
             width=len(iter))
 
     def paths_buttons(self, paths: list[AnswerPathInfo], values_in_string: int = 2):
-        for path in paths:
-            self.builder.button(text=path.name, callback_data=PathCall(id=path.path_id, tg_id=self.tg_id))
+        for path in sorted(paths, key=lambda x: x.path_id):
+            self.builder.button(text=path.name, icon_custom_emoji_id=path.custom_emodzi_id, callback_data=PathCall(id=path.path_id, tg_id=self.tg_id))
         self.builder.adjust(values_in_string)
 
     def all_paths(self, paths: list[AnswerPathInfo], group: str, where: str | None = None):
@@ -34,8 +34,8 @@ class WikiIKB(BotIKB):
         return self.builder.as_markup()
 
     def gas_buttons(self, gas: list[AnswerGAInfo], values_in_string: int = 2):
-        for ga in gas:
-            self.builder.button(text=ga.name, callback_data=GACall(id=ga.ga_id, tg_id=self.tg_id))
+        for ga in sorted(gas, key=lambda x: x.ga_id):
+            self.builder.button(text=ga.name, icon_custom_emoji_id=ga.custom_emodzi_id, callback_data=GACall(id=ga.ga_id, tg_id=self.tg_id))
         self.builder.adjust(values_in_string)
 
     def all_gas(self, gas: list[AnswerGAInfo], group: str, where: str | None = None):

@@ -24,7 +24,9 @@ from app.aio.cls.callback.organ import (OrganBackCall,
                                         OrganTitulDeleteCall,
                                         OrganPageCall,
                                         OrganCaptureCall,
-                                        OrganGiveCall)
+                                        OrganGiveCall,
+                                        OrganMemberPageCall,
+                                        OrganSearchCall)
 from app.aio.cls.fsm.utils import OrganFSM
 from app.aio.cls.callback.back import OrganBackValues
 
@@ -75,6 +77,12 @@ async def call(callback: CallbackQuery, callback_data: OrganBackCall, state: FSM
     msgs = await OrganService(callback.message, state, callback, **kwargs).search(is_back=True)
     [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
+@organ_router.callback_query(OrganSearchCall.filter())     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: OrganSearchCall, state: FSMContext, **kwargs):
+    msgs = await OrganService(callback.message, state, callback, **kwargs).search(is_back=True)
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
 @organ_router.message(OrganState.search)
 @exept()
 async def text_state(message: Message, state: FSMContext, **kwargs):
@@ -84,6 +92,7 @@ async def text_state(message: Message, state: FSMContext, **kwargs):
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
     await fsm.set_state()
     await msg0.delete()
+    await fsm.remove_value('msg')
 
 @organ_router.callback_query(OrganPageCall.filter(F.is_search == True))     
 @call_exept()
@@ -135,6 +144,12 @@ async def call(callback: CallbackQuery, callback_data: OrganBackCall, state: FSM
 @call_exept()
 async def call(callback: CallbackQuery, callback_data: OrganInfoMembersCall, state: FSMContext, **kwargs):
     msgs = await OrganService(callback.message, state, callback, **kwargs).info_members(callback_data.organ_id)
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@organ_router.callback_query(OrganMemberPageCall.filter())     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: OrganMemberPageCall, state: FSMContext, **kwargs):
+    msgs = await OrganService(callback.message, state, callback, **kwargs).info_members(callback_data.organ_id, callback_data.page)
     [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
     
 @organ_router.message(Command('organ'), F.text.contains('description') | F.text.contains('desc'))
@@ -322,6 +337,7 @@ async def text_state(message: Message, state: FSMContext, **kwargs):
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
     await fsm.set_state()
     await msg0.delete()
+    await fsm.remove_value('msg')
 
 @organ_router.message(Command('organ'), F.text.contains('capture'))
 @command(
@@ -334,6 +350,11 @@ async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await OrganService(message, state, **kwargs).capture()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
+@organ_router.callback_query(OrganCaptureCall.filter())     
+@call_exept()
+async def cmd(callback: CallbackQuery, callback_data: OrganCaptureCall, state: FSMContext, **kwargs):
+    msgs = await OrganService(callback.message, state, callback, **kwargs).capture()
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
 
 
@@ -489,6 +510,7 @@ async def text_state(message: Message, state: FSMContext, **kwargs):
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
     await fsm.set_state()
     await msg0.delete()
+    await fsm.remove_value('msg')
 
 @organ_router.message(Command('titul'))
 @command(

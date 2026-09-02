@@ -21,9 +21,8 @@ class OrganService(BaseService):
         self.state = OrganFSM(state)
 
     async def menu(self):
-        data = await self.logic.member()
         return self.to_json([
-            [self.text.menu(), data, self.IKB.menu()]
+            [self.text.menu(), None, self.IKB.menu()]
             ])
     
     async def member(self, purpose_tg_id: int | None = None):
@@ -44,7 +43,7 @@ class OrganService(BaseService):
             organ_id = await self.state.get_value('organ_id')
             data = await self.logic.info(organ_id=organ_id)
         else:
-            data = await self.logic.info(purpose_tg_id=purpose_tg_id)
+            data = await self.logic.info(organ_id, purpose_tg_id=purpose_tg_id)
         await self.state.update_data(back_where=OrganBackValues.info)
         return self.to_json([
             [self.text(data).info, data, self.IKB.info(data, where=back_where2)]
@@ -60,15 +59,14 @@ class OrganService(BaseService):
             data = await self.logic.search(**args.model_dump())
         else:
             return await self.to_enter_search()
-        organ_ids = {o.id:o for o in data.organs}
-        pages = self.to_pages([o.id for o in data.organs])
+        pages = self.to_pages(data.organs)
         max_page = len(pages)
         if len(data.organs) == 0:
-            await self.state.update_data(back_where2=OrganBackValues.search, pages=pages, page=page)
+            await self.state.update_data(back_where2=OrganBackValues.search, page=page)
         else:
-            await self.state.update_data(search_value=data.search_value, back_where2=OrganBackValues.search, pages=pages, page=page)
+            await self.state.update_data(search_value=data.search_value, back_where2=OrganBackValues.search, page=page)
         return self.to_json([
-            [self.text.search(data.search_value, len(data.organs), page, max_page), data, self.IKB.organs(([organ_ids.get(organ_id) for organ_id in pages[page]] if len(pages) > 0 else []), page, max_page, OrganBackValues.search)]
+            [self.text.search(data.search_value, len(data.organs), page, max_page), data, self.IKB.organs((pages[page if page < max_page else 0] if len(pages) > 0 else []), page, max_page, OrganBackValues.search)]
             ])
 
     async def to_enter_search(self):
@@ -81,14 +79,21 @@ class OrganService(BaseService):
     async def to_search(self):
         return await self.search(self.message.text, is_back=True)
 
-    async def info_members(self, organ_id: int | None = None):
+    async def enter_search(self):
+        await self.state.remove_value('search_value')
+        return await self.search()
+
+    async def info_members(self, organ_id: int | None = None, page: int | None = None):
+        page = page if not(page is None) else await self.state.get_value('info_members_page', 0)
         if organ_id:
             data = await self.logic.info_members(organ_id=organ_id)
         else:
             data = await self.logic.info_members(**InfoOrganIdArg.model_validate(self.kwargs).model_dump())
-        await self.state.update_data(organ_id=data.id)
+        pages = self.to_pages(sorted(data.members, key=lambda x: x.member.rank))
+        max_page = len(pages)
+        await self.state.update_data(organ_id=data.id, info_members_page=page)
         return self.to_json([
-            [self.text(data).members, data, self.IKB.members(data.members, data.id)]
+            [self.text(data).members(page, max_page), data, self.IKB.members((pages[page if page < max_page else 0] if len(pages) > 0 else []), page, max_page, data.id)]
             ])
     
     async def info_description(self, organ_id: int | None = None):
@@ -104,12 +109,11 @@ class OrganService(BaseService):
     async def list(self, page: int | None = None):
         page = page if not(page is None) else await self.state.get_value('page', 0)
         data = await self.logic.list()
-        organ_ids = {o.id:o for o in data.organs}
-        pages = self.to_pages([o.id for o in data.organs])
+        pages = self.to_pages(data.organs)
         max_page = len(pages)
-        await self.state.update_data(back_where2=OrganBackValues.list, pages=pages, page=page)
+        await self.state.update_data(back_where2=OrganBackValues.list, page=page)
         return self.to_json([
-            [self.text.list(page, max_page), data, self.IKB.organs([organ_ids.get(organ_id) for organ_id in pages[page]], page, max_page)]
+            [self.text.list(page, max_page), data, self.IKB.organs(pages[page if page < max_page else 0], page, max_page)]
             ])
 
     async def top(self):
@@ -182,13 +186,10 @@ class OrganService(BaseService):
             raise JSONEnterError('Ввел невалидный json', json=self.message.text)
         return await self.get_settings()
 
-    async def capture(self, organ_id: int | None = None):
-        if organ_id:
-            data = await self.logic.login(organ_id=organ_id)
-        else:
-            data = await self.logic.login(**OrganIdArg.model_validate(self.kwargs).model_dump())
+    async def capture(self):
+        data = await self.logic.capture()
         return self.to_json([
-            [self.text(data).capture, data, (self.IKB.organ_back(organ_id) if self.is_bot_message else None)]
+            [self.text(data).capture, data, (self.IKB.organ_back(data.organ.id) if self.is_bot_message else None)]
             ])
 
 
@@ -281,7 +282,7 @@ class OrganService(BaseService):
     async def give(self, purpose_tg_id: int):
         data = await self.logic.give(purpose_tg_id)
         return self.to_json([
-            [self.text(data).give(), data, self.IKB.member_back(data.user.tg_id)]
+            [self.text.give(data), data, self.IKB.member_back(data.user.tg_id)]
             ])
  
     async def cancel_give(self):

@@ -26,14 +26,16 @@ async def cmd(message: Message, state: FSMContext, **kwargs):
     await message.answer('✅ Отмена произошла успешно')
 
 @base_router.message(Command('emodzi'))
+@base_router.message(Command('emoji'))
 @exept()
 async def cmd(message: Message, state: FSMContext, **kwargs):
+    text = []
     if message.entities:
         for entity in message.entities:
             if entity.type == "custom_emoji":
                 custom_emoji_id = entity.custom_emoji_id
-                await message.answer(f"ID эмодзи: {custom_emoji_id}, эмодзи <tg-emoji emoji-id='{custom_emoji_id}'>🤔</tg-emoji>")
-                break
+                text.append(f"ID эмодзи: {TextHTML(custom_emoji_id).code()}, эмодзи {TextHTML('🃏').custom_emoji(f'{custom_emoji_id}')}")
+        await message.answer('\n'.join(text))
 
 @base_router.message(Command("shutdown"))
 async def cmd(message: Message):

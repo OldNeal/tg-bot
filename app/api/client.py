@@ -237,9 +237,9 @@ async def organ_titul_delete(result: schemas.AnswerRedactTitul | schemas.BaseExc
     return result
 
 
-@client.post("/organ/give", response_map={200: schemas.AnswerOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse})
+@client.post("/organ/give", response_map={200: schemas.AnswerOrganGive, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse})
 
-async def organ_give(result: schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: int) -> schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+async def organ_give(result: schemas.AnswerOrganGive | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: int) -> schemas.AnswerOrganGive | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Give
     """
     return result
@@ -372,10 +372,10 @@ async def get_group(result: schemas.AnswerGroupInfo | schemas.BaseExceptionRespo
 
 
 
-@client.get("/stats/info", response_map={200: schemas.Endpoint200Response, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse})
+@client.get("/stats/all", response_map={200: schemas.AnswerAllStats, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse})
 
-async def endpoint(result: schemas.BaseExceptionResponse | schemas.Endpoint200Response | schemas.HTTPValidationError) -> schemas.BaseExceptionResponse | schemas.Endpoint200Response | schemas.HTTPValidationError:
-    """Endpoint
+async def stats_all(result: schemas.AnswerAllStats | schemas.BaseExceptionResponse) -> schemas.AnswerAllStats | schemas.BaseExceptionResponse:
+    """Stats All
     """
     return result
 
