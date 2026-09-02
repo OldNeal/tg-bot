@@ -5,3 +5,4 @@ loguru
 pytest
 markdown
 clientele
+telegram_click_aio
