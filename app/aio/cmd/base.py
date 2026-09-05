@@ -1,5 +1,6 @@
 from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage, CallbackQuery
 from app.aio.cmd.main import main_router
+from app.aio.cmd.help import help_router
 from aiogram.types import ErrorEvent
 from aiogram.exceptions import TelegramBadRequest
 from app.exception.decor import exept, call_exept
@@ -9,7 +10,7 @@ from app.aio.cls.callback.base import CancelCall
 import asyncio
 
 base_router = Router()
-base_router.include_routers(main_router)
+base_router.include_routers(main_router, help_router)
 
 @base_router.message(Command('chat_id'))
 @base_router.message(Command('topic_id'))

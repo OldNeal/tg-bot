@@ -185,9 +185,9 @@ class TextHTMLBase(str):
     def anchor(cls, name: str):
         return cls(f'<a name="{name}"></a>')
     
-    @property
-    def br(self):
-        return TextHTML(f'{self}<br>')
+    @classmethod
+    def br(cls, n: int = 1):
+        return cls(n*"<br>")
 
     @classmethod
     def joined(cls, iter: list, sep: str = '<br>'):
