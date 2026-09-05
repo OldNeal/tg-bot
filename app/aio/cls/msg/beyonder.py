@@ -4,7 +4,7 @@ from app.validate.base import BaseValidate
 
 class BeyonderText(BaseText):
     drink_template = Templates(templates_file_name='drink.txt')
-    upseq_template = Templates(templates_file_name='drink.txt')
+    upseq_template = Templates(templates_file_name='upseq.txt')
     downseq_template = Templates(templates_file_name='downseq.txt')
     kill_template = Templates(templates_file_name='kill.txt')
 

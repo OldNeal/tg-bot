@@ -1,5 +1,4 @@
 from app.api import client, schemas
-from functools import wraps
 from datetime import datetime
 from app.logging.base import log
 from app.exception.base import ApiTimeoutError
@@ -16,11 +15,19 @@ class BaseLogic:
         self.fullname = fullname
         self.purpose_tg_id = purpose_tg_id or tg_id
         self.kwargs = kwargs
-        self.body = self.schemas.QueryBody(tg_id=self.tg_id, username=self.username, fullname=self.fullname, is_admin=self.is_admin)
+        self.body = self.schemas.QueryBody(tg_id=self.tg_id, username=self.username, fullname=self.fullname, is_admin=self.is_admin, request_id=self.request_id, chat_id=self.chat_id)
 
     @property
     def is_admin(self):
         return self.kwargs.get('is_admin', False)
+
+    @property
+    def request_id(self):
+        return self.kwargs.get('request_id')
+
+    @property
+    def chat_id(self):
+        return self.kwargs.get('chat_id')
 
     async def info(self, purpose_tg_id: int | None = None):
         return await self.client.get_info(purpose_tg_id or self.purpose_tg_id)

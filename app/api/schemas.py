@@ -269,6 +269,8 @@ class QueryBody(pydantic.BaseModel):
     username: typing.Optional[str | None] = None
     fullname: typing.Optional[str | None] = None
     is_admin: bool = False
+    request_id: typing.Optional[str | None] = None
+    chat_id: typing.Optional[int | None] = None
 
 
 class QueryOrganSetting(pydantic.BaseModel):
@@ -276,6 +278,8 @@ class QueryOrganSetting(pydantic.BaseModel):
     username: typing.Optional[str | None] = None
     fullname: typing.Optional[str | None] = None
     is_admin: bool = False
+    request_id: typing.Optional[str | None] = None
+    chat_id: typing.Optional[int | None] = None
     parametrs: dict[str, typing.Any]
 
 
@@ -284,6 +288,8 @@ class QueryOrganSettingDefault(pydantic.BaseModel):
     username: typing.Optional[str | None] = None
     fullname: typing.Optional[str | None] = None
     is_admin: bool = False
+    request_id: typing.Optional[str | None] = None
+    chat_id: typing.Optional[int | None] = None
     to_default: "OrganSettingDefault"
 
 

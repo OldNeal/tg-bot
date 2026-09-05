@@ -19,7 +19,7 @@ class FSMUtils:
     
     async def update_data(self, **kwargs):
         state_keys = await self.get_value('state_keys', [])
-        return await self.state.update_data(**{self.prefix + k: v for k, v in kwargs.items()} | {self.prefix + 'state_keys': set(list(state_keys) + [self.prefix + k for k in kwargs.keys()])})
+        return await self.state.update_data(**{self.prefix + k: v for k, v in kwargs.items()} | {self.prefix + 'state_keys': state_keys + [self.prefix + k for k in kwargs.keys()]})
     
     async def set_state(self, new_state = None):
         return await self.state.set_state(new_state)

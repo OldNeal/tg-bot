@@ -15,6 +15,11 @@ async def main():
     await to_menu_cmds()
     await dp.start_polling(bot)
 
+@dp.shutdown()
+async def stop(bot):
+    await dp.storage.close()
+    botlog.stop()
+
 if __name__ == "__main__": 
     try:
         asyncio.run(main())

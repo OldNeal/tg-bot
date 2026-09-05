@@ -30,8 +30,9 @@ class BaseService:
         self.command = command
         self.kwargs = kwargs
         self.user = self.callback.from_user if self.callback else self.message.from_user
+        self.chat = self.callback.message.chat if self.callback else self.message.chat
         self.tg_id = self.user.id
-        self.logic_kwargs = {'is_admin':self.is_admin} | logic_kwargs
+        self.logic_kwargs = {'is_admin':self.is_admin, 'request_id':self.kwargs.get('request_id'), 'chat_id':self.chat.id} | logic_kwargs
 
         self.is_bot_message = bool(self.callback)
         self.state: FSMUtils = FSMUtils(state)

@@ -55,7 +55,7 @@ def call_exept(check_is_user: bool = True, tips: list[str] | None = None, rarity
             try:
                 if check_is_user and callback_data.is_check:
                     if callback.from_user.id != callback_data.tg_id:
-                        raise ALienCallbackError(f'This user enter is alien callback keyboard', tg_id=callback.from_user.id, chat_id=callback.message.chat.i)
+                        raise ALienCallbackError(f'This user enter is alien callback keyboard', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
                 answer_text = ''
                 show_alert=None
                 result = await func(callback, callback_data, **kwargs)
