@@ -44,8 +44,20 @@ class FSMUtils:
 
     async def remove_value(self, key: str):
         data = await self.get_data()
-        return await self.set_data({self.prefix + k: v for k, v in data.items() if key not in k})
+        state_keys = data.get('state_keys', [])
+        data['state_keys'] = [k for k in state_keys if key not in k]
+        return await self.set_data({k: v for k, v in data.items() if key != k})
 
+    async def save_message(self, chat_id: int, message_id: int):
+        return await self.update_data(chat_id=chat_id, message_id=message_id)
+    
+    async def get_message(self) -> tuple[int, int]:
+        return await self.get_value('chat_id'), await self.get_value('message_id')
+    
+    async def remove_message(self):
+        await self.remove_value('chat_id')
+        await self.remove_value('message_id')
+    
 
 class MainFSM(FSMUtils):
     prefixs = ['main']

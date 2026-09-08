@@ -45,7 +45,7 @@ class OrganText(BaseText):
 
     @property
     def desc(self):
-        return (self.html('🪶 Описание').h1.br.br + self.html(self.data.description)) if self.data.description else '🪶 Описание отсуствует'
+        return (self.html('🪶 Описание').h1.br().br() + self.html(self.data.description)) if self.data.description else '🪶 Описание отсуствует'
 
     @classmethod
     def member(self, user: AnswerMemberInfo):

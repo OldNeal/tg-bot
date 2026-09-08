@@ -87,12 +87,12 @@ async def call(callback: CallbackQuery, callback_data: OrganSearchCall, state: F
 @exept()
 async def text_state(message: Message, state: FSMContext, **kwargs):
     fsm = OrganFSM(state)
-    msg0 = await fsm.get_value('msg')
+    msg0 = await fsm.get_message()
     msgs = await OrganService(message, state, **kwargs).to_search()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
     await fsm.set_state()
-    await msg0.delete()
-    await fsm.remove_value('msg')
+    await bot.delete_message(*msg0)
+    await fsm.remove_message()
 
 @organ_router.callback_query(OrganPageCall.filter(F.is_search == True))     
 @call_exept()
@@ -332,12 +332,12 @@ async def cmd(callback: CallbackQuery, callback_data: OrganSettingParametrDefaul
 @exept()
 async def text_state(message: Message, state: FSMContext, **kwargs):
     fsm = OrganFSM(state)
-    msg0 = await fsm.get_value('msg')
+    msg0 = await fsm.get_message()
     msgs = await OrganService(message, state, **kwargs).redact_settings()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
     await fsm.set_state()
-    await msg0.delete()
-    await fsm.remove_value('msg')
+    await bot.delete_message(*msg0)
+    await fsm.remove_message()
 
 @organ_router.message(Command('organ'), F.text.contains('capture'))
 @command(
@@ -505,12 +505,12 @@ async def call(callback: CallbackQuery, callback_data: OrganTitulRedactCall, sta
 @exept()
 async def text_state(message: Message, state: FSMContext, **kwargs):
     fsm = OrganFSM(state)
-    msg0 = await fsm.get_value('msg')
+    msg0 = await fsm.get_message()
     msgs = await OrganService(message, state, **kwargs).titul_redact()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
     await fsm.set_state()
-    await msg0.delete()
-    await fsm.remove_value('msg')
+    await bot.delete_message(*msg0)
+    await fsm.remove_message()
 
 @organ_router.message(Command('titul'))
 @command(

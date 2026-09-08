@@ -62,3 +62,9 @@ async def cmd(message: Message, state: FSMContext, **kwargs):
 async def call(callback: CallbackQuery, callback_data: CancelCall, state: FSMContext, **kwargs):
     await state.set_state()
     await callback.message.edit_text(rich_message=InputRichMessage(html='✅ Отмена произошла успешно'), reply_markup=None)
+
+@base_router.message(Command('mystateclear'))
+@exept()
+async def cmd(message: Message, state: FSMContext, **kwargs):
+    await state.clear()
+    await message.answer('✅ Куки очищены')

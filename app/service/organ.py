@@ -71,7 +71,7 @@ class OrganService(BaseService):
 
     async def to_enter_search(self):
         await self.state.set_state(OrganState.search)
-        await self.state.update_data(msg=self.message)
+        await self.state.save_message(self.message.chat.id, self.message.message_id)
         return self.to_json([
             [self.text.to_search(), None, self.IKB.cancel()]
             ])
@@ -174,7 +174,7 @@ class OrganService(BaseService):
 
     async def to_redact_settings(self):
         await self.state.set_state(OrganState.settings)
-        await self.state.update_data(msg=self.message)
+        await self.state.save_message(self.message.chat.id, self.message.message_id)
         return self.to_json([
             [self.text.to_enter_paramet(), None, self.IKB.back(OrganBackValues.search)]
             ])
@@ -242,20 +242,22 @@ class OrganService(BaseService):
 
     async def titul(self, purpose_tg_id: int | None = None):
         arg = self.check_enter_purpose(TitulRedactArg)
-        if purpose_tg_id and not arg.titul:
+        if not arg.titul:
             return await self.to_titul_redact(purpose_tg_id)
         else:
             return await self.titul_redact(**arg.model_dump())
 
     async def to_titul_redact(self, purpose_tg_id: int):
+        purpose_tg_id = await self.state.get_value('purpose_tg_id', purpose_tg_id if not purpose_tg_id is None else self.tg_id)
         await self.state.set_state(OrganState.titul)
-        await self.state.update_data(msg=self.message, purpose_tg_id=purpose_tg_id)
+        await self.state.update_data(purpose_tg_id=purpose_tg_id)        
+        await self.state.save_message(self.message.chat.id, self.message.message_id)
         return self.to_json([
             [self.text.redact_titul(), None, self.IKB.redact_titul(purpose_tg_id, self.is_bot_message)]
             ])
 
     async def titul_redact(self, titul: str | None = None, purpose_tg_id: int | None = None):
-        purpose_tg_id = await self.state.get_value('purpose_tg_id', purpose_tg_id)
+        purpose_tg_id = await self.state.get_value('purpose_tg_id', purpose_tg_id if not purpose_tg_id is None else self.tg_id)
         data = await self.logic.titul_redact(purpose_tg_id, titul or self.message.text)
         return self.to_json([
             [self.text(data).titul(data.old_titul, data.new_titul), data, self.IKB.member_back(purpose_tg_id)]

@@ -94,6 +94,7 @@ admin_cmds = cmds | {
     'ping':'⌛ Проверить задержку API',
     'downseq':'⬇️ Понизить последовательность',
     'mystate':'🗂️ Ваши куки',
+    'mystateclear':'🗑️ Очистить куки',
 }
 
 async def to_menu_cmds():
