@@ -58,7 +58,11 @@ class BaseService:
 
     @property
     def is_admin(self):
-        return self.kwargs.get('is_admin', False) and self.tg_id in self.settings.admins
+        return self.kwargs.get('is_admin', False) and self.tg_id_in_admins
+
+    @property
+    def tg_id_in_admins(self):
+        return self.tg_id in self.settings.admins
 
     @classmethod
     def is_natural_int(self, value, **kwargs):
@@ -112,3 +116,7 @@ class BaseService:
 
     def to_pages(self, datas: list[DATA_PAGE], value_in_page: int = 5) -> list[tuple[DATA_PAGE, ...]]:
         return [tuple(datas[i:i+value_in_page]) for i in range(0, len(datas), value_in_page)]
+
+    def redact_kwargs(self, **new_kwargs):
+        self.kwargs |= new_kwargs
+        return self

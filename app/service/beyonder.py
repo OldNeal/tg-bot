@@ -40,7 +40,7 @@ class BeyonderService(BaseService):
             ])
 
     async def accert_kill(self, purpose_tg_id: int):
-        data = await self.logic.kill(purpose_tg_id=purpose_tg_id)
+        data = await self.logic.redact_kwargs(is_admin=self.tg_id_in_admins).kill(purpose_tg_id=purpose_tg_id)
         return self.to_json([
             [self.text(UserTextValidate(name=data.user.fullname)).accert_kill, data, None]
             ])

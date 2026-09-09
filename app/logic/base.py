@@ -15,7 +15,10 @@ class BaseLogic:
         self.fullname = fullname
         self.purpose_tg_id = purpose_tg_id or tg_id
         self.kwargs = kwargs
-        self.body = self.schemas.QueryBody(tg_id=self.tg_id, username=self.username, fullname=self.fullname, is_admin=self.is_admin, request_id=self.request_id, chat_id=self.chat_id)
+
+    @property
+    def body(self):
+        return self.schemas.QueryBody(tg_id=self.tg_id, username=self.username, fullname=self.fullname, is_admin=self.is_admin, request_id=self.request_id, chat_id=self.chat_id)
 
     @property
     def is_admin(self):
@@ -47,3 +50,6 @@ class BaseLogic:
         except:
             raise ApiTimeoutError('API не работает')
 
+    def redact_kwargs(self, **new_kwargs):
+        self.kwargs |= new_kwargs
+        return self
