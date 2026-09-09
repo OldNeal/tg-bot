@@ -24,8 +24,17 @@ class BeyonderText(BaseText):
         return self.downseq_template.random().format_map(self.data.model_dump())
     
     @property
-    def kill(self):
+    def accert_kill(self):
         return self.kill_template.random().format_map(self.data.model_dump())
+
+    def kill(self, tg_id: int, is_admin: bool):
+        if self.data.user.tg_id == tg_id or not is_admin:
+            return f'{self.html('Вы').openmessage(tg_id)} хотите потерять контроль?'
+        return f'{self.html('Вы').openmessage(tg_id)} хотите, чтобы потусторонний {self.html(self.data.user.fullname).openmessage(self.data.user.tg_id)} потерял контроль?'
+    
+    @property
+    def cancel_kill(self):
+        return f'{self.html(self.data.user.fullname).openmessage(self.data.user.tg_id)} смог успокоиться и не потерять контроль'
     
     @property
     def time_info(self):

@@ -10,7 +10,7 @@ client = clientele_api.APIClient(config=config.Config())
 
 @client.put("/beyonder/drink", response_map={200: schemas.AnswerRedactSeq, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse})
 
-async def drink(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+async def drink(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, path_id: typing.Optional[int] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Drink
     """
     return result

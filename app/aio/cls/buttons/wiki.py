@@ -2,7 +2,7 @@ from app.aio.cls.buttons.base import BotIKB, MenuCall
 from app.aio.cls.callback.wiki import WikiBackCall, PathCall, GroupCall, GACall
 from app.validate.api import AnswerAllPathInfo, AnswerPathInfo, AnswerGAInfo
 from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
-
+from app.aio.cls.callback.beyonder import DrinkCall
 
 class WikiIKB(BotIKB):    
     def back(self, where: str):
@@ -32,6 +32,11 @@ class WikiIKB(BotIKB):
         if where:
             self.builder.row(InlineKeyboardButton(text='↩️ Назад', callback_data=WikiBackCall(where=where, tg_id=self.tg_id).pack()))
         return self.builder.as_markup()
+
+    def path(self, path_id: int, where: str):
+        self.builder.button(text='🧪 Стать потусторонним', callback_data=DrinkCall(path_id=path_id, tg_id=self.tg_id))
+        self.builder.button(text='↩️ Назад', callback_data=WikiBackCall(where=where, tg_id=self.tg_id))
+        return self.builder.adjust(1).as_markup()
 
     def gas_buttons(self, gas: list[AnswerGAInfo], values_in_string: int = 2):
         for ga in sorted(gas, key=lambda x: x.ga_id):

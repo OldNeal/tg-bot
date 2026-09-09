@@ -1,8 +1,9 @@
-from config import settings, bot, Router, Command, FSMContext, Message, F, InputRichMessage
+from config import settings, bot, Router, Command, FSMContext, Message, F, InputRichMessage, CallbackQuery
 from app.service.beyonder import BeyonderService
 from telegram_click_aio.decorator import command
 from app.aio.args import base_args, Requireds, Optionals
 from app.exception.decor import exept, call_exept
+from app.aio.cls.callback.beyonder import DrinkCall, KillCall
 
 beyonder_router = Router()
 
@@ -16,6 +17,12 @@ beyonder_router = Router()
 async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs).drink()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@beyonder_router.callback_query(DrinkCall.filter())     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: DrinkCall, state: FSMContext, **kwargs):
+    msgs = await BeyonderService(callback.message, state, callback, **kwargs).drink(callback_data.path_id)
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
 @beyonder_router.message(Command('upseq'))
 @command(
@@ -49,6 +56,18 @@ async def cmd(message: Message, state: FSMContext, **kwargs):
 async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs).kill()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@beyonder_router.callback_query(KillCall.filter(F.accert == True))     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: KillCall, state: FSMContext, **kwargs):
+    msgs = await BeyonderService(callback.message, state, callback, **kwargs).accert_kill(callback_data.purpose_tg_id)
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@beyonder_router.callback_query(KillCall.filter(F.cancel == True))     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: KillCall, state: FSMContext, **kwargs):
+    msgs = await BeyonderService(callback.message, state, callback, **kwargs).cancel_kill(callback_data.purpose_tg_id)
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
 @beyonder_router.message(Command('time'), F.text.contains('redact'))
 @command(

@@ -22,7 +22,7 @@ class WikiService(BaseService):
 
     async def all_gas(self, group: str | None = None):
         data = await self.logic.all_gas()
-        group = group or list({g.group for g in data.gas})[0]
+        group = group or list({g.group for g in data.gas if g.group.lower().startswith('зем')})[0]
         await self.state.update_data(group=group, is_all=True)
         return self.to_json([
             [self.text.ga(data).all, data, self.IKB.all_gas(data.gas, group=group)]
@@ -67,12 +67,12 @@ class WikiService(BaseService):
         value = await self.state.get_value('value')
         back_where = where or await self.state.get_value('back_where')
         return self.to_json([
-            [self.text.path(data).info(value), data, self.IKB.back(back_where)]
+            [self.text.path(data).info(value), data, self.IKB.path(data.path_id, back_where)]
             ])
 
     async def all_paths(self, group: str | None = None):
         data = await self.logic.all_paths()
-        group = group or list({p.group for p in data.paths})[0]
+        group = group or list({p.group for p in data.paths if p.group.lower().startswith('зем')})[0]
         await self.state.update_data(group=group, is_all=True)
         return self.to_json([
             [self.text.path(data).all, data, self.IKB.all_paths(data.paths, group=group)]

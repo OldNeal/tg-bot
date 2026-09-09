@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 
 @class_decor
 class BeyonderLogic(BaseLogic):
-    async def drink(self, purpose_tg_id: int | None = None, path_name: str | None = None, seq: int | None = None):
-        return await self.client.drink(self.body, (purpose_tg_id or self.purpose_tg_id), path_name, seq)
+    async def drink(self, purpose_tg_id: int | None = None, path_name: str | None = None, path_id: int | None = None, seq: int | None = None):
+        return await self.client.drink(self.body, (purpose_tg_id or self.purpose_tg_id), path_name, path_id, seq)
 
     async def upseq(self, purpose_tg_id: int | None = None, path_name: str | None = None, seq: int | None = None):
         return await self.client.upseq(self.body, purpose_tg_id or self.purpose_tg_id, path_name, seq)
