@@ -73,6 +73,12 @@ class OrganCaptureCall(OrganCall, prefix='organ_capture'):
 class OrganSearchCall(OrganCall, prefix='organ_search'):
     pass
 
+class OrganCreateCall(OrganCall, prefix='organ_create'):
+    pass
+
+class OrganMyCall(OrganCall, prefix='organ_my'):
+    pass
+
 class OrganExitCall(OrganCall, AccertCancelCall, prefix='organ_exit'):
     pass
 

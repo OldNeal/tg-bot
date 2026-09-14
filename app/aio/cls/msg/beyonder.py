@@ -29,8 +29,8 @@ class BeyonderText(BaseText):
 
     def kill(self, tg_id: int, is_admin: bool):
         if self.data.user.tg_id == tg_id or not is_admin:
-            return f'{self.html('Вы').openmessage(tg_id)} хотите потерять контроль?'
-        return f'{self.html('Вы').openmessage(tg_id)} хотите, чтобы потусторонний {self.html(self.data.user.fullname).openmessage(self.data.user.tg_id)} потерял контроль?'
+            return f'☠️ {self.html('Вы').openmessage(tg_id)} хотите потерять контроль?'
+        return f'☠️ {self.html('Вы').openmessage(tg_id)} хотите, чтобы потусторонний {self.html(self.data.user.fullname).openmessage(self.data.user.tg_id)} потерял контроль?'
     
     @property
     def cancel_kill(self):

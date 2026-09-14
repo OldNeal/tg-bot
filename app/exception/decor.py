@@ -8,8 +8,6 @@ from app.aio.cls.msg.utils import TextHTML
 from app.aio.cls.callback.base import BaseCall, MenuCall
 import random
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
-import traceback
-from datetime import datetime
 
 def exept():
     def decor(func):
@@ -30,16 +28,10 @@ def exept():
             except (TelegramBadRequest, TelegramForbiddenError) as e:
                 log.warning(f'AioPartPath: {e}', tg_id=message.from_user.id, chat_id=message.chat.id)
             except Exception as e:
-                tb = traceback.extract_tb(e.__traceback__)
-                for frame in tb:
-                    print(f"AioPartPath, Файл: {frame.filename}, строка: {frame.lineno}, функция: {frame.name}")
-                    print(f"AioPartPath, Код: {frame.line}\n")
                 str_e = str(e)
                 log.error(f'AioPartPath: {e}', tg_id=message.from_user.id, chat_id=message.chat.id)
                 if message.from_user.id == settings.owner:
                     await message.answer(f'{PythonError.msg}: {(TextHTML(str_e).escape())[:4000]}')
-                    await message.answer(f'Файл: {frame.filename}, строка: {frame.lineno}, функция: {frame.name}')
-                    await message.answer(f'Код: {frame.line}')
                 else:
                     await message.answer(f'{PythonError.msg}')
                 raise e

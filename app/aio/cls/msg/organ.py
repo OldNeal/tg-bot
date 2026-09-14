@@ -58,7 +58,7 @@ class OrganText(BaseText):
                 member.append(f'🎖 Титул: {user.member.titul}')
             #f'⌛ Состоит в организации дней: {(datetime.now() - datetime.fromisoformat(user.member.login_at)).days}'
 
-        return self.html(user.user.fullname).openmessage(user.user.tg_id) + self.html(self.html.joined([f'🏷 ID: {user.user.tg_id}'] + member)).blockquote()
+        return '🎎 ' + self.html(user.user.fullname).openmessage(user.user.tg_id) + self.html(self.html.joined([f'🏷 ID: {user.user.tg_id}'] + member)).blockquote()
 
     @classmethod
     def top(self):
@@ -70,23 +70,23 @@ class OrganText(BaseText):
 
     @property
     def login(self):
-        return self.user_name + f' стал участником организации {self.data.organ.name}'
+        return '🎎 ' + self.user_name + f' стал участником организации {self.data.organ.name}'
 
     @classmethod
     def to_exit(self):
-        return 'Вы хотите выйти из организации?'
+        return '🚪 Вы хотите выйти из организации?'
 
     @property
     def exit(self):
-        return self.user_name + f' вышел из организации "{self.organ_name}"'
+        return '🚪 ' + self.user_name + f' вышел из организации "{self.organ_name}"'
     
     @property
     def cancel_exit(self):
-        return self.user_name + f' передумал выходить из организации "{self.organ_name}"'
+        return '🚪 ' + self.user_name + f' передумал выходить из организации "{self.organ_name}"'
 
     @property
     def create(self):
-        return self.user_name + f' создал организацию "{self.organ_name}"'
+        return '➕ ' + self.user_name + f' создал организацию "{self.organ_name}"'
 
     @classmethod
     def parametr_value(self, value):
@@ -96,7 +96,7 @@ class OrganText(BaseText):
 
     @classmethod
     def to_enter_paramet(self):
-        return '🪶 Отправьте новые настройки'
+        return '✒️ Отправьте новые настройки'
 
     @classmethod
     def settings(self, setting: SettingGroupValidate):
@@ -110,48 +110,54 @@ class OrganText(BaseText):
     
     @property
     def capture(self):
-        return self.user_name + f' захватил организацию "{self.organ_name}"'
+        return '👑 ' + self.user_name + f' захватил организацию "{self.organ_name}"'
 
+    @classmethod
+    def to_create(self):
+        return '✒️ Отправьте имя новой организации'
 
+    @classmethod
+    def my_organ(self):
+        return '❌ Вы не состоите в организации.'
 
 
     def uprank(self, rank: int):
-        return self.user_name + f' был повышен до {rank} ранга'
+        return '🔼 ' + self.user_name + f' был повышен до {rank} ранга'
     
     def downrank(self, rank: int):
-        return self.user_name + f' был понижен до {rank} ранга'
+        return '🔽 ' + self.user_name + f' был понижен до {rank} ранга'
 
     @classmethod
     def kick(self, purpose: AnswerMemberInfo):
-        return f'Вы хотите выгнать {self.html(purpose.user.fullname).openmessage(purpose.user.tg_id)} из организации {purpose.member.organ_name}?'
+        return f'🥊 Вы хотите выгнать {self.html(purpose.user.fullname).openmessage(purpose.user.tg_id)} из организации {purpose.member.organ_name}?'
 
     @property
     def accert_kick(self):
-        return self.user_name + f' был выгнан из организации "{self.organ_name}"'
+        return '🥊 ' + self.user_name + f' был выгнан из организации "{self.organ_name}"'
 
     @property
     def cancel_kick(self):
-        return self.user_name + f' передумал кикать'
-        
+        return '🥊 ' + self.user_name + f' передумал кикать'
+         
     @classmethod
     def redact_titul(self):
-        return f'Введите новый титул'
+        return f'✒️ Введите новый титул'
 
     def titul(self, old_titul: str | None = None, new_titul: str | None = None):
         if new_titul:
             result = f'получил титул "{new_titul}"'
         elif old_titul:
             result = f'лишился титула "{old_titul}"'
-        return f'{self.user_name} {result}'
+        return f'🎖️ {self.user_name} {result}'
 
     @classmethod
     def give(self, data: AnswerOrganGive):
-        return f'{self.html(data.user.fullname).openmessage(data.user.tg_id)} передал организацию "{data.purpose.member.organ_name}" пользователю {self.html(data.purpose.user.fullname).openmessage(data.purpose.user.tg_id)}'
+        return f'👑 {self.html(data.user.fullname).openmessage(data.user.tg_id)} передал организацию "{data.purpose.member.organ_name}" пользователю {self.html(data.purpose.user.fullname).openmessage(data.purpose.user.tg_id)}'
 
     @classmethod
     def to_give(self, purpose: AnswerMemberInfo):        
-        return f'Вы хотите передать организацию "{purpose.member.organ_name}" пользователю {self.html(purpose.user.fullname).openmessage(purpose.user.tg_id)}'
+        return f'👑 Вы хотите передать организацию "{purpose.member.organ_name}" пользователю {self.html(purpose.user.fullname).openmessage(purpose.user.tg_id)}'
 
     @property
     def cancel_give(self):
-        return self.user_name + f' передумал передавать организацию "{self.organ_name}"'
+        return '👑 ' + self.user_name + f' передумал передавать организацию "{self.organ_name}"'

@@ -26,7 +26,9 @@ from app.aio.cls.callback.organ import (OrganBackCall,
                                         OrganCaptureCall,
                                         OrganGiveCall,
                                         OrganMemberPageCall,
-                                        OrganSearchCall)
+                                        OrganSearchCall,
+                                        OrganCreateCall,
+                                        OrganMyCall)
 from app.aio.cls.fsm.utils import OrganFSM
 from app.aio.cls.callback.back import OrganBackValues
 
@@ -43,7 +45,7 @@ async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await OrganService(message, state, **kwargs).member()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
-@organ_router.message(Command('organ'), F.text.contains('member'))
+@organ_router.message(Command('organ'), F.text.contains('member'), F.text.not_contains('members'))
 @command(
     name='organ member',
     description='Информация о участнике',  
@@ -64,7 +66,7 @@ async def call(callback: CallbackQuery, callback_data: OrganMemberCall, state: F
 @command(
     name='organ search',
     description='Найти организацию',  
-    arguments=[Requireds.organ_mode, Requireds.organ_value] + base_args
+    arguments=[Requireds.organ_mode, Optionals.organ_value] + base_args
 )
 @exept()
 async def cmd(message: Message, state: FSMContext, **kwargs):
@@ -80,7 +82,7 @@ async def call(callback: CallbackQuery, callback_data: OrganBackCall, state: FSM
 @organ_router.callback_query(OrganSearchCall.filter())     
 @call_exept()
 async def call(callback: CallbackQuery, callback_data: OrganSearchCall, state: FSMContext, **kwargs):
-    msgs = await OrganService(callback.message, state, callback, **kwargs).search(is_back=True)
+    msgs = await OrganService(callback.message, state, callback, **kwargs).search()
     [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
 @organ_router.message(OrganState.search)
@@ -286,13 +288,30 @@ async def call(callback: CallbackQuery, callback_data: OrganExitCall, state: FSM
 @command(
     name='organ create',
     description='Создать организацию',  
-    arguments=[Requireds.organ_mode, Requireds.organ_name]
+    arguments=[Requireds.organ_mode, Optionals.organ_name]
 )
 @exept()
 async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await OrganService(message, state, **kwargs).create()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
-    
+
+@organ_router.callback_query(OrganCreateCall.filter())     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: OrganCreateCall, state: FSMContext, **kwargs):
+    msgs = await OrganService(callback.message, state, callback, **kwargs).to_enter_name_for_create()
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@organ_router.message(OrganState.create)
+@exept()
+async def text_state(message: Message, state: FSMContext, **kwargs):
+    fsm = OrganFSM(state)
+    msg0 = await fsm.get_message()
+    msgs = await OrganService(message, state, **kwargs).enter_name_for_create()
+    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+    await fsm.set_state()
+    await bot.delete_message(*msg0)
+    await fsm.remove_message()
+
 @organ_router.message(Command('organ'), F.text.contains('setting') | F.text.contains('settings'))
 @command(
     name='organ setting',
@@ -571,6 +590,17 @@ async def call(callback: CallbackQuery, callback_data: OrganGiveCall, state: FSM
 
 
 
+@organ_router.message(Command('organ'), F.text.contains('menu'))
+@command(
+    name='organ menu',
+    description='Передать организацию',  
+    arguments=[Requireds.organ_mode] + base_args
+)
+@exept()
+async def cmd(message: Message, state: FSMContext, **kwargs):
+    msgs = await OrganService(message, state, **kwargs).menu()
+    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
 @organ_router.message(Command('organ'))
 @command(
     name='organ',
@@ -578,6 +608,13 @@ async def call(callback: CallbackQuery, callback_data: OrganGiveCall, state: FSM
     arguments=[Optionals.organ_id] + base_args
 )
 @exept()
-async def cmd_organ_info(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await OrganService(message, state, **kwargs).menu()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@organ_router.callback_query(OrganMyCall.filter())     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: OrganMyCall, state: FSMContext, **kwargs):
+    msgs = await OrganService(callback.message, state, callback, **kwargs).my_organ()
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+

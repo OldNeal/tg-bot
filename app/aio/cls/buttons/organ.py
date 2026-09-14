@@ -22,7 +22,9 @@ from app.aio.cls.callback.organ import (OrganBackCall,
                                         OrganCaptureCall,
                                         OrganGiveCall,
                                         OrganMemberPageCall,
-                                        OrganSearchCall)
+                                        OrganSearchCall,
+                                        OrganCreateCall,
+                                        OrganMyCall)
 from app.validate.api import OrganSettingValidate, AnswerMemberInfo, OrganInfo, AnswerOrganInfo
 from app.aio.cls.callback.back import OrganBackValues
 
@@ -135,7 +137,7 @@ class OrganIKB(BotIKB):
         return self.builder.adjust(2).as_markup()
 
     def menu(self):
-        self.builder.button(text='🃏 Моя организация', callback_data=OrganInfoCall(purpose_tg_id=self.tg_id, tg_id=self.tg_id))
+        self.builder.button(text='🃏 Моя организация', callback_data=OrganMyCall(tg_id=self.tg_id))
         self.builder.button(text='🔎 Поиск организаций', callback_data=OrganBackCall(where=OrganBackValues.search, tg_id=self.tg_id))
         self.builder.button(text='📜 Все организации', callback_data=OrganBackCall(where=OrganBackValues.list, tg_id=self.tg_id))
         self.builder.button(text='🏆 Топ организаций', callback_data=OrganBackCall(where=OrganBackValues.top, tg_id=self.tg_id))
@@ -153,3 +155,8 @@ class OrganIKB(BotIKB):
         else:
             self.builder.button(text='❌ Нет', callback_data=OrganGiveCall(cancel=True, purpose_tg_id=purpose_tg_id, tg_id=self.tg_id))
         return self.builder.adjust(2).as_markup()
+
+    def my_organ(self):
+        self.builder.button(text='➕ Создать', callback_data=OrganCreateCall(tg_id=self.tg_id))
+        self.builder.button(text='🔍 Найти', callback_data=OrganSearchCall(tg_id=self.tg_id))
+        return self.builder.adjust(1).as_markup()

@@ -24,7 +24,7 @@ class TimeReplaceArg(UserArg):
 
 
 class NameArg(BaseArg):
-    name: str
+    name: str | None = None
 
 class SearchArg(BaseArg):
     value: str | None = None

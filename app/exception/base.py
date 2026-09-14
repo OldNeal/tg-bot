@@ -7,7 +7,7 @@ class PythonError:
 class BotError(Exception):
     msg = 'Базовый класс ошибки'
     faq = ''
-    emodzi = '⚠️'
+    emodzi = '❌'
 
     def __init__(self, *args, level: Literal['trace', 'debug', 'info', 'success', 'warning', 'error', 'critical'] = 'warning', is_error: bool = True, **kwargs):
         self.level = level
@@ -16,7 +16,7 @@ class BotError(Exception):
         self.is_error = is_error
         if is_error:
             super().__init__(*args)
-            getattr(log, level)(f'{self.__class__.__name__}, msg: {' '.join(self.args)}, kwargs: {self.kwargs}')
+            getattr(log, level)(f'{self.__class__.__name__}, msg: {' '.join(self.args) if len(args) > 0 else self.msg}, kwargs: {self.kwargs}')
 
     def __str__(self):
         return super().__str__()

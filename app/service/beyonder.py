@@ -4,6 +4,7 @@ from app.validate.args import UserArg, DrinkArg, UpDownSeqArg, TimeReplaceArg, T
 from app.aio.cls.msg.beyonder import BeyonderText
 from app.validate.text import RedactSeqTextValidate, UserTextValidate
 from app.aio.cls.buttons.beyonder import BeyonderIKB
+from app.exception.args import DrinkPathNameError
 
 class BeyonderService(BaseService):
     def __init__(self, message = None, state = None, callback = None, **kwargs):
@@ -16,7 +17,11 @@ class BeyonderService(BaseService):
         if path_id:
             data = await self.logic.drink(path_id=path_id)
         else:
-            data = await self.logic.drink(**DrinkArg.model_validate(self.kwargs).model_dump())
+            try:
+                args = DrinkArg.model_validate(self.kwargs)
+            except:
+                raise DrinkPathNameError()
+            data = await self.logic.drink(**args.model_dump())
         return self.to_json([
             [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)).drink, data, None]
             ])

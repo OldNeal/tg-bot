@@ -24,6 +24,14 @@ class OrganService(BaseService):
         return self.to_json([
             [self.text.menu(), None, self.IKB.menu()]
             ])
+
+    async def my_organ(self):
+        try:
+            return await self.info()
+        except:
+            return self.to_json([
+            [self.text.my_organ(), None, self.IKB.my_organ()]
+            ])
     
     async def member(self, purpose_tg_id: int | None = None):
         await self.state.set_state()
@@ -154,11 +162,27 @@ class OrganService(BaseService):
             [self.text(data).cancel_exit, data, None]
             ])
 
-    async def create(self):
-        data = await self.logic.create(**NameArg.model_validate(self.kwargs).model_dump())
+    async def create(self, name: str | None = None):
+        args = NameArg.model_validate(self.kwargs)
+        if args.name:
+            data = await self.logic.create(**args.model_dump())
+        elif name:
+            data = await self.logic.create(name=name)
+        else:
+            return await self.to_enter_name_for_create()
         return self.to_json([
-            [self.text(data).create, data, None]
+            [self.text(data).create, data, self.IKB.organ_back(data.organ.id)]
             ])
+
+    async def to_enter_name_for_create(self):
+        await self.state.set_state(OrganState.create)
+        await self.state.save_message(self.message.chat.id, self.message.message_id)
+        return self.to_json([
+            [self.text.to_create(), None, self.IKB.cancel()]
+            ])
+
+    async def enter_name_for_create(self):
+        return await self.create(self.message.text)
     
     async def get_settings(self):
         await self.state.set_state()

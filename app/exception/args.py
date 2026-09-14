@@ -1,7 +1,7 @@
 from app.exception.base import BotError
 
 class DurationFormatError(BotError):
-    msg = '❌ Значение не является временным промежутком'
+    msg = 'Значение не является временным промежутком'
     faq = """Примеры:
     - 5h      -> -5h (отрицательное, знак по умолчанию -)
     - +5h     -> +5h (положительное)
@@ -10,7 +10,7 @@ class DurationFormatError(BotError):
     - -5h     -> -5h (явное отрицательное)"""
         
 class DataFormatError(BotError):
-    msg = '❌ Значение не является датой'
+    msg = 'Значение не является датой'
     faq = """Примеры:
     - 2026.07.10
     - 10.07.2010
@@ -18,7 +18,7 @@ class DataFormatError(BotError):
     - 2034-12-16"""
 
 class DrinkPathNameError(BotError):
-    msg = '❌ Вы не указали путь'
+    msg = 'Вы не указали путь'
     faq = """Примеры:
     - Шут
     - провидец
@@ -26,7 +26,7 @@ class DrinkPathNameError(BotError):
     - Мошенник"""
 
 class SeqError(BotError):
-    msg = '❌ Такой последовательности нету'
+    msg = 'Такой последовательности нету'
     faq = """Примеры:
     - 1
     - 7"""

@@ -21,7 +21,7 @@ class BaseService:
                  state: FSMContext | None = None, 
                  callback: CallbackQuery | None = None, 
                  command: CommandObject | None = None, 
-                 logic_kwargs: dict = {}, 
+                 add_logic_kwargs: dict = {}, 
                  **kwargs):
         self.settings = settings
         self.bot = bot
@@ -32,7 +32,7 @@ class BaseService:
         self.user = self.callback.from_user if self.callback else self.message.from_user
         self.chat = self.callback.message.chat if self.callback else self.message.chat
         self.tg_id = self.user.id
-        self.logic_kwargs = {'is_admin':self.is_admin, 'request_id':self.kwargs.get('request_id'), 'chat_id':self.chat.id} | logic_kwargs
+        self.add_logic_kwargs = add_logic_kwargs
 
         self.is_bot_message = bool(self.callback)
         self.state: FSMUtils = FSMUtils(state)
@@ -46,6 +46,9 @@ class BaseService:
         self.msg_to_json: bool = self.kwargs.get('to_json', False)
         self.enter_args: bool = self.command.args != None if command else False
 
+    @property
+    def logic_kwargs(self):
+        return {'is_admin':self.is_admin, 'request_id':self.kwargs.get('request_id'), 'chat_id':self.chat.id, 'purpose_tg_id':self.purpose.id} | self.add_logic_kwargs
 
     @property
     def purpose(self):

@@ -60,8 +60,12 @@ async def cmd(message: Message, state: FSMContext, **kwargs):
 @base_router.callback_query(CancelCall.filter())     
 @call_exept()
 async def call(callback: CallbackQuery, callback_data: CancelCall, state: FSMContext, **kwargs):
-    await state.set_state()
-    await callback.message.edit_text(rich_message=InputRichMessage(html='✅ Отмена произошла успешно'), reply_markup=None)
+    text_state = await state.get_state()
+    if text_state:
+        await state.set_state()
+        await callback.message.edit_text(rich_message=InputRichMessage(html='✅ Отмена произошла успешно'), reply_markup=None)
+    else:
+        await callback.message.edit_text(rich_message=InputRichMessage(html='❗ Вы уже ввели значение'), reply_markup=None)
 
 @base_router.message(Command('mystateclear'))
 @exept()

@@ -21,14 +21,14 @@ class Optionals:
     rank = rank
     organ_id = organ_id
     titul = titul
+    organ_value = organ_value
+    organ_name = organ_name
 
 class Requireds:
     date = datetime_arg
     duration = duration
     time_mode = time_mode
-    organ_value = organ_value
     organ_mode = organ_mode
     titul_mode = titul_mode
-    organ_name = organ_name
 
 base_args = [Optionals.tg_id, Optionals.to_json, Optionals.is_reply, Optionals.is_admin, Optionals.is_delay]

@@ -12,7 +12,8 @@ organ_name = Argument(
             name=['name'],
             description='Название организации',
             type=str,
-            example='Орден Старых'
+            example='Орден Старых',
+            optional=True
         )
 
 rank = Argument(
@@ -27,7 +28,8 @@ organ_value = Argument(
             name=['value'],
             description='Поисковой запрос',
             type=str,
-            example='Орден'
+            example='Орден',
+            optional=True
         )
 
 organ_mode = Argument(

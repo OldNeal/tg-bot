@@ -6,7 +6,7 @@ from app.validate.api import QueryOrganSetting, QueryOrganSettingDefault, OrganS
 @class_decor
 class OrganLogic(BaseLogic):
     async def member(self, purpose_tg_id: int | None = None):
-        return await self.client.organ_member(self.body, purpose_tg_id or self.purpose_tg_id)
+        return await self.client.organ_member(self.body, (purpose_tg_id or self.purpose_tg_id))
 
     async def search(self, value: str):
         return await self.client.organ_search(value)
