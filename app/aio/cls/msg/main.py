@@ -31,5 +31,18 @@ class MainText(BaseText):
     def first_msg_by_info(self):
         return 'Держи карточку'
 
-    def check_ping(api_ping: str | None = None):
+    @classmethod
+    def check_ping(self, api_ping: str | None = None):
         return f'⌛ Задержка API - {api_ping} мс.'
+
+    @classmethod
+    def state_clear(self):
+        return f'✅ Куки очищены'
+
+    @classmethod
+    def state_pop(self):
+        return f'✅ Кук удален'
+
+    @classmethod
+    def state_dont_pop(self):
+        return f'❌ Кук не найден'

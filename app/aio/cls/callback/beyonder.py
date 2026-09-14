@@ -6,7 +6,7 @@ class BeyonderCall(BaseCall, prefix='beyonder'):
 class BeyonderBackCall(BackCall, prefix='beyonder_back'):
     pass
 
-class DrinkCall(BaseCall, prefix='drink'):
+class DrinkCall(BeyonderCall, prefix='drink'):
     path_id: int
 
 class KillCall(AccertCancelCall, prefix='kill'):

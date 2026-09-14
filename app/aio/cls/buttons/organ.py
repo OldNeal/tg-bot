@@ -160,3 +160,7 @@ class OrganIKB(BotIKB):
         self.builder.button(text='➕ Создать', callback_data=OrganCreateCall(tg_id=self.tg_id))
         self.builder.button(text='🔍 Найти', callback_data=OrganSearchCall(tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()
+
+    def create(self, organ_id: int):
+        self.builder.button(text='🃏 Моя организация', callback_data=OrganInfoCall(organ_id=organ_id, tg_id=self.tg_id))
+        return self.builder.adjust(1).as_markup()

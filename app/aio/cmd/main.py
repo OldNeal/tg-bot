@@ -1,4 +1,4 @@
-from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage
+from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage, CallbackQuery, CommandObject
 from app.service.main import MainService
 from telegram_click_aio.decorator import command
 from app.aio.args import base_args
@@ -7,6 +7,7 @@ from app.aio.cmd.wiki import wiki_router
 from app.aio.cmd.organ import organ_router
 from app.aio.cmd.stats import stats_router
 from app.exception.decor import exept, call_exept
+from app.aio.cls.callback.main import MyStateCall
 
 main_router = Router()
 main_router.include_routers(beyonder_router, organ_router, wiki_router, stats_router)
@@ -31,5 +32,24 @@ async def cmd(message: Message, state: FSMContext, **kwargs):
 @main_router.message(Command('mystate'))
 @exept()
 async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await MainService(message, state).mystate()
+    msgs = await MainService(message, state).my_state()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+    
+@beyonder_router.callback_query(MyStateCall.filter())     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: MyStateCall, state: FSMContext, **kwargs):
+    msgs = await MainService(callback.message, state, callback, **kwargs).my_state()
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@beyonder_router.message(Command('mystateclear'))
+@exept()
+async def cmd(message: Message, state: FSMContext, **kwargs):
+    msgs = await MainService(message, state).my_state_clear()
+    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@beyonder_router.message(Command('mystatepop'))
+@exept()
+async def cmd(message: Message, state: FSMContext, command: CommandObject, **kwargs):
+    msgs = await MainService(message, state, command=command).my_state_pop()
+    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+

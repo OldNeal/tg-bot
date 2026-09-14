@@ -44,6 +44,7 @@ class BaseService:
         self.log = log
         self.botlog = botlog
         self.msg_to_json: bool = self.kwargs.get('to_json', False)
+        self.msg_to_json_keyboard: bool = self.kwargs.get('to_json_keyboard', True)
         self.enter_args: bool = self.command.args != None if command else False
 
     @property
@@ -105,7 +106,7 @@ class BaseService:
         return True
 
     def to_json(self, msgs: list[tuple[str, BaseValidate, InlineKeyboardButton | InlineKeyboardMarkup | None]]):
-        return [(((TextHTML.anchor('start-json') + TextHTML.json_format(self.model_dump(v), 4).pre('json').details('Открыть JSON') + TextHTML('Вверх').href('#start-json')) if self.msg_to_json and v else m),None if self.msg_to_json and v else i) for m, v, i in msgs]
+        return [(((TextHTML.anchor('start-json') + TextHTML.json_format(self.model_dump(v), 4).pre('json').details('Открыть JSON') + TextHTML('Вверх').href('#start-json')) if self.msg_to_json and v else m),None if self.msg_to_json and v and self.msg_to_json_keyboard else i) for m, v, i in msgs]
 
     def model_dump(self, data):
         if hasattr(data, 'model_dump'):

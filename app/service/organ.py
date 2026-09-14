@@ -54,7 +54,6 @@ class OrganService(BaseService):
             data = await self.logic.info(organ_id=organ_id)
         else:
             data = await self.logic.info(organ_id, purpose_tg_id=purpose_tg_id)
-        await self.state.update_data(back_where=OrganBackValues.info)
         return self.to_json([
             [self.text(data).info, data, self.IKB.info(data, where=back_where2)]
             ])
@@ -173,7 +172,7 @@ class OrganService(BaseService):
         else:
             return await self.to_enter_name_for_create()
         return self.to_json([
-            [self.text(data).create, data, self.IKB.organ_back(data.organ.id)]
+            [self.text(data).create, data, self.IKB.create(data.organ.id)]
             ])
 
     async def to_enter_name_for_create(self):
