@@ -9,6 +9,7 @@ import json
 from app.exception.base import JSONEnterError
 from app.aio.cls.fsm.utils import OrganFSM
 from app.aio.cls.callback.back import OrganBackValues
+from app.exception.organ import ALreadyMemberError
 
 ARG = TypeVar('ARG', bound=UserArg)
 
@@ -21,6 +22,7 @@ class OrganService(BaseService):
         self.state = OrganFSM(state)
 
     async def menu(self):
+        await self.state.remove_value('back_where2')
         return self.to_json([
             [self.text.menu(), None, self.IKB.menu()]
             ])
@@ -44,7 +46,7 @@ class OrganService(BaseService):
             ])
 
     async def info(self, organ_id: int | None = None, purpose_tg_id: int | None = None, is_back: bool = False):
-        back_where2 = await self.state.get_value('back_where2')
+        back_where2 = await self.state.pop_vaue('back_where2')
         if organ_id is None and purpose_tg_id is None and not is_back:
             data = await self.logic.info(**InfoOrganIdArg.model_validate(self.kwargs).model_dump())
         elif is_back:
@@ -175,11 +177,17 @@ class OrganService(BaseService):
             ])
 
     async def to_enter_name_for_create(self):
-        await self.state.set_state(OrganState.create)
-        await self.state.save_message(self.message.chat.id, self.message.message_id)
-        return self.to_json([
-            [self.text.to_create(), None, self.IKB.cancel()]
-            ])
+        try:
+            await self.logic.info()
+        except:
+            await self.state.set_state(OrganState.create)
+            await self.state.save_message(self.message.chat.id, self.message.message_id)
+            return self.to_json([
+                [self.text.to_create(), None, self.IKB.cancel()]
+                ])
+        else:
+            raise ALreadyMemberError()
+
 
     async def enter_name_for_create(self):
         return await self.create(self.message.text)
