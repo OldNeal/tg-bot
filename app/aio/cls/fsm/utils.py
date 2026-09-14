@@ -64,7 +64,7 @@ class FSMUtils:
 
     async def pop_vaue(self, key: str, default = None):
         data = await self.get_data()
-        value = data.pop(data, default)
+        value = data.pop(key, default)
         await self.set_data(data)
         return value
 
