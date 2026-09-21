@@ -1,5 +1,4 @@
 from app.aio.cls.buttons.base import BotIKB, MenuCall
-from app.validate.api import AnswerAllPathInfo, AnswerPathInfo, AnswerGAInfo
 from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
 from app.aio.cls.callback.main import MainBackCall, MyStateCall
 
