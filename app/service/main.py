@@ -11,7 +11,7 @@ class MainService(BaseService):
         self.IKB = MainIKB(tg_id=self.tg_id)
 
     async def info(self):
-        data = await self.logic.info(self.kwargs.get('tg_id'))
+        data = await self.logic.info(self.kwargs.get('purpose_tg_id'))
         return self.to_json([
             [self.text(data).first_msg_by_info, None, None],
             [self.text(data).info, data, None]

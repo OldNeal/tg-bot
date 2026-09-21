@@ -212,7 +212,11 @@ class OrganService(BaseService):
 
     async def redact_settings(self):
         try:
-            await self.logic.settings_redact(json.loads(self.message.text))
+            if not self.message.text.startswith('{'):
+                self.message.text = '{' + self.message.text
+            if not self.message.text.endswith('}'):
+                self.message.text += '}'
+            await self.logic.settings_redact(json.loads(self.message.text.replace("'", '"')))
         except json.JSONDecodeError:
             raise JSONEnterError('Ввел невалидный json', json=self.message.text)
         return await self.get_settings()
