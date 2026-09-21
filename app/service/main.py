@@ -2,6 +2,7 @@ from app.service.base import BaseService
 from app.logic.main import MainLogic
 from app.aio.cls.msg.main import MainText
 from app.aio.cls.buttons.main import MainIKB
+from app.validate.args import UserArg
 
 class MainService(BaseService):
     def __init__(self, message = None, state = None, callback = None, **kwargs):
@@ -11,7 +12,7 @@ class MainService(BaseService):
         self.IKB = MainIKB(tg_id=self.tg_id)
 
     async def info(self):
-        data = await self.logic.info(self.kwargs.get('purpose_tg_id'))
+        data = await self.logic.info(**UserArg.model_validate(self.kwargs).model_dump())
         return self.to_json([
             [self.text(data).first_msg_by_info, None, None],
             [self.text(data).info, data, None]

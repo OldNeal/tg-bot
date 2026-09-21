@@ -38,7 +38,7 @@ class Settings:
     use_proxy = os.getenv('use_proxy', 'f')
     redis_url = os.getenv('redis_url')
     use_redis = os.getenv('use_redis', 'f')
-    docs_url = os.getenv('docs_url', 'f')
+    docs_url = os.getenv('docs_url')
 
     @property
     def is_dev(self):
