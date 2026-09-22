@@ -48,6 +48,10 @@ class ApiError(BotError):
     def to_msg(self):
         return self.msg
 
+    @property
+    def code(self):
+        return self.kwargs.get('status_code')
+
 class ApiTimeoutError(BotError):
     msg = 'API не работает'
     emodzi = '❌'

@@ -1,8 +1,7 @@
 from functools import wraps
-from aiogram.types import Message, CallbackQuery
-from app.exception.base import BotError, ALienCallbackError, PythonError
+from app.exception.base import BotError, ALienCallbackError, PythonError, ApiError
 from app.logging.base import log
-from config import settings
+from config import settings, FSMContext, Message, CallbackQuery
 #from app.aio.inline_buttons.faq import FaqIKB
 from app.aio.cls.msg.utils import TextHTML
 from app.aio.cls.callback.base import BaseCall, MenuCall
@@ -12,7 +11,7 @@ from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 def exept():
     def decor(func):
         @wraps(func)
-        async def wrapped(message: Message, **kwargs): 
+        async def wrapped(message: Message, stats: FSMContext, **kwargs): 
             dowload = await message.answer('⏳')
             try:
                 result = await func(message, **kwargs)
@@ -21,6 +20,13 @@ def exept():
                 except:
                     pass
                 return result
+            except ApiError as apie:
+                log.trace(f'AioPartPath: {apie}', tg_id=message.from_user.id, chat_id=message.chat.id)
+                await message.answer((TextHTML(apie.to_msg).escape())[:4000])
+                if apie.code == 255:
+                    await message.delete()
+                if stats.get_state():
+                    await message.answer('❗ Чтобы отменить ввод, используйте команду /stats')
             except BotError as bote:
                 log.trace(f'AioPartPath: {bote}', tg_id=message.from_user.id, chat_id=message.chat.id)
                 #markup = FaqIKB(message.from_user.id).to_error_faq(bote.code) if len(bote.faq) > 0 else None

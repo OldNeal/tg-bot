@@ -9,7 +9,7 @@ import json
 from app.exception.base import JSONEnterError
 from app.aio.cls.fsm.utils import OrganFSM
 from app.aio.cls.callback.back import OrganBackValues
-from app.exception.organ import ALreadyMemberError
+from app.exception.organ import ALreadyMemberError, OrganPermissioError
 
 ARG = TypeVar('ARG', bound=UserArg)
 
@@ -277,6 +277,9 @@ class OrganService(BaseService):
 
     async def titul(self, purpose_tg_id: int | None = None):
         arg = self.check_enter_purpose(TitulRedactArg)
+        member = await self.logic.member(self.tg_id)
+        if not member.for_buttons.is_redact_titul:
+            raise OrganPermissioError()
         if not arg.titul:
             return await self.to_titul_redact(purpose_tg_id)
         else:

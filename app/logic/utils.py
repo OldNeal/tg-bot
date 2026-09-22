@@ -18,7 +18,7 @@ def api_error_decor(func):
             try:
                 result = await func(*args, **kwargs)
                 if type(result) == BaseExceptionResponse:
-                    raise ApiError(result.message)
+                    raise ApiError(result.message, status_code=result.status_code)
                 return result
             except ConnectError:
                 raise ApiTimeoutError('API не работает')
@@ -29,7 +29,7 @@ def api_error_decor(func):
             try:
                 result = func(*args, **kwargs)
                 if type(result) == BaseExceptionResponse:
-                    raise ApiError(result.message)
+                    raise ApiError(result.message, status_code=result.status_code)
                 return result
             except ConnectError:
                 raise ApiTimeoutError('API не работает')
