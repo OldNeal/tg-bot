@@ -207,7 +207,7 @@ class OrganService(BaseService):
         await self.state.set_state(OrganState.settings)
         await self.state.save_message(self.message.chat.id, self.message.message_id)
         return self.to_json([
-            [self.text.to_enter_paramet(), None, self.IKB.back(OrganBackValues.search)]
+            [self.text.to_enter_paramet(), None, self.IKB.back(OrganBackValues.settings)]
             ])
 
     async def redact_settings(self):
