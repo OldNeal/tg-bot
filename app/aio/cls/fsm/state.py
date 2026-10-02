@@ -6,4 +6,5 @@ class OrganState(StatesGroup):
     titul = State()
     search = State()
 
-
+class WikiState(StatesGroup):
+    search = State()

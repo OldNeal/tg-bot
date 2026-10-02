@@ -46,7 +46,7 @@ class OrganService(BaseService):
             ])
 
     async def info(self, organ_id: int | None = None, purpose_tg_id: int | None = None, is_back: bool = False):
-        back_where2 = await self.state.pop_vaue('back_where2')
+        back_where2 = await self.state.pop_value('back_where2')
         if organ_id is None and purpose_tg_id is None and not is_back:
             data = await self.logic.info(**InfoOrganIdArg.model_validate(self.kwargs).model_dump())
         elif is_back:

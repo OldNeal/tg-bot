@@ -8,59 +8,77 @@ from . import config, schemas
 client = clientele_api.APIClient(config=config.Config())
 
 
-@client.put("/beyonder/drink", response_map={200: schemas.AnswerRedactSeq, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse})
 
-async def drink(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, path_id: typing.Optional[int] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
-    """Drink
+@client.get("/beyonder/info", response_map={200: schemas.AnswerBeyonderInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
+
+async def beyonder_info(result: schemas.AnswerBeyonderInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, tg_id: int) -> schemas.AnswerBeyonderInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Beyonder Info
     """
     return result
 
 
-@client.patch("/beyonder/upseq", response_map={200: schemas.AnswerRedactSeq, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse})
+@client.put("/beyonder/drink", response_map={200: schemas.AnswerRedactSeq, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
 
-async def upseq(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
-    """Upseq
+async def beyonder_drink(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, path_id: typing.Optional[int] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Beyonder Drink
     """
     return result
 
 
-@client.patch("/beyonder/downseq", response_map={200: schemas.AnswerRedactSeq, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse})
+@client.patch("/beyonder/upseq", response_map={200: schemas.AnswerRedactSeq, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
 
-async def dowseq(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
-    """Dowseq
+async def beyonder_upseq(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Beyonder Upseq
+    """
+    return result
+
+
+@client.patch("/beyonder/downseq", response_map={200: schemas.AnswerRedactSeq, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
+
+async def beyonder_dowseq(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Beyonder Dowseq
     """
     return result
 
 
 
-@client.get("/beyonder/time/info/{tg_id}", response_map={200: schemas.AnswerTimeInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse})
+@client.get("/beyonder/time/info/{tg_id}", response_map={200: schemas.AnswerTimeInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
 
-async def time_info(result: schemas.AnswerTimeInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, tg_id: int) -> schemas.AnswerTimeInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
-    """Time Info
+async def beyonder_time_info(result: schemas.AnswerTimeInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, tg_id: int) -> schemas.AnswerTimeInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Beyonder Time Info
     """
     return result
 
 
-@client.patch("/beyonder/time/replace", response_map={200: schemas.AnswerTimeReplace, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse})
+@client.patch("/beyonder/time/replace", response_map={200: schemas.AnswerTimeReplace, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
 
-async def time_replace(result: schemas.AnswerTimeReplace | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, date: str, tg_id: typing.Optional[int] = None) -> schemas.AnswerTimeReplace | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
-    """Time Replace
+async def beyonder_time_replace(result: schemas.AnswerTimeReplace | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, date: str, tg_id: typing.Optional[int] = None) -> schemas.AnswerTimeReplace | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Beyonder Time Replace
     """
     return result
 
 
-@client.patch("/beyonder/time/redact", response_map={200: schemas.AnswerTimeRedact, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse})
+@client.patch("/beyonder/time/redact", response_map={200: schemas.AnswerTimeRedact, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
 
-async def time_redact(result: schemas.AnswerTimeRedact | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, seconds: float, operator: str, tg_id: typing.Optional[int] = None) -> schemas.AnswerTimeRedact | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
-    """Time Redact
+async def beyonder_time_redact(result: schemas.AnswerTimeRedact | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, seconds: float, operator: str, tg_id: typing.Optional[int] = None) -> schemas.AnswerTimeRedact | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Beyonder Time Redact
     """
     return result
 
 
-@client.post("/beyonder/kill", response_map={200: schemas.AnswerUserBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse})
+@client.post("/beyonder/kill", response_map={200: schemas.AnswerUserBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
 
-async def kill(result: schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None) -> schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
-    """Kill
+async def beyonder_kill(result: schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, tg_id: typing.Optional[int] = None) -> schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Beyonder Kill
+    """
+    return result
+
+
+
+@client.get("/beyonder/list", response_map={200: schemas.AnswerBeyonderList, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
+
+async def beyonder_list(result: schemas.AnswerBeyonderList | schemas.BaseExceptionResponse | schemas.HTTPValidationError, path_id: int) -> schemas.AnswerBeyonderList | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Beyonder List
     """
     return result
 
@@ -376,6 +394,24 @@ async def get_group(result: schemas.AnswerGroupInfo | schemas.BaseExceptionRespo
 
 async def stats_all(result: schemas.AnswerAllStats | schemas.BaseExceptionResponse) -> schemas.AnswerAllStats | schemas.BaseExceptionResponse:
     """Stats All
+    """
+    return result
+
+
+
+@client.get("/logs/file/get/{file_path}", response_map={200: schemas.LogsFileGet200Response, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse})
+
+async def logs_file_get(result: schemas.BaseExceptionResponse | schemas.HTTPValidationError | schemas.LogsFileGet200Response, file_path: typing.Any) -> schemas.BaseExceptionResponse | schemas.HTTPValidationError | schemas.LogsFileGet200Response:
+    """Logs File Get
+    """
+    return result
+
+
+
+@client.get("/logs/file/names", response_map={200: schemas.AnswerLogFileNames, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse})
+
+async def logs_file_names(result: schemas.AnswerLogFileNames | schemas.BaseExceptionResponse | schemas.HTTPValidationError, mask: typing.Optional[typing.Any] = None, type_: typing.Optional[typing.Any] = None) -> schemas.AnswerLogFileNames | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Logs File Names
     """
     return result
 

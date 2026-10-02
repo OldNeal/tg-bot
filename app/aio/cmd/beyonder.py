@@ -3,9 +3,27 @@ from app.service.beyonder import BeyonderService
 from telegram_click_aio.decorator import command
 from app.aio.args import base_args, Requireds, Optionals
 from app.exception.decor import exept, call_exept
-from app.aio.cls.callback.beyonder import DrinkCall, KillCall
+from app.aio.cls.callback.beyonder import DrinkCall, KillCall, BeyonderListCall, BeyonderListPageCall, BeyonderInfoCall, BeyonderBackCall
+from app.aio.cls.callback.back import BeyonderBackValues
 
 beyonder_router = Router()
+
+@beyonder_router.message(Command('beyonder'))
+@command(
+    name='beyonder',
+    description='Карточка потустороннего',  
+    arguments=base_args
+)
+@exept()
+async def cmd(message: Message, state: FSMContext, **kwargs):
+    msgs = await BeyonderService(message, state, **kwargs).info()
+    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@beyonder_router.callback_query(BeyonderInfoCall.filter())     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: BeyonderInfoCall, state: FSMContext, **kwargs):
+    msgs = await BeyonderService(callback.message, state, callback, **kwargs).info(callback_data.purpose_tg_id)
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
 @beyonder_router.message(Command('drink'))
 @command(
@@ -113,4 +131,22 @@ async def cmd(message: Message, state: FSMContext, **kwargs):
     msgs = await BeyonderService(message, state, **kwargs | {'time_mode':'info'}).time_info()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
+
+
+@beyonder_router.callback_query(BeyonderListCall.filter())     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: BeyonderListCall, state: FSMContext, **kwargs):
+    msgs = await BeyonderService(callback.message, state, callback, **kwargs).list(callback_data.path_id)
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
     
+@beyonder_router.callback_query(BeyonderListPageCall.filter())     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: BeyonderListPageCall, state: FSMContext, **kwargs):
+    msgs = await BeyonderService(callback.message, state, callback, **kwargs).list(callback_data.path_id, callback_data.page)
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@beyonder_router.callback_query(BeyonderBackCall.filter(F.where == BeyonderBackValues.list))     
+@call_exept()
+async def call(callback: CallbackQuery, callback_data: BeyonderInfoCall, state: FSMContext, **kwargs):
+    msgs = await BeyonderService(callback.message, state, callback, **kwargs).list()
+    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]

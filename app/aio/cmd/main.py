@@ -20,19 +20,19 @@ main_router.include_routers(beyonder_router, organ_router, wiki_router, stats_ro
 )
 @exept()
 async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await MainService(message, state).info()
+    msgs = await MainService(message, state, **kwargs).info()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
 @main_router.message(Command('ping'))
 @exept()
 async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await MainService(message, state).ping()
+    msgs = await MainService(message, state, **kwargs).ping()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
 @main_router.message(Command('mystate'))
 @exept()
 async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await MainService(message, state).my_state()
+    msgs = await MainService(message, state, **kwargs).my_state()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
     
 @beyonder_router.callback_query(MyStateCall.filter())     
@@ -44,12 +44,12 @@ async def call(callback: CallbackQuery, callback_data: MyStateCall, state: FSMCo
 @beyonder_router.message(Command('mystateclear'))
 @exept()
 async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await MainService(message, state).my_state_clear()
+    msgs = await MainService(message, state, **kwargs).my_state_clear()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
 @beyonder_router.message(Command('mystatepop'))
 @exept()
 async def cmd(message: Message, state: FSMContext, command: CommandObject, **kwargs):
-    msgs = await MainService(message, state, command=command).my_state_pop()
+    msgs = await MainService(message, state, command=command, **kwargs).my_state_pop()
     [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 

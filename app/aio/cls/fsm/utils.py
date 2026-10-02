@@ -62,10 +62,13 @@ class FSMUtils:
         await self.remove_value('chat_id')
         await self.remove_value('message_id')
 
-    async def pop_vaue(self, key: str, default = None):
-        data = await self.get_data()
-        value = data.pop(key, default)
-        await self.set_data(data)
+    async def pop_value(self, key: str, default = None):
+        data = await self._state.get_data()
+        if self.prefix + key:
+            value = data.pop(self.prefix + key, default)
+        else:
+            value = default
+        await self._state.set_data(data)
         return value
 
 class MainFSM(FSMUtils):

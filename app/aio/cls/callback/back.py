@@ -10,3 +10,12 @@ class OrganBackValues(BackValues):
     members = 'organ_members'
     top = 'organ_top'
 
+class BeyonderBackValues(BackValues):
+    list = 'beyonder_list'
+
+class WikiBackValues(BackValues):
+    paths = 'paths'
+    ga = 'ga'
+    gas = 'gas'
+    search = 'search'
+    menu = 'menu'

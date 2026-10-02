@@ -5,4 +5,6 @@ from app.logic.utils import class_decor
 class StatsLogic(BaseLogic):
     async def all(self):
         return await self.client.stats_all()
-    
+
+    async def search_path(self, value: str):
+        return await self.client.search_path(value)

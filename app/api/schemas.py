@@ -45,6 +45,18 @@ class AnswerBaseInfo(pydantic.BaseModel):
     member: typing.Optional[typing.Union["MemberInfo", None]] = None
 
 
+class AnswerBeyonderInfo(pydantic.BaseModel):
+    user: "QueryBody"
+    beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
+    for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
+
+
+class AnswerBeyonderList(pydantic.BaseModel):
+    path: "AnswerPathInfo"
+    ga: typing.Optional[typing.Union["AnswerBeyonderInfo", None]] = None
+    beyonders: list["AnswerBeyonderInfo"]
+
+
 class AnswerGAFullInfo(pydantic.BaseModel):
     group: str
     name: str
@@ -70,6 +82,10 @@ class AnswerGASearchInfo(pydantic.BaseModel):
 class AnswerGroupInfo(pydantic.BaseModel):
     group_name: str
     gas: list["AnswerGAInfo"]
+
+
+class AnswerLogFileNames(pydantic.BaseModel):
+    names: list[str]
 
 
 class AnswerMain(pydantic.BaseModel):
@@ -335,6 +351,9 @@ class ValidationError(pydantic.BaseModel):
 
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
+
+class LogsFileGet200Response(pydantic.BaseModel):
+    pass
 
 def get_subclasses_from_same_file() -> list[typing.Type[pydantic.BaseModel]]:
     """

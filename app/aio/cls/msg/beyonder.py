@@ -58,3 +58,28 @@ class BeyonderText(BaseText):
             f'📅 Старая дата: {datetime.fromisoformat(self.data.old_time).date()}',
             f'⚡ Новая дата: {datetime.fromisoformat(self.data.new_time).date()}'
         ]).blockquote()
+    
+    @property
+    def info(self):
+        beyonder = [f'🔮 Обычный смертный']
+
+        if self.data.beyonder:
+            if self.data.beyonder.seq > 0:
+                beyonder = [f'🔮 Путь: {self.data.beyonder.path_name}',
+                f'🧪 Последовательноcть: {self.data.beyonder.seq} - {self.data.beyonder.seq_name}']
+            elif self.data.beyonder.seq == 0:
+                beyonder = [f'🎗 {self.data.beyonder.seq_name}']
+            elif self.data.beyonder.seq < 0:
+                beyonder = [f'🏵 {self.data.beyonder.seq_name}']
+
+        return self.html(self.data.user.fullname or self.data.user.username or 'Неизвестный').openmessage(self.data.user.tg_id) + self.html(self.html.joined([
+            f'🏷 ID: {self.data.user.tg_id}',
+            f'🔗 Юз: {self.html(self.data.user.username or '❌').openmessage(self.data.user.tg_id)}'
+            ] + beyonder)).blockquote()
+    
+    def list(self, max_page: int, page: int):
+        return f'📊 Статистика пути "{self.html(f'{self.html(self.data.path.emodzi or '🎗️').emoji(self.data.path.custom_emodzi_id)} {self.data.path.name}')}" {f'[{page+1}/{max_page} стр.]' if max_page > 1 else ''}' + self.html.joined([
+            f'🏵 ВД: {self.html(self.data.ga.user.fullname).openmessage(self.data.ga.user.tg_id) if self.data.ga else '❌'}',
+            f'🧪 Потусторонних: {len(self.data.beyonders)}'
+        ]).blockquote()
+

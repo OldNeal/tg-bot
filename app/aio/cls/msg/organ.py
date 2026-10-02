@@ -58,8 +58,11 @@ class OrganText(BaseText):
                 member.append(f'🎖 Титул: {user.member.titul}')
             #f'⌛ Состоит в организации дней: {(datetime.now() - datetime.fromisoformat(user.member.login_at)).days}'
 
-        return '🎎 ' + self.html(user.user.fullname).openmessage(user.user.tg_id) + self.html(self.html.joined([f'🏷 ID: {user.user.tg_id}'] + member)).blockquote()
-
+        return '🎎 ' + self.html(user.user.fullname).openmessage(user.user.tg_id) + self.html(self.html.joined([
+            f'🏷 ID: {user.user.tg_id}',
+            f'🔗 Юз: {self.html(user.user.username or '❌').openmessage(user.user.tg_id)}'
+            ] + member)).blockquote()
+    
     @classmethod
     def top(self):
         return '🏆 Топ организаций по количеству участников'

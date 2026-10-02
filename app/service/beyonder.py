@@ -5,6 +5,8 @@ from app.aio.cls.msg.beyonder import BeyonderText
 from app.validate.text import RedactSeqTextValidate, UserTextValidate
 from app.aio.cls.buttons.beyonder import BeyonderIKB
 from app.exception.args import DrinkPathNameError
+from app.aio.cls.callback.back import BeyonderBackValues
+from app.aio.cls.fsm.utils import BeyonderFSM
 
 class BeyonderService(BaseService):
     def __init__(self, message = None, state = None, callback = None, **kwargs):
@@ -12,6 +14,17 @@ class BeyonderService(BaseService):
         self.logic = BeyonderLogic(tg_id=self.tg_id, username=self.user.username, fullname=self.user.full_name, **self.logic_kwargs)
         self.text = BeyonderText
         self.IKB = BeyonderIKB(self.tg_id)
+        self.state = BeyonderFSM(state=state)
+
+    async def info(self, purpose_tg_id: int | None = None):
+        back_where = await self.state.get_value('back_where')
+        if purpose_tg_id:
+            data = await self.logic.info(purpose_tg_id=purpose_tg_id)
+        else:
+            data = await self.logic.info(**UserArg.model_validate(self.kwargs).model_dump())
+        return self.to_json([
+            [self.text(data).info, data, (self.IKB.back(back_where) if back_where else None)]
+            ])
 
     async def drink(self, path_id: int | None = None):
         if path_id:
@@ -73,5 +86,20 @@ class BeyonderService(BaseService):
         data = await self.logic.time_replace(**TimeReplaceArg.model_validate(self.kwargs).model_dump())
         return self.to_json([
             [self.text(data).time_replace, data, None]
+            ])
+
+    async def list(self, path_id: int | None = None, page: int | None = None):
+        page = page if not(page is None) else await self.state.get_value('page', 0)
+        path_id = path_id if not(path_id is None) else await self.state.get_value('path_id')
+        data = await self.logic.list(path_id)
+        if data.ga:
+            data.beyonders = [data.ga] + data.beyonders
+        pages = self.to_pages(data.beyonders)
+        max_page = len(pages)
+        if page >= max_page:
+            page = 0
+        await self.state.update_data(back_where=BeyonderBackValues.list, page=page, path_id=path_id)
+        return self.to_json([
+            [self.text(data).list(max_page, page), data, self.IKB.list((pages[page] if len(pages) > 0 else []), page, max_page, data.path.path_id)]
             ])
     

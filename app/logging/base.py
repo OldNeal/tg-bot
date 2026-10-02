@@ -2,6 +2,7 @@ import loguru, sys, inspect
 from functools import wraps
 from datetime import time
 from typing import Literal
+from app.logging.paths import PurePath, LogPaths
 
 class BotLog:
     def __init__(self, terminal_level: Literal['trace', 'debug', 'info', 'success', 'warning', 'error', 'critical'] = 'debug'):
@@ -23,7 +24,7 @@ class BotLog:
             }
         ] + [
             {
-            "sink":f'logs/{self.levels[0].name.lower()}.log',
+            "sink":LogPaths.base / PurePath(f'{self.levels[0].name.lower()}' + '_{time:YYYY-MM-DD}.log'),
             'rotation':'7 day',
             'retention':'30 days',
             'filter':lambda r: r['level'].name == self.levels[0].name,
@@ -34,7 +35,7 @@ class BotLog:
             'serialize':True
             }, 
             {
-            "sink":f'logs/{self.levels[1].name.lower()}.log',
+            "sink":LogPaths.base / PurePath(f'{self.levels[1].name.lower()}' + '_{time:YYYY-MM-DD}.log'),
             'rotation':'7 day',
             'retention':'30 days',
             'filter':lambda r: r['level'].name == self.levels[1].name,
@@ -45,7 +46,7 @@ class BotLog:
             'serialize':True
             }, 
             {
-            "sink":f'logs/api.log',
+            "sink":LogPaths.base / PurePath('bot_{time:YYYY-MM-DD}.log'),
             'rotation':'7 day',
             'retention':'30 days',
             'level':'DEBUG', 
@@ -55,7 +56,7 @@ class BotLog:
             'serialize':True
             }, 
             {
-            "sink":f'logs/warning.log',
+            "sink":LogPaths.base / PurePath(f'warning.log'),
             'rotation':'30 day',
             'retention':'120 days',
             'level':'WARNING', 
@@ -65,7 +66,7 @@ class BotLog:
             'serialize':True
             }, 
             {
-            "sink":f'logs/error.log',
+            "sink":LogPaths.base / PurePath(f'error.log'),
             'level':'ERROR', 
             'enqueue':True,
             'format':self.log_format,

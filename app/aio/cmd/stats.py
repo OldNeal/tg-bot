@@ -10,7 +10,7 @@ stats_router = Router()
 @command(
     name='stats',
     description='Получить статистику', 
-    arguments=base_args
+    arguments=[Optionals.value] + base_args
 )
 @exept()
 async def cmd(message: Message, state: FSMContext, **kwargs):

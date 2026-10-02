@@ -119,7 +119,7 @@ class BaseService:
             return str(data)
 
     def to_pages(self, datas: list[DATA_PAGE], value_in_page: int = 5) -> list[tuple[DATA_PAGE, ...]]:
-        return [tuple(datas[i:i+value_in_page]) for i in range(0, len(datas), value_in_page)]
+        return [tuple(datas[i:i+value_in_page]) for i in range(0, len(datas), value_in_page)] if datas else []
 
     def redact_kwargs(self, **new_kwargs):
         self.kwargs |= new_kwargs

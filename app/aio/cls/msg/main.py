@@ -25,7 +25,10 @@ class MainText(BaseText):
             elif self.data.beyonder.seq < 0:
                 beyonder = [f'🏵 {self.data.beyonder.seq_name}']
 
-        return self.html(self.data.user.fullname).openmessage(self.data.user.tg_id) + self.html(self.html.joined([f'🏷 ID: {self.data.user.tg_id}'] + member + beyonder)).blockquote()
+        return self.html(self.data.user.fullname or self.data.user.username or 'Неизвестный').openmessage(self.data.user.tg_id) + self.html(self.html.joined([
+            f'🏷 ID: {self.data.user.tg_id}',
+            f'🔗 Юз: {self.html(self.data.user.username or '❌').openmessage(self.data.user.tg_id)}'
+            ] + member + beyonder)).blockquote()
 
     @property
     def first_msg_by_info(self):
