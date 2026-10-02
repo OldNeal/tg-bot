@@ -27,5 +27,5 @@ class StatsService(BaseService):
         if page >= max_page:
             page = 0
         return self.to_json([
-            [self.text.all(data), data, self.IKB.paths((pages[page] if len(pages) > 0 else []), max_page, page)]
+            [self.text.search(max_page, page, value, len(data.paths)), data, self.IKB.paths((pages[page] if len(pages) > 0 else []), max_page, page)]
             ])

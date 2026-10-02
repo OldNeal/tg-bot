@@ -13,3 +13,9 @@ class StatsText(BaseText):
             f'🎎 Всего участников: {data.members}',
             f'🏛️ Всего организаций: {data.organs}',
         ]).blockquote()
+    
+    @classmethod
+    def search(cls, max_page: int, page: int, value: str, results: int = 0):
+        return f'🔎 По запросу "{value}" найдены пути ({results} шт.) {f'[{page+1}/{max_page} стр.]' if max_page > 1 else ''}' if results > 0 else '❌ Ничего не найдено'
+    
+    
