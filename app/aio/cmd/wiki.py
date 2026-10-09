@@ -91,6 +91,7 @@ async def call(callback: CallbackQuery, callback_data: PathCall, state: FSMConte
     msgs = await WikiService(callback.message, state, callback, **kwargs).get_path(id=callback_data.id)
     [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
+@wiki_router.callback_query(WikiBackCall.filter(F.where == WikiBackValues.search))   
 @wiki_router.callback_query(WikiBackCall.filter(F.where == WikiBackValues.paths))     
 @call_exept()
 async def call(callback: CallbackQuery, callback_data: WikiBackCall, state: FSMContext, **kwargs):

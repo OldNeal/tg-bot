@@ -1,6 +1,6 @@
 
 class BackValues:
-    pass
+    stats_paths = 'stats_paths'
 
 class OrganBackValues(BackValues):
     search = 'organ_search'
@@ -19,3 +19,6 @@ class WikiBackValues(BackValues):
     gas = 'gas'
     search = 'search'
     menu = 'menu'
+
+class StatsBackValues(BackValues):
+    all = 'all'

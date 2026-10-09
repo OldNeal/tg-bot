@@ -88,7 +88,7 @@ class BeyonderService(BaseService):
             [self.text(data).time_replace, data, None]
             ])
 
-    async def list(self, path_id: int | None = None, page: int | None = None):
+    async def list(self, path_id: int | None = None, page: int | None = None, where: str | None = None):
         page = page if not(page is None) else await self.state.get_value('page', 0)
         path_id = path_id if not(path_id is None) else await self.state.get_value('path_id')
         data = await self.logic.list(path_id)
@@ -100,6 +100,6 @@ class BeyonderService(BaseService):
             page = 0
         await self.state.update_data(back_where=BeyonderBackValues.list, page=page, path_id=path_id)
         return self.to_json([
-            [self.text(data).list(max_page, page), data, self.IKB.list((pages[page] if len(pages) > 0 else []), page, max_page, data.path.path_id)]
+            [self.text(data).list(max_page, page), data, self.IKB.list((pages[page] if len(pages) > 0 else []), page, max_page, data.path.path_id, where=where)]
             ])
     

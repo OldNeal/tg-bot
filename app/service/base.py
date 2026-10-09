@@ -53,9 +53,9 @@ class BaseService:
 
     @property
     def purpose(self):
-        if self.message.is_topic_message and self.kwargs.get('is_reply') and self.message.reply_to_message:
+        if self.message.reply_to_message and self.message.is_topic_message and self.kwargs.get('is_reply'):
             return self.message.reply_to_message.from_user
-        elif self.message.reply_to_message:
+        elif self.message.reply_to_message and not self.message.is_topic_message:
             return self.message.reply_to_message.from_user
         else:
             return self.user

@@ -20,3 +20,4 @@ class BeyonderListCall(AccertCancelCall, prefix='beyonder_list'):
 
 class BeyonderListPageCall(PageCall, prefix='beyonder_list_page'):
     path_id: int
+    where: str | None = None

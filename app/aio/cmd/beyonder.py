@@ -142,7 +142,7 @@ async def call(callback: CallbackQuery, callback_data: BeyonderListCall, state: 
 @beyonder_router.callback_query(BeyonderListPageCall.filter())     
 @call_exept()
 async def call(callback: CallbackQuery, callback_data: BeyonderListPageCall, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(callback.message, state, callback, **kwargs).list(callback_data.path_id, callback_data.page)
+    msgs = await BeyonderService(callback.message, state, callback, **kwargs).list(callback_data.path_id, callback_data.page, where=callback_data.where)
     [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
 @beyonder_router.callback_query(BeyonderBackCall.filter(F.where == BeyonderBackValues.list))     

@@ -8,3 +8,6 @@ class OrganState(StatesGroup):
 
 class WikiState(StatesGroup):
     search = State()
+
+class StatsState(StatesGroup):
+    search = State()

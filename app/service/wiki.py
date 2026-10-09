@@ -117,7 +117,7 @@ class WikiService(BaseService):
             ])
 
     async def back_path(self, is_all: bool | None = None):
-        is_all = await self.state.get_value('is_all', is_all)
+        is_all = is_all if not is_all is None else await self.state.get_value('is_all')
         if self.is_bot_message and await self.state.get_value('from_menu'):
             back_where = WikiBackValues.menu  
         else:

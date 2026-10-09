@@ -6,5 +6,9 @@ class StatsCall(BaseCall, prefix='stats'):
 class StatsBackCall(BackCall, prefix='stats_back'):
     pass
 
+class StatsPathsCall(StatsCall, prefix='stats_paths'):
+    pass
+
 class StatsPageCall(PageCall, prefix='stats_page'):
     page: int
+    value: str

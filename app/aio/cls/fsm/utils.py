@@ -82,3 +82,6 @@ class WikiFSM(FSMUtils):
 
 class OrganFSM(FSMUtils):
     prefixs = ['organ']
+
+class StatsFSM(FSMUtils):
+    prefixs = ['stats']
