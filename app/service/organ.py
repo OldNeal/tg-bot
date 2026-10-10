@@ -5,7 +5,7 @@ from app.aio.cls.msg.organ import OrganText
 from typing import TypeVar
 from app.aio.cls.fsm.state import OrganState
 from app.aio.cls.buttons.organ import OrganIKB
-import json
+import json5, json
 from app.exception.base import JSONEnterError
 from app.aio.cls.fsm.utils import OrganFSM
 from app.aio.cls.callback.back import OrganBackValues
@@ -212,12 +212,11 @@ class OrganService(BaseService):
 
     async def redact_settings(self):
         try:
-            if not self.message.text.startswith('{'):
-                self.message.text = '{' + self.message.text
-            if not self.message.text.endswith('}'):
-                self.message.text += '}'
-            await self.logic.settings_redact(json.loads(self.message.text.replace("'", '"')))
-        except json.JSONDecodeError:
+            await self.logic.settings_redact(json5.loads(self.message.text))
+        except json.JSONDecodeError as e:    
+            print("Ошибка:", e.msg)
+            print("Строка:", e.lineno, "колонка:", e.colno)
+            print("Контекст:", repr(self.message.text[max(0, e.pos-40):e.pos+40]))
             raise JSONEnterError('Ввел невалидный json', json=self.message.text)
         return await self.get_settings()
 
