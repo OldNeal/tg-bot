@@ -1,12 +1,12 @@
 from functools import wraps
-from app.exception.base import BotError, ALienCallbackError, PythonError, ApiError
-from app.logging.base import log
-from config import settings, FSMContext, Message, CallbackQuery
-#from app.aio.inline_buttons.faq import FaqIKB
-from app.aio.cls.msg.utils import TextHTML
-from app.aio.cls.callback.base import BaseCall, MenuCall
 import random
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
+
+from config import settings, FSMContext, Message, CallbackQuery
+from app.exception.base import BotError, ALienCallbackError, PythonError, ApiError
+from app.logging.base import log
+from app.aio.cls.msg.utils import TextHTML
+from app.aio.cls.callback.base import BaseCall, MenuCall
 
 def exept():
     def decor(func):

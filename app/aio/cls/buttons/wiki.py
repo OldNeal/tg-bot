@@ -1,9 +1,10 @@
+from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
+
 from app.aio.cls.buttons.base import BotIKB, MenuCall, CancelCall
 from app.aio.cls.callback.wiki import WikiBackCall, PathCall, GroupCall, GACall, WikiSearchCall, WikiMenuCall, PathsPageCall, GasPageCall
-from app.validate.api import AnswerAllPathInfo, AnswerPathInfo, AnswerGAInfo
-from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
 from app.aio.cls.callback.beyonder import DrinkCall, BeyonderListCall
 from app.aio.cls.callback.back import WikiBackValues
+from app.validate.api import AnswerAllPathInfo, AnswerPathInfo, AnswerGAInfo
 
 class WikiIKB(BotIKB):    
     def back(self, where: str):

@@ -1,5 +1,6 @@
-from app.logging.base import log, botlog
 from typing import Literal    
+
+from app.logging.base import log, botlog
 
 class PythonError:
     msg = '⚠️ Непредвиденная ошибка'

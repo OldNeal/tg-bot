@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta
 import re
+from datetime import datetime, timedelta
+
 from app.exception.args import DataFormatError, DurationFormatError, DrinkPathNameError, SeqError
 
 def is_datetime(s):

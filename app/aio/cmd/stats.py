@@ -1,8 +1,9 @@
+from telegram_click_aio.decorator import command
+
 from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage, F, CallbackQuery
 from app.service.stats import StatsService
-from telegram_click_aio.decorator import command
-from app.aio.args import base_args, Optionals, Requireds
 from app.exception.decor import exept, call_exept
+from app.aio.args import base_args, Optionals, Requireds
 from app.aio.cls.callback.stats import StatsBackCall, BackCall, StatsPageCall, StatsPathsCall
 from app.aio.cls.callback.back import StatsBackValues
 from app.aio.cls.fsm.state import StatsState

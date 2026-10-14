@@ -1,4 +1,5 @@
 from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
+
 from app.aio.cls.buttons.base import BotIKB, MenuCall, CancelCall
 from app.aio.cls.callback.organ import (OrganBackCall, 
                                         OrganSettingParametrCall, 
@@ -25,8 +26,8 @@ from app.aio.cls.callback.organ import (OrganBackCall,
                                         OrganSearchCall,
                                         OrganCreateCall,
                                         OrganMyCall)
-from app.validate.api import OrganSettingValidate, AnswerMemberInfo, OrganInfo, AnswerOrganInfo
 from app.aio.cls.callback.back import OrganBackValues
+from app.validate.api import OrganSettingValidate, AnswerMemberInfo, OrganInfo, AnswerOrganInfo
 
 
 class OrganIKB(BotIKB):    

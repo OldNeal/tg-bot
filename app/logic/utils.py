@@ -1,8 +1,9 @@
+import inspect
 from functools import wraps
+from httpx2 import ConnectError
+
 from app.exception.base import ApiError, ApiTimeoutError
 from app.validate.api import BaseExceptionResponse
-from httpx2 import ConnectError
-import inspect
 
 def class_decor(cls):
     for name, method in cls.__dict__.items():

@@ -1,5 +1,6 @@
-from app.aio.cls.buttons.base import BotIKB, MenuCall, BackCall
 from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
+
+from app.aio.cls.buttons.base import BotIKB, MenuCall, BackCall
 from app.aio.cls.callback.beyonder import DrinkCall, BeyonderBackCall, KillCall, BeyonderInfoCall, BeyonderListPageCall
 from app.aio.cls.callback.wiki import PathCall
 from app.validate.api import AnswerBeyonderInfo

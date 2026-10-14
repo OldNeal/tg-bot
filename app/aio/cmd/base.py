@@ -1,9 +1,7 @@
 from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage, CallbackQuery
+from app.exception.decor import exept, call_exept
 from app.aio.cmd.main import main_router
 from app.aio.cmd.help import help_router
-from aiogram.types import ErrorEvent
-from aiogram.exceptions import TelegramBadRequest
-from app.exception.decor import exept, call_exept
 from app.aio.cls.msg.utils import TextHTML
 from app.aio.cls.callback.base import CancelCall
 

@@ -1,4 +1,5 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 from app.aio.cls.callback.base import MenuCall, CancelCall, BackCall
 
 class BotIKB:

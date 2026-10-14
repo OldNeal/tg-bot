@@ -1,8 +1,9 @@
+from telegram_click_aio.decorator import command
+
 from config import settings, bot, Router, Command, FSMContext, Message, F, InputRichMessage, CallbackQuery
 from app.service.beyonder import BeyonderService
-from telegram_click_aio.decorator import command
-from app.aio.args import base_args, Requireds, Optionals
 from app.exception.decor import exept, call_exept
+from app.aio.args import base_args, Requireds, Optionals
 from app.aio.cls.callback.beyonder import DrinkCall, KillCall, BeyonderListCall, BeyonderListPageCall, BeyonderInfoCall, BeyonderBackCall
 from app.aio.cls.callback.back import BeyonderBackValues
 

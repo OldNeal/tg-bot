@@ -1,5 +1,6 @@
-from app.aio.cls.msg.utils import TextHTML
 import random
+
+from app.aio.cls.msg.utils import TextHTML
 
 class Templates:
     directory_path = './app/aio/cls/msg/templates'

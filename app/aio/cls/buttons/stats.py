@@ -1,9 +1,10 @@
+from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
+
 from app.aio.cls.buttons.base import BotIKB, MenuCall, CancelCall
 from app.aio.cls.callback.stats import StatsBackCall, StatsPageCall, StatsPathsCall
 from app.aio.cls.callback.beyonder import BeyonderListPageCall
-from app.validate.api import AnswerPathInfo
-from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
 from app.aio.cls.callback.back import StatsBackValues
+from app.validate.api import AnswerPathInfo
 
 class StatsIKB(BotIKB):    
     def back(self, where: str):

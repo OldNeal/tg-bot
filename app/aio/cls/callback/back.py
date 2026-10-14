@@ -1,4 +1,3 @@
-
 class BackValues:
     stats_paths = 'stats_paths'
 

@@ -1,8 +1,9 @@
+from telegram_click_aio.decorator import command
+
 from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage, F, CallbackQuery
 from app.service.wiki import WikiService
-from telegram_click_aio.decorator import command
-from app.aio.args import base_args, Optionals, Requireds
 from app.exception.decor import exept, call_exept
+from app.aio.args import base_args, Optionals, Requireds
 from app.aio.cls.callback.wiki import PathCall, GroupCall, WikiBackCall, GACall, WikiMenuCall, WikiSearchCall, PathsPageCall, GasPageCall
 from app.aio.cls.callback.back import WikiBackValues
 from app.aio.cls.fsm.state import WikiState

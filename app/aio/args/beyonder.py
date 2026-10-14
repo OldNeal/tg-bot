@@ -1,6 +1,7 @@
 from telegram_click_aio.argument import Argument, Flag, Selection
-from app.aio.args.func import parse_date, parse_duration, is_time_pattern, is_datetime
 from datetime import datetime, timedelta
+
+from app.aio.args.func import parse_date, parse_duration, is_time_pattern, is_datetime
 
 seq = Selection(
     name=['seq', 's'],

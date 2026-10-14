@@ -1,9 +1,10 @@
+import uuid
 from typing import Callable, Dict, Any, Awaitable
+from datetime import datetime
 from aiogram import BaseMiddleware
 from aiogram.types import Message, CallbackQuery
+
 from app.logging.base import botlog
-from datetime import datetime
-import uuid
 
 class BotLogMessageMiddleware(BaseMiddleware):
     async def __call__(

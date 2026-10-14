@@ -1,7 +1,4 @@
-import random
-import html
-import json
-import markdown
+import random, html, json, markdown
 from typing import Any
 from html.parser import HTMLParser
 

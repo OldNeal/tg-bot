@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from app.exception.logs import DontExistCategoryException, DontHavePermissionException, DontLogFileException
 from app.logging.paths import LogPaths
 

@@ -1,8 +1,9 @@
+from telegram_click_aio.decorator import command
+
 from config import settings, bot, Router, Command, FSMContext, Message, F, InputRichMessage, CallbackQuery
 from app.service.organ import OrganService
-from telegram_click_aio.decorator import command
-from app.aio.args import base_args, Requireds, Optionals
 from app.exception.decor import exept, call_exept
+from app.aio.args import base_args, Requireds, Optionals
 from app.aio.cls.fsm.state import OrganState
 from app.aio.cls.callback.organ import (OrganBackCall, 
                                         OrganSettingParametrCall, 

@@ -1,6 +1,7 @@
+from telegram_click_aio.decorator import command
+
 from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage
 from app.service.help import HelpService
-from telegram_click_aio.decorator import command
 from app.aio.args import base_args
 from app.exception.decor import exept, call_exept
 

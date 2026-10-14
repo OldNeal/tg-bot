@@ -1,31 +1,9 @@
-from config import bot
 from aiogram.exceptions import TelegramBadRequest
 from functools import wraps
+
+from config import bot
 from aiogram.types import Message, CallbackQuery
 from aiogram.types.chat_member_banned import ChatMemberStatus
-
-def str_to_json(string: str):
-    if ':' not in string:
-        raise ValueError("String hasnt ':' ")
-    if "'"  in string or "\"" in string:
-        string = string.replace("'", '').replace("\"", '')
-    if ', 'in string:
-        string = string.replace(", ", ',')
-    print(string)
-    if ',' in string:
-        objs = string.split(',')
-    else:
-        objs = [string]
-    
-    json = {}
-    for obj in objs:
-        if ':' in obj:
-            if obj.index(':') != 0:
-                tpl = obj.split(':')
-                print(tpl)
-                json |= {tpl[0]: tpl[1]}
-
-    return json
 
 def is_natural_int(string: str | None, 
                    tg_id: int | None = None, 

@@ -1,5 +1,5 @@
-from app.validate.base import BaseValidate
 from config import Message, User
+from app.validate.base import BaseValidate
 
 class Purpose(BaseValidate):
     user: User | None = None

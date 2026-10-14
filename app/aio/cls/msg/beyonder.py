@@ -1,5 +1,6 @@
-from app.aio.cls.msg.base import Templates, BaseText
 from datetime import datetime, timedelta
+
+from app.aio.cls.msg.base import Templates, BaseText
 from app.validate.base import BaseValidate
 
 class BeyonderText(BaseText):

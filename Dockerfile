@@ -1,6 +1,5 @@
-FROM python:3.13-slim AS bot_builder
+FROM python:3.13-slim
 
-# Настройки окружения
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
@@ -8,21 +7,19 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-# Системные зависимости (для бота обычно не нужны, но оставим на всякий случай)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# gosu — чтобы сбросить права после chown
+RUN apt-get update && apt-get install -y --no-install-recommends gosu \
     && rm -rf /var/lib/apt/lists/*
 
-# Копируем и устанавливаем зависимости
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем код
-COPY . .
+RUN useradd --create-home --shell /bin/bash botuser
+RUN mkdir -p /app/logs && chown -R botuser:botuser /app/logs
 
-# Создаём non-root пользователя
-RUN useradd --create-home --shell /bin/bash botuser && \
-    chown -R botuser:botuser /app
-USER botuser
+COPY --chown=botuser:botuser . .
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Запуск бота
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["python", "run.py"]

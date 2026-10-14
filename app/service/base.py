@@ -1,16 +1,17 @@
 import asyncio, functools
 from datetime import datetime
+from typing import TypeVar
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputRichMessage
 from aiogram.filters import CommandStart, Command, CommandObject
-from app.aio.cls.buttons.base import BotIKB
+
 from config import settings, bot, log, botlog
+from app.aio.cls.buttons.base import BotIKB
 from app.aio.cls.fsm.utils import FSMUtils
+from app.aio.cls.msg.utils import TextHTML
 from app.service.utils import is_natural_int
 from app.validate.service import Purpose
 from app.validate.base import BaseValidate, BaseModel
-from app.aio.cls.msg.utils import TextHTML
-from typing import TypeVar
 
 NOT_NEW_STATE = object()
 DATA_PAGE = TypeVar('DATA_PAGE')

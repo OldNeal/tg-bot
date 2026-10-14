@@ -2,6 +2,7 @@ import loguru, sys, inspect
 from functools import wraps
 from datetime import time
 from typing import Literal
+
 from app.logging.paths import PurePath, LogPaths
 
 class BotLog:

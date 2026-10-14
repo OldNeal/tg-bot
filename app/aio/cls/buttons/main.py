@@ -1,5 +1,6 @@
-from app.aio.cls.buttons.base import BotIKB, MenuCall
 from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
+
+from app.aio.cls.buttons.base import BotIKB, MenuCall
 from app.aio.cls.callback.main import MainBackCall, MyStateCall
 
 class MainIKB(BotIKB):    
