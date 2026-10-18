@@ -1,7 +1,7 @@
-import os, redis.asyncio as redis, asyncio
+import os, redis.asyncio as redis
 from dotenv import load_dotenv
 from pathlib import Path
-from aiogram import Bot, Dispatcher, F
+from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode

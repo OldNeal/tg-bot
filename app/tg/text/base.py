@@ -3,7 +3,7 @@ import random
 from app.tg.text.utils import TextHTML
 
 class Templates:
-    directory_path = './app/aio/cls/msg/templates'
+    directory_path = './app/tg/text/templates'
 
     def __init__(self, *, templates_file_path: str | None = None, templates_file_name: str | None = None, templates: list[str] | None = None):
         self.templates_file_path = templates_file_path
