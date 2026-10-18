@@ -1,19 +1,36 @@
 from telegram_click_aio.decorator import command
+from aiogram.types import Message
+from aiogram import Router
+from aiogram.filters import Command
 
-from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage
 from app.service.help import HelpService
-from app.aio.args import base_args
-from app.exception.decor import exept, call_exept
+from app.aio.args import Optionals
+from app.aio.cls.middlewares import ServiceMiddleware
 
 help_router = Router()
+help_router.message.middleware(ServiceMiddleware(HelpService))
+help_router.callback_query.middleware(ServiceMiddleware(HelpService))
+
 
 @help_router.message(Command('help'))
 @command(
     name='help',
-    description='Получить список команд',  # <- Описание команды
-    arguments=base_args
+    description='Получить список команд',
+    arguments=[
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay,
+    ],
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await HelpService(message, state).main()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: HelpService,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False,
+):
+    await service.main()

@@ -1,6 +1,10 @@
-from app.service.base import BaseService
+from datetime import datetime, timedelta
+
+from pydantic import ValidationError
+
+from app.service.base import BaseService, AnswerBody
 from app.logic.beyonder import BeyonderLogic
-from app.validate.args import UserArg, DrinkArg, UpDownSeqArg, TimeReplaceArg, TimeRedactArg
+from app.validate.args import DrinkArg, UpDownSeqArg, TimeReplaceArg, TimeRedactArg
 from app.validate.text import RedactSeqTextValidate, UserTextValidate
 from app.aio.cls.msg.beyonder import BeyonderText
 from app.aio.cls.buttons.beyonder import BeyonderIKB
@@ -9,88 +13,213 @@ from app.aio.cls.fsm.utils import BeyonderFSM
 from app.exception.args import DrinkPathNameError
 
 class BeyonderService(BaseService):
-    def __init__(self, message = None, state = None, callback = None, **kwargs):
-        super().__init__(message, state, callback, **kwargs)
-        self.logic = BeyonderLogic(tg_id=self.tg_id, username=self.user.username, fullname=self.user.full_name, **self.logic_kwargs)
-        self.text = BeyonderText
-        self.IKB = BeyonderIKB(self.tg_id)
-        self.state = BeyonderFSM(state=state)
+    logic_class: type[BeyonderLogic] = BeyonderLogic
+    logic: BeyonderLogic
+    text_class: type[BeyonderText] = BeyonderText
+    text: type[BeyonderText]
+    ikb_class: type[BeyonderIKB] = BeyonderIKB
+    IKB: BeyonderIKB
+    fsm_class: type[BeyonderFSM] = BeyonderFSM
+    fsm: BeyonderFSM
 
     async def info(self, purpose_tg_id: int | None = None):
-        back_where = await self.state.get_value('back_where')
-        if purpose_tg_id:
-            data = await self.logic.info(purpose_tg_id=purpose_tg_id)
-        else:
-            data = await self.logic.info(**UserArg.model_validate(self.kwargs).model_dump())
-        return self.to_json([
-            [self.text(data).info, data, (self.IKB.back(back_where) if back_where else None)]
-            ])
+        back_where = await self.fsm.get_value('back_where')
+        data = await self.logic.info(purpose_tg_id=purpose_tg_id)
+        return await self.answer([
+            AnswerBody(
+                text=self.text(data).info,
+                data=data,
+                reply_markup=self.IKB.back(back_where) if back_where else None,
+                is_rich_text=True
+            )
+        ])
 
-    async def drink(self, path_id: int | None = None):
+    async def drink(
+        self,
+        path_id: int | None = None,
+        path_name: str | None = None,
+        seq: int = 9,
+        purpose_tg_id: int | None = None
+    ):
         if path_id:
             data = await self.logic.drink(path_id=path_id)
         else:
             try:
-                args = DrinkArg.model_validate(self.kwargs)
-            except:
-                raise DrinkPathNameError()
-            data = await self.logic.drink(**args.model_dump())
-        return self.to_json([
-            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)).drink, data, None]
-            ])
+                args = DrinkArg.model_validate({
+                    'path_name': path_name,
+                    'seq': seq,
+                    'purpose_tg_id': purpose_tg_id
+                })
+            except ValidationError as error:
+                raise DrinkPathNameError() from error
+            data = await self.logic.drink(
+                purpose_tg_id=args.purpose_tg_id,
+                path_name=args.path_name,
+                seq=args.seq
+            )
+        return await self.answer([
+            AnswerBody(
+                text=self.text(
+                    RedactSeqTextValidate(
+                        seq_name=data.new.seq,
+                        path_name=data.new.path,
+                        name=data.user.fullname
+                    )
+                ).drink,
+                data=data,
+                is_rich_text=True
+            )
+        ])
 
-    async def upseq(self):
-        data = await self.logic.upseq(**UpDownSeqArg.model_validate(self.kwargs).model_dump())
-        return self.to_json([
-            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)).upseq, data, None]
-            ])
+    async def upseq(
+        self,
+        seq: int | None = None,
+        path_name: str | None = None,
+        purpose_tg_id: int | None = None
+    ):
+        args = UpDownSeqArg.model_validate({
+            'seq': seq,
+            'path_name': path_name,
+            'purpose_tg_id': purpose_tg_id
+        })
+        data = await self.logic.upseq(
+            purpose_tg_id=args.purpose_tg_id,
+            path_name=args.path_name,
+            seq=args.seq
+        )
+        return await self.answer([
+            AnswerBody(
+                text=self.text(
+                    RedactSeqTextValidate(
+                        seq_name=data.new.seq,
+                        path_name=data.new.path,
+                        name=data.user.fullname
+                    )
+                ).upseq,
+                data=data,
+                is_rich_text=True
+            )
+        ])
 
-    async def dowseq(self):
-        data = await self.logic.dowseq(**UpDownSeqArg.model_validate(self.kwargs).model_dump())
-        return self.to_json([
-            [self.text(RedactSeqTextValidate(seq_name=data.new.seq, path_name=data.new.path, name=data.user.fullname)).downseq, data, None]
-            ])
+    async def dowseq(
+        self,
+        seq: int | None = None,
+        path_name: str | None = None,
+        purpose_tg_id: int | None = None
+    ):
+        args = UpDownSeqArg.model_validate({
+            'seq': seq,
+            'path_name': path_name,
+            'purpose_tg_id': purpose_tg_id
+        })
+        data = await self.logic.dowseq(
+            purpose_tg_id=args.purpose_tg_id,
+            path_name=args.path_name,
+            seq=args.seq
+        )
+        return await self.answer([
+            AnswerBody(
+                text=self.text(
+                    RedactSeqTextValidate(
+                        seq_name=data.new.seq,
+                        path_name=data.new.path,
+                        name=data.user.fullname
+                    )
+                ).downseq,
+                data=data,
+                is_rich_text=True
+            )
+        ])
 
-    async def kill(self):
-        data = await self.logic.info(**UserArg.model_validate(self.kwargs).model_dump())
-        return self.to_json([
-            [self.text(data).kill(self.tg_id, is_admin=self.is_admin), data, self.IKB.accert_kill(data.user.tg_id)]
-            ])
+    async def kill(self, purpose_tg_id: int | None = None, is_admin: bool = False):
+        data = await self.logic.info(purpose_tg_id=purpose_tg_id)
+        return await self.answer([
+            AnswerBody(
+                text=self.text(data).kill(
+                    self.tg_id,
+                    is_admin=is_admin and self.tg_id_in_admins
+                ),
+                data=data,
+                reply_markup=self.IKB.accert_kill(data.user.tg_id),
+                is_rich_text=True
+            )
+        ])
 
     async def accert_kill(self, purpose_tg_id: int):
-        data = await self.logic.redact_kwargs(is_admin=self.tg_id_in_admins).kill(purpose_tg_id=purpose_tg_id)
-        return self.to_json([
-            [self.text(UserTextValidate(name=data.user.fullname)).accert_kill, data, None]
-            ])
+        data = await self.logic.kill(
+            purpose_tg_id=purpose_tg_id,
+            is_admin=self.tg_id_in_admins
+        )
+        return await self.answer([
+            AnswerBody(
+                text=self.text(UserTextValidate(name=data.user.fullname)).accert_kill,
+                data=data,
+                is_rich_text=True
+            )
+        ])
 
     async def cancel_kill(self, purpose_tg_id: int):
         data = await self.logic.info(purpose_tg_id=purpose_tg_id)
-        return self.to_json([
-            [self.text(data).cancel_kill, data, None]
-            ])
+        return await self.answer([
+            AnswerBody(
+                text=self.text(data).cancel_kill,
+                data=data,
+                is_rich_text=True
+            )
+        ])
 
+    async def time_info(self, purpose_tg_id: int | None = None):
+        data = await self.logic.time_info(purpose_tg_id=purpose_tg_id)
+        return await self.answer([
+            AnswerBody(
+                text=self.text(data).time_info,
+                data=data,
+                is_rich_text=True
+            )
+        ])
 
-    async def time_info(self):
-        data = await self.logic.time_info(**UserArg.model_validate(self.kwargs).model_dump())
-        return self.to_json([
-            [self.text(data).time_info, data, None]
-            ])
+    async def time_redact(self, duration: timedelta, purpose_tg_id: int | None = None):
+        args = TimeRedactArg.model_validate({
+            'duration': duration,
+            'purpose_tg_id': purpose_tg_id
+        })
+        data = await self.logic.time_redact(
+            duration=args.duration,
+            purpose_tg_id=args.purpose_tg_id
+        )
+        return await self.answer([
+            AnswerBody(
+                text=self.text(data).time_redact,
+                data=data,
+                is_rich_text=True
+            )
+        ])
 
-    async def time_redact(self):
-        data = await self.logic.time_redact(**TimeRedactArg.model_validate(self.kwargs).model_dump())
-        return self.to_json([
-            [self.text(data).time_redact, data, None]
-            ])
-    
-    async def time_replace(self):
-        data = await self.logic.time_replace(**TimeReplaceArg.model_validate(self.kwargs).model_dump())
-        return self.to_json([
-            [self.text(data).time_replace, data, None]
-            ])
+    async def time_replace(self, datetime_arg: datetime, purpose_tg_id: int | None = None):
+        args = TimeReplaceArg.model_validate({
+            'datetime_arg': datetime_arg,
+            'purpose_tg_id': purpose_tg_id
+        })
+        data = await self.logic.time_replace(
+            datetime_arg=args.datetime_arg,
+            purpose_tg_id=args.purpose_tg_id
+        )
+        return await self.answer([
+            AnswerBody(
+                text=self.text(data).time_replace,
+                data=data,
+                is_rich_text=True
+            )
+        ])
 
-    async def list(self, path_id: int | None = None, page: int | None = None, where: str | None = None):
-        page = page if not(page is None) else await self.state.get_value('page', 0)
-        path_id = path_id if not(path_id is None) else await self.state.get_value('path_id')
+    async def list(
+        self,
+        path_id: int | None = None,
+        page: int | None = None,
+        where: str | None = None
+    ):
+        page = page if page is not None else await self.fsm.get_value('page', 0)
+        path_id = path_id if path_id is not None else await self.fsm.get_value('path_id')
         data = await self.logic.list(path_id)
         if data.ga:
             data.beyonders = [data.ga] + data.beyonders
@@ -98,8 +227,18 @@ class BeyonderService(BaseService):
         max_page = len(pages)
         if page >= max_page:
             page = 0
-        await self.state.update_data(back_where=BeyonderBackValues.list, page=page, path_id=path_id)
-        return self.to_json([
-            [self.text(data).list(max_page, page), data, self.IKB.list((pages[page] if len(pages) > 0 else []), page, max_page, data.path.path_id, where=where)]
-            ])
-    
+        await self.fsm.update_data(back_where=BeyonderBackValues.list, page=page, path_id=path_id)
+        return await self.answer([
+            AnswerBody(
+                text=self.text(data).list(max_page, page),
+                data=data,
+                reply_markup=self.IKB.list(
+                    pages[page] if pages else [],
+                    page,
+                    max_page,
+                    data.path.path_id,
+                    where=where
+                ),
+                is_rich_text=True
+            )
+        ])

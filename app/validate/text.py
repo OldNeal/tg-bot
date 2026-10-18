@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 from app.validate.base import BaseValidate
 
 class BaseTextValidate(BaseValidate):

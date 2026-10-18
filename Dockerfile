@@ -15,7 +15,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 RUN useradd --create-home --shell /bin/bash botuser
-RUN mkdir -p /app/logs && chown -R botuser:botuser /app/logs
 
 COPY --chown=botuser:botuser . .
 COPY entrypoint.sh /entrypoint.sh

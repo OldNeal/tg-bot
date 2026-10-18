@@ -1,52 +1,71 @@
-from app.service.base import BaseService
+from aiogram.filters import CommandObject
+
+from app.service.base import BaseService, AnswerBody
 from app.logic.main import MainLogic
 from app.aio.cls.msg.main import MainText
 from app.aio.cls.buttons.main import MainIKB
-from app.validate.args import UserArg
+from app.aio.cls.fsm.utils import FSMUtils
+
 
 class MainService(BaseService):
-    def __init__(self, message = None, state = None, callback = None, **kwargs):
-        super().__init__(message, state, callback, **kwargs)
-        self.logic = MainLogic(tg_id=self.tg_id, username=self.user.username, fullname=self.user.full_name, **self.logic_kwargs)
-        self.text = MainText
-        self.IKB = MainIKB(tg_id=self.tg_id)
+    logic_class: type[MainLogic] = MainLogic
+    logic: MainLogic
+    text_class: type[MainText] = MainText
+    text: type[MainText]
+    ikb_class: type[MainIKB] = MainIKB
+    IKB: MainIKB
+    fsm: FSMUtils
 
-    async def info(self):
-        data = await self.logic.info(**UserArg.model_validate(self.kwargs).model_dump())
-        return self.to_json([
-            [self.text(data).first_msg_by_info, None, None],
-            [self.text(data).info, data, None]
-            ])
+    async def info(self, purpose_tg_id: int | None = None):
+        data = await self.logic.info(purpose_tg_id=purpose_tg_id)
+        return await self.answer([
+            AnswerBody(
+                text=self.text(data).first_msg_by_info,
+                is_rich_text=True,
+            ),
+            AnswerBody(
+                text=self.text(data).info,
+                data=data,
+                is_rich_text=True,
+            )
+        ])
 
     async def ping(self):
         api_ping = await self.logic.test_api_connect()
-        return [
-            [self.text.check_ping(api_ping), None]
-        ]
-    
+        return await self.answer([
+            AnswerBody(text=self.text.check_ping(api_ping), is_rich_text=True)
+        ])
+
     async def my_state(self):
-        data = await self.state.state.get_data()
-        self.msg_to_json = True
-        self.msg_to_json_keyboard = False
-        return self.to_json([
-            [self.text.html(data), data, self.IKB.my_state()]
-            ])
+        data = await self.fsm.get_data()
+        return await self.answer([
+            AnswerBody(
+                text=self.text.html(data),
+                data=None,
+                reply_markup=self.IKB.my_state(),
+                is_rich_text=True,
+            )
+        ])
 
     async def my_state_clear(self):
-        data = await self.state.state.clear()
-        return self.to_json([
-            [self.text.state_clear(), data, None]
-            ])
+        data = await self.fsm.clear()
+        return await self.answer([
+            AnswerBody(
+                text=self.text.state_clear(),
+                data=None,
+                is_rich_text=True,
+            )
+        ])
 
-    async def my_state_pop(self):
-        data = await self.state.state.get_data()
-        key = self.command.args
+    async def my_state_pop(self, command: CommandObject):
+        data = await self.fsm.get_data()
+        key = command.args
         if key in data:
             data.pop(key)
-            await self.state.state.set_data(data)
-            return self.to_json([
-                [self.text.state_pop(), data, None]
-                ])
-        return self.to_json([
-            [self.text.state_dont_pop(), data, None]
-            ])     
+            await self.fsm.set_data(data)
+            text = self.text.state_pop()
+        else:
+            text = self.text.state_dont_pop()
+        return await self.answer([
+            AnswerBody(text=text, data=None, is_rich_text=True)
+        ])

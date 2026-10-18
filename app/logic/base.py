@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from app.api import client, schemas
-from app.logging.base import log
+from app.logging.base import botlog
 from app.exception.base import ApiTimeoutError
 from app.logic.utils import class_decor
 
@@ -45,7 +45,7 @@ class BaseLogic:
                 end = datetime.now()
                 result = f'{int((end - start).total_seconds()*1000)}'
                 if logged:
-                    log.info('API работает', ping=result, url=cls.client.client.config.base_url)
+                    botlog.logger.info('API работает', ping=result, url=cls.client.client.config.base_url)
                 return result
             raise ApiTimeoutError('API не работает')
         except:

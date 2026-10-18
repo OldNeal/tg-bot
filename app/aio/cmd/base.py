@@ -1,5 +1,9 @@
-from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage, CallbackQuery
-from app.exception.decor import exept, call_exept
+from aiogram.types import InputRichMessage, Message, CallbackQuery
+from aiogram import Router
+from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
+
+from config import settings, bot
 from app.aio.cmd.main import main_router
 from app.aio.cmd.help import help_router
 from app.aio.cls.msg.utils import TextHTML
@@ -12,22 +16,19 @@ base_router.include_routers(main_router, help_router)
 
 @base_router.message(Command('chat_id'))
 @base_router.message(Command('topic_id'))
-@exept()
-async def cmd(message: Message, **kwargs):
+async def cmd(message: Message):
     await message.answer(f'Chat id: {message.chat.id}')
     if message.is_topic_message:
         await message.answer(f'\nTopic id: {message.message_thread_id}')    
 
 @base_router.message(Command('cancel'))
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message, state: FSMContext):
     await state.set_state()
     await message.answer('✅ Отмена произошла успешно')
 
 @base_router.message(Command('emodzi'))
 @base_router.message(Command('emoji'))
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message):
     text = []
     if message.entities:
         for entity in message.entities:
@@ -46,18 +47,19 @@ async def cmd(message: Message):
     asyncio.get_running_loop().stop()
 
 @base_router.message(Command('rich'))
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message):
     await message.answer_rich(InputRichMessage(html=TextHTML.example()))
 
 @base_router.message(Command('test'))
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
+async def cmd(message: Message):
     await message.answer_rich(InputRichMessage(html=TextHTML("""<tag>Tag</tag>, a & b, "quotes", 'single'""").pre()))
 
 @base_router.callback_query(CancelCall.filter())     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: CancelCall, state: FSMContext, **kwargs):
+async def call(
+    callback: CallbackQuery,
+    callback_data: CancelCall,
+    state: FSMContext,
+):
     text_state = await state.get_state()
     if text_state:
         await state.set_state()

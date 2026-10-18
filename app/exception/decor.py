@@ -1,12 +1,13 @@
-from functools import wraps
 import random
+from functools import wraps
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
+from aiogram.types import InputRichMessage, Message, CallbackQuery
 
-from config import settings, FSMContext, Message, CallbackQuery
+from config import settings
 from app.exception.base import BotError, ALienCallbackError, PythonError, ApiError
-from app.logging.base import log
 from app.aio.cls.msg.utils import TextHTML
 from app.aio.cls.callback.base import BaseCall, MenuCall
+from app.logging.base import botlog
 
 def exept():
     def decor(func):
@@ -21,7 +22,7 @@ def exept():
                     pass
                 return result
             except ApiError as apie:
-                log.trace(f'AioPartPath: {apie}', tg_id=message.from_user.id, chat_id=message.chat.id)
+                botlog.logger.trace(f'AioPartPath: {apie}', tg_id=message.from_user.id, chat_id=message.chat.id)
                 await message.answer((TextHTML(apie.to_msg).escape())[:4000])
                 if apie.code == 255:
                     await message.delete()
@@ -29,14 +30,14 @@ def exept():
                     if kwargs.get('stats').get_state():
                         await message.answer('❗ Чтобы отменить ввод, используйте команду /stats')
             except BotError as bote:
-                log.trace(f'AioPartPath: {bote}', tg_id=message.from_user.id, chat_id=message.chat.id)
+                botlog.logger.trace(f'AioPartPath: {bote}', tg_id=message.from_user.id, chat_id=message.chat.id)
                 #markup = FaqIKB(message.from_user.id).to_error_faq(bote.code) if len(bote.faq) > 0 else None
                 await message.answer((TextHTML(bote.to_msg).escape())[:4000])
             except (TelegramBadRequest, TelegramForbiddenError) as e:
-                log.warning(f'AioPartPath: {e}', tg_id=message.from_user.id, chat_id=message.chat.id)
+                botlog.logger.warning(f'AioPartPath: {e}', tg_id=message.from_user.id, chat_id=message.chat.id)
             except Exception as e:
                 str_e = str(e)
-                log.error(f'AioPartPath: {e}', tg_id=message.from_user.id, chat_id=message.chat.id)
+                botlog.logger.error(f'AioPartPath: {e}', tg_id=message.from_user.id, chat_id=message.chat.id)
                 if message.from_user.id == settings.owner:
                     await message.answer(f'{PythonError.msg}: {(TextHTML(str_e).escape())[:4000]}')
                 else:
@@ -63,14 +64,14 @@ def call_exept(check_is_user: bool = True, tips: list[str] | None = None, rarity
                         await callback.answer(random.choice(tips))
                 return result, callback
             except BotError as bote:
-                log.trace(f'AioPartPath: {bote}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
+                botlog.logger.trace(f'AioPartPath: {bote}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
                 show_alert=True
                 answer_text = (TextHTML(bote.to_msg).escape())[:4000]
             except (TelegramBadRequest, TelegramForbiddenError) as e:
-                log.warning(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
+                botlog.logger.warning(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
             except Exception as e:
                 str_e = str(e)
-                log.error(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
+                botlog.logger.error(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
                 show_alert=True
                 if callback.from_user.id == settings.owner:
                     answer_text = f'{PythonError.msg}: {(TextHTML(str_e).escape())[:4000]}'
@@ -81,7 +82,7 @@ def call_exept(check_is_user: bool = True, tips: list[str] | None = None, rarity
                 try:
                     await callback.answer(answer_text, show_alert=show_alert)
                 except Exception as e:
-                    log.error(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
+                    botlog.logger.error(f'AioPartPath: {e}', tg_id=callback.from_user.id, chat_id=callback.message.chat.id)
                     if callback.from_user.id == settings.owner:
                         await callback.message.answer(f'⚠️ {(TextHTML(e).escape())[:4000]} \n \n {answer_text}')
                     else:

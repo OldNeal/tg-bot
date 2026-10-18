@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from app.validate.base import BaseValidate, Field
+from app.validate.base import BaseValidate
 
 class BaseArg(BaseValidate):
     pass

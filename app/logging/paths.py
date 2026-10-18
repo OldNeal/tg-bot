@@ -1,7 +1,9 @@
 from pathlib import PurePath
 
+from config import settings
+
 class LogPaths:
-    logs = PurePath('logs/')
+    logs = PurePath(settings.log_files_path)
     base = logs / PurePath('base/')
     beyonder = logs / PurePath('beyonder/')
     organ = logs / PurePath('organ/')

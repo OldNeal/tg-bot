@@ -1,9 +1,11 @@
 from telegram_click_aio.decorator import command
+from aiogram.types import Message, CallbackQuery
+from aiogram import Router
+from aiogram.filters import Command, CommandObject
 
-from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage, CallbackQuery, CommandObject
 from app.service.main import MainService
-from app.exception.decor import exept, call_exept
-from app.aio.args import base_args
+from app.aio.args import Optionals
+from app.aio.cls.middlewares import ServiceMiddleware
 from app.aio.cmd.beyonder import beyonder_router
 from app.aio.cmd.wiki import wiki_router
 from app.aio.cmd.organ import organ_router
@@ -11,46 +13,136 @@ from app.aio.cmd.stats import stats_router
 from app.aio.cls.callback.main import MyStateCall
 
 main_router = Router()
+main_router.message.middleware(ServiceMiddleware(MainService))
+main_router.callback_query.middleware(ServiceMiddleware(MainService))
 main_router.include_routers(beyonder_router, organ_router, wiki_router, stats_router)
+
 
 @main_router.message(Command('info'))
 @command(
     name='info',
-    description='Получить карточку',  # <- Описание команды
-    arguments=base_args
+    description='Получить карточку',
+    arguments=[
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await MainService(message, state, **kwargs).info()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: MainService,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.info(purpose_tg_id=purpose_tg_id)
+
 
 @main_router.message(Command('ping'))
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await MainService(message, state, **kwargs).ping()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+@command(
+    name='ping',
+    description='Проверить соединение',
+    arguments=[
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
+)
+async def cmd(
+    message: Message,
+    service: MainService,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.ping()
+
 
 @main_router.message(Command('mystate'))
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await MainService(message, state, **kwargs).my_state()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
-    
-@main_router.callback_query(MyStateCall.filter())     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: MyStateCall, state: FSMContext, **kwargs):
-    msgs = await MainService(callback.message, state, callback, **kwargs).my_state()
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+@command(
+    name='mystate',
+    description='Показать состояние',
+    arguments=[
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
+)
+async def cmd(
+    message: Message,
+    service: MainService,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.my_state()
+
+
+@main_router.callback_query(MyStateCall.filter())
+async def call(
+    callback: CallbackQuery,
+    callback_data: MyStateCall,
+    service: MainService
+):
+    await service.my_state()
+
 
 @main_router.message(Command('mystateclear'))
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await MainService(message, state, **kwargs).my_state_clear()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+@command(
+    name='mystateclear',
+    description='Очистить состояние',
+    arguments=[
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
+)
+async def cmd(
+    message: Message,
+    service: MainService,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.my_state_clear()
+
 
 @main_router.message(Command('mystatepop'))
-@exept()
-async def cmd(message: Message, state: FSMContext, command: CommandObject, **kwargs):
-    msgs = await MainService(message, state, command=command, **kwargs).my_state_pop()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
-
+@command(
+    name='mystatepop',
+    description='Удалить значение состояния',
+    arguments=[
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
+)
+async def cmd(
+    message: Message,
+    service: MainService,
+    command: CommandObject,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.my_state_pop(command)

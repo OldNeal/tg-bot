@@ -1,59 +1,86 @@
 from telegram_click_aio.decorator import command
+from aiogram.types import Message, CallbackQuery
+from aiogram import Router, F
+from aiogram.filters import Command
 
-from config import settings, bot, Router, Command, FSMContext, Message, InputRichMessage, F, CallbackQuery
 from app.service.stats import StatsService
-from app.exception.decor import exept, call_exept
-from app.aio.args import base_args, Optionals, Requireds
+from app.aio.args import Optionals
 from app.aio.cls.callback.stats import StatsBackCall, BackCall, StatsPageCall, StatsPathsCall
 from app.aio.cls.callback.back import StatsBackValues
 from app.aio.cls.fsm.state import StatsState
-from app.aio.cls.fsm.utils import StatsFSM
+from app.aio.cls.middlewares import ServiceMiddleware
 
 stats_router = Router()
+stats_router.message.middleware(ServiceMiddleware(StatsService))
+stats_router.callback_query.middleware(ServiceMiddleware(StatsService))
+
 
 @stats_router.message(Command('stats'))
 @command(
     name='stats',
-    description='Получить статистику', 
-    arguments=[Optionals.value] + base_args
+    description='Получить статистику',
+    arguments=[
+        Optionals.value,
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await StatsService(message, state, **kwargs).all()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: StatsService,
+    value: str | None = None,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.all(value=value)
 
-@stats_router.callback_query(StatsBackCall.filter(F.where == StatsBackValues.all))  
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: StatsBackCall, state: FSMContext, **kwargs):
-    msgs = await StatsService(callback.message, state, callback, **kwargs).all()
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
-@stats_router.callback_query(StatsPathsCall.filter())  
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: StatsPathsCall, state: FSMContext, **kwargs):
-    msgs = await StatsService(callback.message, state, callback, **kwargs).back_paths()
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+@stats_router.callback_query(StatsBackCall.filter(F.where == StatsBackValues.all))
+async def call(
+    callback: CallbackQuery,
+    callback_data: StatsBackCall,
+    service: StatsService
+):
+    await service.all()
 
-@stats_router.callback_query(StatsBackCall.filter(F.where == StatsBackValues.stats_paths))  
-@stats_router.callback_query(BackCall.filter(F.where == StatsBackValues.stats_paths))     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: BackCall, state: FSMContext, **kwargs):
-    msgs = await StatsService(callback.message, state, callback, **kwargs).paths()
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
-@stats_router.callback_query(StatsPageCall.filter())     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: StatsPageCall, state: FSMContext, **kwargs):
-    msgs = await StatsService(callback.message, state, callback, **kwargs).paths(callback_data.value, callback_data.page)
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+@stats_router.callback_query(StatsPathsCall.filter())
+async def call(
+    callback: CallbackQuery,
+    callback_data: StatsPathsCall,
+    service: StatsService
+):
+    await service.back_paths()
+
+
+@stats_router.callback_query(StatsBackCall.filter(F.where == StatsBackValues.stats_paths))
+@stats_router.callback_query(BackCall.filter(F.where == StatsBackValues.stats_paths))
+async def call(
+    callback: CallbackQuery,
+    callback_data: BackCall,
+    service: StatsService
+):
+    await service.paths()
+
+
+@stats_router.callback_query(StatsPageCall.filter())
+async def call(
+    callback: CallbackQuery,
+    callback_data: StatsPageCall,
+    service: StatsService
+):
+    await service.paths(value=callback_data.value, page=callback_data.page)
+
 
 @stats_router.message(StatsState.search)
-@exept()
-async def text_state(message: Message, state: FSMContext, **kwargs):
-    fsm = StatsFSM(state)
-    msg0 = await fsm.get_message()
-    msgs = await StatsService(message, state, **kwargs).enter_path()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
-    await fsm.set_state()
-    await bot.delete_message(*msg0)
-    await fsm.remove_message()
+async def text_state(
+    message: Message,
+    service: StatsService
+):
+    await service.enter_path()

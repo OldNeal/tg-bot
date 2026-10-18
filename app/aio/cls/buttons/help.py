@@ -1,7 +1,7 @@
 from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
 
-from app.aio.cls.buttons.base import BotIKB, MenuCall
 from config import settings
+from app.aio.cls.buttons.base import BotIKB, MenuCall
 
 class HelpIKB(BotIKB):    
     def main(self):

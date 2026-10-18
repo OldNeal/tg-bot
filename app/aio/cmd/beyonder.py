@@ -1,153 +1,317 @@
-from telegram_click_aio.decorator import command
+from datetime import datetime, timedelta
 
-from config import settings, bot, Router, Command, FSMContext, Message, F, InputRichMessage, CallbackQuery
+from telegram_click_aio.decorator import command
+from aiogram.types import Message, CallbackQuery
+from aiogram import Router, F
+from aiogram.filters import Command
+
 from app.service.beyonder import BeyonderService
-from app.exception.decor import exept, call_exept
-from app.aio.args import base_args, Requireds, Optionals
+from app.aio.args import Requireds, Optionals
 from app.aio.cls.callback.beyonder import DrinkCall, KillCall, BeyonderListCall, BeyonderListPageCall, BeyonderInfoCall, BeyonderBackCall
 from app.aio.cls.callback.back import BeyonderBackValues
+from app.aio.cls.middlewares import ServiceMiddleware
 
 beyonder_router = Router()
+beyonder_router.message.middleware(ServiceMiddleware(BeyonderService))
+beyonder_router.callback_query.middleware(ServiceMiddleware(BeyonderService))
+
 
 @beyonder_router.message(Command('beyonder'))
 @command(
     name='beyonder',
-    description='Карточка потустороннего',  
-    arguments=base_args
+    arguments=[
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ],
+    description='Карточка потустороннего'
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(message, state, **kwargs).info()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: BeyonderService,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.info(purpose_tg_id)
 
-@beyonder_router.callback_query(BeyonderInfoCall.filter())     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: BeyonderInfoCall, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(callback.message, state, callback, **kwargs).info(callback_data.purpose_tg_id)
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@beyonder_router.callback_query(BeyonderInfoCall.filter())
+async def call(
+    callback: CallbackQuery,
+    callback_data: BeyonderInfoCall,
+    service: BeyonderService
+):
+    await service.info(callback_data.purpose_tg_id)
+
 
 @beyonder_router.message(Command('drink'))
 @command(
     name='drink',
-    description='Выпить зелье',  
-    arguments=[Optionals.path_name] + [Optionals.drink_seq] + base_args
+    description='Выпить зелье',
+    arguments=[
+        Optionals.path_name,
+        Optionals.drink_seq,
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(message, state, **kwargs).drink()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: BeyonderService,
+    path_name: str | None = None,
+    seq: int = 9,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.drink(path_name=path_name, seq=seq, purpose_tg_id=purpose_tg_id)
 
-@beyonder_router.callback_query(DrinkCall.filter())     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: DrinkCall, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(callback.message, state, callback, **kwargs).drink(callback_data.path_id)
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+
+@beyonder_router.callback_query(DrinkCall.filter())
+async def call(
+    callback: CallbackQuery,
+    callback_data: DrinkCall,
+    service: BeyonderService
+):
+    await service.drink(path_id=callback_data.path_id)
+
 
 @beyonder_router.message(Command('upseq'))
 @command(
     name='upseq',
-    description='Поднять последовательонсть',  
-    arguments=[Optionals.seq] + [Optionals.path_name] + base_args
+    description='Поднять последовательонсть',
+    arguments=[
+        Optionals.seq,
+        Optionals.path_name,
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(message, state, **kwargs).upseq()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: BeyonderService,
+    seq: int | None = None,
+    path_name: str | None = None,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.upseq(seq=seq, path_name=path_name, purpose_tg_id=purpose_tg_id)
+
 
 @beyonder_router.message(Command('downseq'))
 @command(
     name='downseq',
-    description='Понизить последовательонсть',  
-    arguments=[Optionals.seq] + [Optionals.path_name] + base_args
+    description='Понизить последовательонсть',
+    arguments=[
+        Optionals.seq,
+        Optionals.path_name,
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(message, state, **kwargs).dowseq()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: BeyonderService,
+    seq: int | None = None,
+    path_name: str | None = None,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.dowseq(seq=seq, path_name=path_name, purpose_tg_id=purpose_tg_id)
+
 
 @beyonder_router.message(Command('kill'))
 @command(
     name='kill',
-    description='Потерять контроль',  
-    arguments=base_args
+    description='Потерять контроль',
+    arguments=[
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(message, state, **kwargs).kill()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: BeyonderService,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.kill(purpose_tg_id=purpose_tg_id, is_admin=is_admin)
 
-@beyonder_router.callback_query(KillCall.filter(F.accert == True))     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: KillCall, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(callback.message, state, callback, **kwargs).accert_kill(callback_data.purpose_tg_id)
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
-@beyonder_router.callback_query(KillCall.filter(F.cancel == True))     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: KillCall, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(callback.message, state, callback, **kwargs).cancel_kill(callback_data.purpose_tg_id)
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+@beyonder_router.callback_query(KillCall.filter(F.accert == True))
+async def call(
+    callback: CallbackQuery,
+    callback_data: KillCall,
+    service: BeyonderService
+):
+    await service.accert_kill(callback_data.purpose_tg_id)
+
+
+@beyonder_router.callback_query(KillCall.filter(F.cancel == True))
+async def call(
+    callback: CallbackQuery,
+    callback_data: KillCall,
+    service: BeyonderService
+):
+    await service.cancel_kill(callback_data.purpose_tg_id)
+
 
 @beyonder_router.message(Command('time'), F.text.contains('redact'))
 @command(
     name='time redact',
-    description='Изменить время продвижения',  
-    arguments=[Requireds.time_mode] + [Requireds.duration] + base_args
+    description='Изменить время продвижения',
+    arguments=[
+        Requireds.time_mode,
+        Requireds.duration,
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(message, state, **kwargs).time_redact()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: BeyonderService,
+    time_mode: str,
+    duration: timedelta,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.time_redact(duration=duration, purpose_tg_id=purpose_tg_id)
+
 
 @beyonder_router.message(Command('time'), F.text.contains('replace'))
 @command(
     name='time replace',
-    description='Заменить время продвижения',  
-    arguments=[Requireds.time_mode] + [Requireds.date] + base_args
+    description='Заменить время продвижения',
+    arguments=[
+        Requireds.time_mode,
+        Requireds.date,
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(message, state, **kwargs).time_replace()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: BeyonderService,
+    time_mode: str,
+    datetime_arg: datetime,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.time_replace(datetime_arg=datetime_arg, purpose_tg_id=purpose_tg_id)
+
 
 @beyonder_router.message(Command('time'), F.text.contains('info'))
 @command(
     name='time info',
-    description='Узнать информацию о продвижении',  
-    arguments=[Optionals.time_mode] + base_args
+    description='Узнать информацию о продвижении',
+    arguments=[
+        Optionals.time_mode,
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(message, state, **kwargs).time_info()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: BeyonderService,
+    time_mode: str = 'info',
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.time_info(purpose_tg_id=purpose_tg_id)
+
 
 @beyonder_router.message(Command('time'))
 @command(
     name='time',
-    description='Узнать информацию о продвижении',  
-    arguments=base_args
+    description='Узнать информацию о продвижении',
+    arguments=[
+        Optionals.tg_id,
+        Optionals.to_json,
+        Optionals.is_reply,
+        Optionals.is_admin,
+        Optionals.is_delay
+    ]
 )
-@exept()
-async def cmd(message: Message, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(message, state, **kwargs | {'time_mode':'info'}).time_info()
-    [await message.answer_rich(InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+async def cmd(
+    message: Message,
+    service: BeyonderService,
+    purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False,
+    is_delay: bool = False
+):
+    await service.time_info(purpose_tg_id=purpose_tg_id)
 
 
+@beyonder_router.callback_query(BeyonderListCall.filter())
+async def call(
+    callback: CallbackQuery,
+    callback_data: BeyonderListCall,
+    service: BeyonderService
+):
+    await service.list(callback_data.path_id)
 
-@beyonder_router.callback_query(BeyonderListCall.filter())     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: BeyonderListCall, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(callback.message, state, callback, **kwargs).list(callback_data.path_id)
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
-    
-@beyonder_router.callback_query(BeyonderListPageCall.filter())     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: BeyonderListPageCall, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(callback.message, state, callback, **kwargs).list(callback_data.path_id, callback_data.page, where=callback_data.where)
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
 
-@beyonder_router.callback_query(BeyonderBackCall.filter(F.where == BeyonderBackValues.list))     
-@call_exept()
-async def call(callback: CallbackQuery, callback_data: BeyonderInfoCall, state: FSMContext, **kwargs):
-    msgs = await BeyonderService(callback.message, state, callback, **kwargs).list()
-    [await callback.message.edit_text(rich_message=InputRichMessage(html=m), reply_markup=k) for m, k in msgs]
+@beyonder_router.callback_query(BeyonderListPageCall.filter())
+async def call(
+    callback: CallbackQuery,
+    callback_data: BeyonderListPageCall,
+    service: BeyonderService
+):
+    await service.list(callback_data.path_id, callback_data.page, where=callback_data.where)
+
+
+@beyonder_router.callback_query(BeyonderBackCall.filter(F.where == BeyonderBackValues.list))
+async def call(
+    callback: CallbackQuery,
+    callback_data: BeyonderBackCall,
+    service: BeyonderService
+):
+    await service.list()

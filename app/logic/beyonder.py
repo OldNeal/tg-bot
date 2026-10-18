@@ -17,8 +17,9 @@ class BeyonderLogic(BaseLogic):
     async def dowseq(self, purpose_tg_id: int | None = None, path_name: str | None = None, seq: int | None = None):
         return await self.client.beyonder_dowseq(self.body, purpose_tg_id or self.purpose_tg_id, path_name, seq)
     
-    async def kill(self, purpose_tg_id: int | None = None):
-        return await self.client.beyonder_kill(self.body, purpose_tg_id or self.purpose_tg_id)
+    async def kill(self, purpose_tg_id: int | None = None, is_admin: bool = False):
+        body = self.body.model_copy(update={'is_admin': is_admin})
+        return await self.client.beyonder_kill(body, purpose_tg_id or self.purpose_tg_id)
 
     async def time_info(self, purpose_tg_id: int | None = None):
         return await self.client.beyonder_time_info(purpose_tg_id or self.purpose_tg_id)

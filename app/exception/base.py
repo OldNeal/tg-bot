@@ -1,6 +1,6 @@
 from typing import Literal    
 
-from app.logging.base import log, botlog
+from app.logging.base import botlog
 
 class PythonError:
     msg = '⚠️ Непредвиденная ошибка'
@@ -17,7 +17,7 @@ class BotError(Exception):
         self.is_error = is_error
         if is_error:
             super().__init__(*args)
-            getattr(log, level)(f'{self.__class__.__name__}, msg: {' '.join(self.args) if len(args) > 0 else self.msg}, kwargs: {self.kwargs}')
+            getattr(botlog.logger, level)(f'{self.__class__.__name__}, msg: {' '.join(self.args) if len(args) > 0 else self.msg}, kwargs: {self.kwargs}')
 
     def __str__(self):
         return super().__str__()

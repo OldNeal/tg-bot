@@ -148,4 +148,3 @@ class BotLog:
         self.logger.log('BOT STOP', f'Бот останавливается', **kwargs)
 
 botlog = BotLog()
-log = botlog.logger

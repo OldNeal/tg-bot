@@ -1,10 +1,3 @@
-from aiogram.exceptions import TelegramBadRequest
-from functools import wraps
-
-from config import bot
-from aiogram.types import Message, CallbackQuery
-from aiogram.types.chat_member_banned import ChatMemberStatus
-
 def is_natural_int(string: str | None, 
                    tg_id: int | None = None, 
                    error_less_one = ValueError,

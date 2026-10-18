@@ -2,51 +2,69 @@ import asyncio, functools
 from datetime import datetime
 from typing import TypeVar
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputRichMessage
+from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputRichMessage, User, Chat
 from aiogram.filters import CommandStart, Command, CommandObject
 
-from config import settings, bot, log, botlog
+from config import settings, bot
 from app.aio.cls.buttons.base import BotIKB
 from app.aio.cls.fsm.utils import FSMUtils
-from app.aio.cls.msg.utils import TextHTML
-from app.service.utils import is_natural_int
-from app.validate.service import Purpose
-from app.validate.base import BaseValidate, BaseModel
+from app.aio.cls.msg.base import BaseText
+from app.validate.tg import Answer, AnswerBody
+from app.logic.base import BaseLogic
+from app.logging.base import botlog
 
 NOT_NEW_STATE = object()
 DATA_PAGE = TypeVar('DATA_PAGE')
 
 class BaseService:
-    def __init__(self, 
-                 message: Message, 
-                 state: FSMContext | None = None, 
-                 callback: CallbackQuery | None = None, 
-                 command: CommandObject | None = None, 
+    asyncio = asyncio
+    datetime = datetime
+    botlog = botlog
+
+    logic_class: type[BaseLogic] = BaseLogic
+    logic: BaseLogic
+    fsm_class: type[FSMUtils] = FSMUtils
+    fsm: FSMUtils
+    ikb_class: type[BotIKB] = BotIKB
+    IKB: BotIKB
+    text_class: type[BaseText] | None = None
+    text: type[BaseText] | None
+
+    def __init__(self,
+                 user: User,
+                 chat: Chat,
+                 message: Message,
+                 state: FSMContext | None = None,
+                 callback: CallbackQuery | None = None,
+                 command: CommandObject | None = None,
                  add_logic_kwargs: dict = {}, 
                  **kwargs):
         self.settings = settings
         self.bot = bot
-        self.message = message
         self.callback = callback
-        self.command = command
+        self.message = message or self.callback.message
         self.kwargs = kwargs
-        self.user = self.callback.from_user if self.callback else self.message.from_user
-        self.chat = self.callback.message.chat if self.callback else self.message.chat
+        self.command = command
+        self.state = state
+
+        self.user = user
+        self.chat = chat
         self.tg_id = self.user.id
         self.add_logic_kwargs = add_logic_kwargs
 
+        self.fsm = self.fsm_class(self.state)
+        self.IKB = self.ikb_class(self.tg_id)
+        self.text = self.text_class
+        self.logic = self.logic_class(
+            tg_id=self.tg_id,
+            username=self.user.username,
+            fullname=self.user.full_name,
+            **self.logic_kwargs
+        )
+
         self.is_bot_message = bool(self.callback)
-        self.state: FSMUtils = FSMUtils(state)
-        self.IKB = BotIKB(self.tg_id)
-        self.text = None
-        self.logic = None
-        self.asyncio = asyncio
-        self.datetime = datetime
-        self.log = log
-        self.botlog = botlog
-        self.msg_to_json: bool = self.kwargs.get('to_json', False)
-        self.msg_to_json_keyboard: bool = self.kwargs.get('to_json_keyboard', True)
         self.enter_args: bool = self.command.args != None if command else False
+        self.to_edit_message: bool = self.kwargs.get('to_edit_message', bool(self.callback))
 
     @property
     def logic_kwargs(self):
@@ -69,58 +87,43 @@ class BaseService:
     def tg_id_in_admins(self):
         return self.tg_id in self.settings.admins
 
-    @classmethod
-    def is_natural_int(self, value, **kwargs):
-        return is_natural_int(value, **kwargs)
-
-    async def get_news_channel_info(self):
-        channel = await self.bot.get_chat(self.settings.news_group_id)
-        return channel
-    
-    async def get_chat_member(self, tg_id: int | None = None):
-        if tg_id:
-            return await bot.get_chat_member(self.settings.news_group_id, tg_id)
-        return await bot.get_chat_member(self.settings.news_group_id, self.tg_id)
-
-    async def another(self, tg_id: int, state: FSMContext | None = NOT_NEW_STATE):
-        self.tg_id = tg_id
-        if state != NOT_NEW_STATE:
-            self.state = state
-        return self
-
-    async def text_boardcast(self, tg_ids: list[int], text: str, reply_markup = None, delay: int = 20):
+    async def text_boardcast(self, answer_body_list: list[Answer], delay: int = 20):
         k = 0
-        for tg_id in tg_ids:
+        results: list[Message] = []
+        for body in answer_body_list:
             k += 1
-            await self.bot.send_message(tg_id, text, reply_markup=reply_markup)
+            if body.is_reply_answer:
+                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, reply_to_message_id=body.message_id, chat_id=body.chat_tg_id)
+            elif body.is_rich_text and body.edit_message:
+                msg = await self.bot.edit_message_text(rich_message=InputRichMessage(html=body.text), reply_markup=body.reply_markup, chat_id=body.chat_tg_id, message_id=body.message_id)
+            elif body.is_rich_text:
+                msg = await self.bot.send_rich_message(rich_message=InputRichMessage(html=body.text), reply_markup=body.reply_markup, chat_id=body.chat_tg_id)
+            elif body.edit_message:
+                msg = await self.bot.edit_message_text(text=body.text, reply_markup=body.reply_markup, chat_id=body.chat_tg_id, message_id=body.message_id)
+            else:
+                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, chat_id=body.chat_tg_id)
+            results.append(msg)
             if k%delay == 0:
                 await asyncio.sleep(2)
-        return True
-
-    async def texts_boardcast(self, datas: list[tuple[int, str, InlineKeyboardButton | InlineKeyboardMarkup | None, int | None]], delay: int = 20):
-        k = 0
-        for tg_id, text, reply_markup, message_thread_id in datas:
-            k += 1
-            await self.bot.send_message(tg_id, text, reply_markup=reply_markup, message_thread_id=message_thread_id)
-            if k%delay == 0:
-                await asyncio.sleep(2)
-        return True
-
-    def to_json(self, msgs: list[tuple[str, BaseValidate, InlineKeyboardButton | InlineKeyboardMarkup | None]]):
-        return [(((TextHTML.anchor('start-json') + TextHTML.json_format(self.model_dump(v), 4).pre('json').details('Открыть JSON') + TextHTML('Вверх').href('#start-json')) if self.msg_to_json and v else m),None if self.msg_to_json and v and self.msg_to_json_keyboard else i) for m, v, i in msgs]
-
-    def model_dump(self, data):
-        if hasattr(data, 'model_dump'):
-            return data.model_dump()
-        elif hasattr(data, '__dict__'):
-            return data.__dict__
-        elif type(data) == dict:
-            return {k:self.model_dump(v) for k, v in data.items()}
-        else:
-            return str(data)
+        return results
 
     def to_pages(self, datas: list[DATA_PAGE], value_in_page: int = 5) -> list[tuple[DATA_PAGE, ...]]:
         return [tuple(datas[i:i+value_in_page]) for i in range(0, len(datas), value_in_page)] if datas else []
+
+    async def answer(self, answer_body_list: list[AnswerBody]):
+        return await self.text_boardcast([
+            Answer(
+                chat_tg_id=self.chat.id,
+                _user_tg_id=self.tg_id,
+                message_id=self.message.message_id,
+                edit_message=self.to_edit_message,
+
+                text=body.text,
+                reply_markup=body.reply_markup,
+                is_rich_text=body.is_rich_text,
+                is_reply_answer=body.is_reply_answer,
+                ) for body in answer_body_list
+                ])
 
     def redact_kwargs(self, **new_kwargs):
         self.kwargs |= new_kwargs
