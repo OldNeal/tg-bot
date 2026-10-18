@@ -4,6 +4,7 @@ from aiogram import Router, F
 from aiogram.filters import Command
 
 from app.service.stats import StatsService
+from app.service.utils import RaiseErrorHandler
 from app.tg.args import Optionals
 from app.tg.callback.stats import StatsBackCall, BackCall, StatsPageCall, StatsPathsCall
 from app.tg.callback.back_values import StatsBackValues
@@ -26,7 +27,8 @@ stats_router.callback_query.middleware(ServiceMiddleware(StatsService))
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,

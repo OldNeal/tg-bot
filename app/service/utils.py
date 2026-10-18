@@ -1,3 +1,6 @@
+from telegram_click_aio.error_handler import ErrorHandler
+from aiogram.types import Message
+
 def is_natural_int(string: str | None, 
                    tg_id: int | None = None, 
                    error_less_one = ValueError,
@@ -14,6 +17,8 @@ def is_natural_int(string: str | None,
         raise error_float(f'This user(tg_id={tg_id}) enter float')
     return int(quan)
 
-
+class RaiseErrorHandler(ErrorHandler):
+    async def on_execution_error(self, *args, **kwargs) -> bool:
+        return True
 
 

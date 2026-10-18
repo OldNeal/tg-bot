@@ -32,6 +32,7 @@ from app.tg.callback.organ import (
 from app.tg.fsm.state import OrganState
 from app.tg.middlewares import ServiceMiddleware
 from app.service.organ import OrganService
+from app.service.utils import RaiseErrorHandler
 
 organ_router = Router()
 organ_router.message.middleware(ServiceMiddleware(OrganService))
@@ -49,6 +50,7 @@ organ_router.callback_query.middleware(ServiceMiddleware(OrganService))
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -74,6 +76,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -110,6 +113,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -178,6 +182,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -227,6 +232,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -288,6 +294,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -324,6 +331,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -368,6 +376,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -403,6 +412,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -429,6 +439,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -463,6 +474,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -488,6 +500,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -537,6 +550,7 @@ async def call(
     name='organ create',
     description='Создать организацию',
     arguments=[Requireds.organ_mode, Optionals.organ_name],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -584,6 +598,7 @@ async def text_state(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -659,6 +674,7 @@ async def text_state(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -694,6 +710,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -721,6 +738,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -748,6 +766,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -775,6 +794,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -820,6 +840,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -876,6 +897,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -906,6 +928,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -943,6 +966,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -972,6 +996,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -1022,6 +1047,7 @@ async def text_state(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -1048,6 +1074,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -1074,6 +1101,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -1127,6 +1155,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -1153,6 +1182,7 @@ async def cmd(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,

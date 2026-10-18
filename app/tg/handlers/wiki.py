@@ -4,6 +4,7 @@ from aiogram import Router, F
 from aiogram.filters import Command
 
 from app.service.wiki import WikiService
+from app.service.utils import RaiseErrorHandler
 from app.tg.args import Optionals
 from app.tg.callback.wiki import (
     PathCall,
@@ -35,6 +36,7 @@ wiki_router.callback_query.middleware(ServiceMiddleware(WikiService))
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -78,6 +80,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -140,6 +143,7 @@ async def call(
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,

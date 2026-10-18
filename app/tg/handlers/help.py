@@ -4,6 +4,7 @@ from aiogram import Router
 from aiogram.filters import Command
 
 from app.service.help import HelpService
+from app.service.utils import RaiseErrorHandler
 from app.tg.args import Optionals
 from app.tg.middlewares import ServiceMiddleware
 
@@ -23,6 +24,7 @@ help_router.callback_query.middleware(ServiceMiddleware(HelpService))
         Optionals.is_admin,
         Optionals.is_delay,
     ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,

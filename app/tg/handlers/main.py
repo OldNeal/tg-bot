@@ -4,6 +4,7 @@ from aiogram import Router
 from aiogram.filters import Command, CommandObject
 
 from app.service.main import MainService
+from app.service.utils import RaiseErrorHandler
 from app.tg.args import Optionals
 from app.tg.middlewares import ServiceMiddleware
 from app.tg.callback.main import MyStateCall
@@ -28,7 +29,8 @@ main_router.include_routers(beyonder_router, organ_router, wiki_router, stats_ro
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -52,7 +54,8 @@ async def cmd(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -76,7 +79,8 @@ async def cmd(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -109,7 +113,8 @@ async def call(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -133,7 +138,8 @@ async def cmd(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,

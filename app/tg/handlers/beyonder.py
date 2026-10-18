@@ -6,6 +6,7 @@ from aiogram import Router, F
 from aiogram.filters import Command
 
 from app.service.beyonder import BeyonderService
+from app.service.utils import RaiseErrorHandler
 from app.tg.args import Requireds, Optionals
 from app.tg.callback.beyonder import DrinkCall, KillCall, BeyonderListCall, BeyonderListPageCall, BeyonderInfoCall, BeyonderBackCall
 from app.tg.callback.back_values import BeyonderBackValues
@@ -26,7 +27,8 @@ beyonder_router.callback_query.middleware(ServiceMiddleware(BeyonderService))
         Optionals.is_admin,
         Optionals.is_delay
     ],
-    description='Карточка потустороннего'
+    description='Карточка потустороннего',
+    error_handler=RaiseErrorHandler
 )
 async def cmd(
     message: Message,
@@ -61,7 +63,8 @@ async def call(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -98,7 +101,8 @@ async def call(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -126,7 +130,8 @@ async def cmd(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -152,7 +157,8 @@ async def cmd(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -196,7 +202,8 @@ async def call(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -224,7 +231,8 @@ async def cmd(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -251,7 +259,8 @@ async def cmd(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
@@ -276,7 +285,8 @@ async def cmd(
         Optionals.is_reply,
         Optionals.is_admin,
         Optionals.is_delay
-    ]
+    ],
+    error_handler=RaiseErrorHandler,
 )
 async def cmd(
     message: Message,
