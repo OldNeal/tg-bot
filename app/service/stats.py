@@ -1,11 +1,10 @@
 from app.service.base import BaseService, AnswerBody
 from app.logic.stats import StatsLogic
-from app.aio.cls.msg.stats import StatsText
-from app.aio.cls.buttons.stats import StatsIKB
-from app.aio.cls.callback.back import StatsBackValues
-from app.aio.cls.fsm.state import StatsState
-from app.aio.cls.fsm.utils import StatsFSM
-
+from app.tg.text.stats import StatsText
+from app.tg.buttons.stats import StatsIKB
+from app.tg.callback.back_values import StatsBackValues
+from app.tg.fsm.state import StatsState
+from app.tg.fsm.utils import StatsFSM
 
 class StatsService(BaseService):
     logic_class: type[StatsLogic] = StatsLogic

@@ -1,9 +1,8 @@
 from app.service.base import BaseService, AnswerBody
 from app.logic.main import MainLogic
-from app.aio.cls.msg.help import HelpText
-from app.aio.cls.buttons.help import HelpIKB
-from app.aio.cls.fsm.utils import FSMUtils
-
+from app.tg.text.help import HelpText
+from app.tg.buttons.help import HelpIKB
+from app.tg.fsm.utils import FSMUtils
 
 class HelpService(BaseService):
     logic_class: type[MainLogic] = MainLogic

@@ -2,8 +2,8 @@ import asyncio
 from aiogram.exceptions import TelegramBadRequest
 
 from config import dp, bot, to_menu_cmds, settings
-from app.aio.cmd.base import base_router
-from app.aio.cls.middlewares import (BotLogMessageMiddleware,
+from app.tg.handlers.base import base_router
+from app.tg.middlewares import (BotLogMessageMiddleware,
                                 BotLogCallbackQueryMiddleware,
                                 ExceptionMessageMiddleware,
                                 ExceptionCallbackQueryMiddleware)

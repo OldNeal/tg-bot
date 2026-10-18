@@ -2,10 +2,9 @@ from aiogram.filters import CommandObject
 
 from app.service.base import BaseService, AnswerBody
 from app.logic.main import MainLogic
-from app.aio.cls.msg.main import MainText
-from app.aio.cls.buttons.main import MainIKB
-from app.aio.cls.fsm.utils import FSMUtils
-
+from app.tg.text.main import MainText
+from app.tg.buttons.main import MainIKB
+from app.tg.fsm.utils import FSMUtils
 
 class MainService(BaseService):
     logic_class: type[MainLogic] = MainLogic

@@ -10,14 +10,13 @@ from app.validate.args import (
     TitulRedactArg,
     UserArg,
 )
-from app.aio.cls.msg.organ import OrganText
-from app.aio.cls.buttons.organ import OrganIKB
-from app.aio.cls.fsm.state import OrganState
-from app.aio.cls.fsm.utils import OrganFSM
-from app.aio.cls.callback.back import OrganBackValues
+from app.tg.text.organ import OrganText
+from app.tg.buttons.organ import OrganIKB
+from app.tg.fsm.state import OrganState
+from app.tg.fsm.utils import OrganFSM
+from app.tg.callback.back_values import OrganBackValues
 from app.exception.organ import OrganPermissioError
 from app.exception.base import JSONEnterError
-
 
 class OrganService(BaseService):
     logic_class: type[OrganLogic] = OrganLogic

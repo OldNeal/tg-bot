@@ -6,10 +6,10 @@ from app.service.base import BaseService, AnswerBody
 from app.logic.beyonder import BeyonderLogic
 from app.validate.args import DrinkArg, UpDownSeqArg, TimeReplaceArg, TimeRedactArg
 from app.validate.text import RedactSeqTextValidate, UserTextValidate
-from app.aio.cls.msg.beyonder import BeyonderText
-from app.aio.cls.buttons.beyonder import BeyonderIKB
-from app.aio.cls.callback.back import BeyonderBackValues
-from app.aio.cls.fsm.utils import BeyonderFSM
+from app.tg.text.beyonder import BeyonderText
+from app.tg.buttons.beyonder import BeyonderIKB
+from app.tg.callback.back_values import BeyonderBackValues
+from app.tg.fsm.utils import BeyonderFSM
 from app.exception.args import DrinkPathNameError
 
 class BeyonderService(BaseService):

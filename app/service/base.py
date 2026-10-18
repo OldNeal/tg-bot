@@ -6,9 +6,9 @@ from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKe
 from aiogram.filters import CommandStart, Command, CommandObject
 
 from config import settings, bot
-from app.aio.cls.buttons.base import BotIKB
-from app.aio.cls.fsm.utils import FSMUtils
-from app.aio.cls.msg.base import BaseText
+from app.tg.buttons.base import BotIKB
+from app.tg.fsm.utils import FSMUtils
+from app.tg.text.base import BaseText
 from app.validate.tg import Answer, AnswerBody
 from app.logic.base import BaseLogic
 from app.logging.base import botlog

@@ -1,11 +1,10 @@
 from app.service.base import BaseService, AnswerBody
 from app.logic.wiki import WikiLogic
-from app.aio.cls.msg.wiki import WikiText
-from app.aio.cls.buttons.wiki import WikiIKB
-from app.aio.cls.fsm.utils import WikiFSM, BeyonderFSM
-from app.aio.cls.fsm.state import WikiState
-from app.aio.cls.callback.back import WikiBackValues
-
+from app.tg.text.wiki import WikiText
+from app.tg.buttons.wiki import WikiIKB
+from app.tg.fsm.utils import WikiFSM, BeyonderFSM
+from app.tg.fsm.state import WikiState
+from app.tg.callback.back_values import WikiBackValues
 
 class WikiService(BaseService):
     logic_class: type[WikiLogic] = WikiLogic
