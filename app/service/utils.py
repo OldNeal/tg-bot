@@ -18,7 +18,7 @@ def is_natural_int(string: str | None,
     return int(quan)
 
 class RaiseErrorHandler(ErrorHandler):
-    async def on_execution_error(self, *args, **kwargs) -> bool:
-        return True
+    async def on_execution_error(message: Message, error: Exception):
+        raise error
 
 
