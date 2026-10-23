@@ -23,7 +23,6 @@ class WikiService(BaseService):
             AnswerBody(
                 text=self.text.menu(),
                 reply_markup=self.IKB.menu(wiki_type),
-                is_rich_text=True,
             )
         ])
 
@@ -42,16 +41,10 @@ class WikiService(BaseService):
                 text=self.text.ga(data).all,
                 data=data,
                 reply_markup=self.IKB.all_gas(data.gas, group=group, where=where),
-                is_rich_text=True,
             )
         ])
 
-    async def search_ga(
-        self,
-        value: str | None = None,
-        page: int | None = None,
-        where: str | None = None,
-    ):
+    async def search_ga(self, value: str | None = None, page: int | None = None, where: str | None = None):
         if value:
             data = await self.logic.search_ga(value)
         else:
@@ -71,7 +64,6 @@ class WikiService(BaseService):
                     if data.gas
                     else self.IKB.search('ga')
                 ),
-                is_rich_text=True,
             )
         ])
 
@@ -87,7 +79,6 @@ class WikiService(BaseService):
                 text=self.text.ga(data).info(),
                 data=data,
                 reply_markup=self.IKB.ga(data.paths, where),
-                is_rich_text=True,
             )
         ])
 
@@ -120,7 +111,6 @@ class WikiService(BaseService):
                 text=self.text.path(data).info(value),
                 data=data,
                 reply_markup=self.IKB.path(data.path_id, back_where),
-                is_rich_text=True,
             )
         ])
 
@@ -133,16 +123,10 @@ class WikiService(BaseService):
                 text=self.text.path(data).all,
                 data=data,
                 reply_markup=self.IKB.all_paths(data.paths, group=group, where=where),
-                is_rich_text=True,
             )
         ])
 
-    async def search_path(
-        self,
-        value: str | None = None,
-        page: int | None = None,
-        where: str | None = None,
-    ):
+    async def search_path(self, value: str | None = None, page: int | None = None, where: str | None = None):
         if value:
             data = await self.logic.search_path(value)
         else:
@@ -162,7 +146,6 @@ class WikiService(BaseService):
                     if data.paths
                     else self.IKB.search('path')
                 ),
-                is_rich_text=True,
             )
         ])
 
@@ -187,7 +170,6 @@ class WikiService(BaseService):
             AnswerBody(
                 text=self.text.enter_search_value(),
                 reply_markup=self.IKB.enter_search(self.is_bot_message),
-                is_rich_text=True,
             )
         ])
 

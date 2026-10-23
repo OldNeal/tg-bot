@@ -25,3 +25,7 @@ class Templates:
 class BaseText:
     html = TextHTML
 
+    @classmethod
+    def json(self, data: dict):
+        text = self.html.json_format(data, 4)
+        return self.html.anchor('start-json') + text.pre('json').details('JSON', text.count('\n') > 10) + self.html('Вверх').href('#start-json')

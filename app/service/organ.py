@@ -2,14 +2,6 @@ import json, json5
 
 from app.service.base import BaseService, AnswerBody
 from app.logic.organ import OrganLogic
-from app.validate.args import (
-    InfoOrganIdArg,
-    NameArg,
-    OrganIdArg,
-    RankRedactArg,
-    TitulRedactArg,
-    UserArg,
-)
 from app.tg.text.organ import OrganText
 from app.tg.buttons.organ import OrganIKB
 from app.tg.fsm.state import OrganState
@@ -34,7 +26,6 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text.menu(),
                 reply_markup=self.IKB.menu(),
-                is_rich_text=True,
             )
         ])
 
@@ -52,71 +43,40 @@ class OrganService(BaseService):
 
     async def member(self, purpose_tg_id: int | None = None):
         await self.fsm.set_state()
-        if purpose_tg_id:
-            data = await self.logic.member(purpose_tg_id)
-        else:
-            data = await self.logic.member(
-                **UserArg(purpose_tg_id=self.purpose.id).model_dump()
-            )
+        if purpose_tg_id is None:
+            purpose_tg_id = self.purpose.id
+        data = await self.logic.member(purpose_tg_id)
         return await self.answer([
             AnswerBody(
                 text=self.text.member(data),
                 data=data,
                 reply_markup=self.IKB.member(data),
-                is_rich_text=True,
             )
         ])
 
-    async def info(
-        self,
-        organ_id: int | None = None,
-        purpose_tg_id: int | None = None,
-        is_back: bool = False,
-    ):
+    async def info(self, organ_id: int | None = None, purpose_tg_id: int | None = None, is_back: bool = False):
         back_where2 = await self.fsm.pop_value('back_where2')
-        if organ_id is None and purpose_tg_id is None and not is_back:
-            data = await self.logic.info(
-                **InfoOrganIdArg(organ_id=organ_id).model_dump()
-            )
-        elif is_back:
-            organ_id = await self.fsm.get_value('organ_id')
-            data = await self.logic.info(organ_id=organ_id)
-        else:
-            data = await self.logic.info(
-                organ_id=organ_id,
-                purpose_tg_id=purpose_tg_id,
-            )
+        organ_id = organ_id if not organ_id is None else await self.fsm.get_value('organ_id')
+        data = await self.logic.info(organ_id=organ_id,purpose_tg_id=purpose_tg_id,)
         return await self.answer([
             AnswerBody(
                 text=self.text(data).info,
                 data=data,
                 reply_markup=self.IKB.info(data, where=back_where2),
-                is_rich_text=True,
             )
         ])
 
-    async def search(
-        self,
-        value: str | None = None,
-        is_back: bool = False,
-        page: int | None = None,
-    ):
+    async def search(self, value: str | None = None, is_new_search: bool = False, page: int | None = None):
         page = page if page is not None else await self.fsm.get_value('page', 0)
         value = await self.fsm.get_value('search_value', value)
-        if is_back and value:
-            data = await self.logic.search(value=value)
-        elif value:
+        if value and not is_new_search:
             data = await self.logic.search(value=value)
         else:
             return await self.to_enter_search()
-
         pages = self.to_pages(data.organs)
         max_page = len(pages)
         if len(data.organs) == 0:
-            await self.fsm.update_data(
-                back_where2=OrganBackValues.search,
-                page=page,
-            )
+            await self.fsm.update_data(back_where2=OrganBackValues.search,page=page,)
         else:
             await self.fsm.update_data(
                 search_value=data.search_value,
@@ -125,21 +85,9 @@ class OrganService(BaseService):
             )
         current_page = pages[page if page < max_page else 0] if pages else []
         return await self.answer([
-            AnswerBody(
-                text=self.text.search(
-                    data.search_value,
-                    len(data.organs),
-                    page,
-                    max_page,
-                ),
+            AnswerBody(text=self.text.search(data.search_value, len(data.organs), page, max_page),
                 data=data,
-                reply_markup=self.IKB.organs(
-                    current_page,
-                    page,
-                    max_page,
-                    OrganBackValues.search,
-                ),
-                is_rich_text=True,
+                reply_markup=self.IKB.organs(current_page, page, max_page, OrganBackValues.search),
             )
         ])
 
@@ -150,33 +98,19 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text.to_search(),
                 reply_markup=self.IKB.cancel(),
-                is_rich_text=True,
             )
         ])
 
     async def to_search(self):
-        return await self.search(self.message.text, is_back=True)
+        return await self.search(self.message.text)
 
     async def enter_search(self):
         await self.fsm.remove_value('search_value')
         return await self.search()
 
-    async def info_members(
-        self,
-        organ_id: int | None = None,
-        page: int | None = None,
-    ):
-        page = (
-            page
-            if page is not None
-            else await self.fsm.get_value('info_members_page', 0)
-        )
-        if organ_id:
-            data = await self.logic.info_members(organ_id=organ_id)
-        else:
-            data = await self.logic.info_members(
-                **InfoOrganIdArg(organ_id=organ_id).model_dump()
-            )
+    async def info_members(self, organ_id: int, page: int | None = None):
+        page = page if page is not None else await self.fsm.get_value('info_members_page', 0)
+        data = await self.logic.info_members(organ_id=organ_id)
         pages = self.to_pages(sorted(data.members, key=lambda x: x.member.rank))
         max_page = len(pages)
         await self.fsm.update_data(organ_id=data.id, info_members_page=page)
@@ -185,30 +119,18 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text(data).members(page, max_page),
                 data=data,
-                reply_markup=self.IKB.members(
-                    current_page,
-                    page,
-                    max_page,
-                    data.id,
-                ),
-                is_rich_text=True,
+                reply_markup=self.IKB.members(current_page, page, max_page, data.id),
             )
         ])
 
-    async def info_description(self, organ_id: int | None = None):
-        if organ_id:
-            data = await self.logic.info_description(organ_id=organ_id)
-        else:
-            data = await self.logic.info_description(
-                **InfoOrganIdArg(organ_id=organ_id).model_dump()
-            )
+    async def info_description(self, organ_id: int):
+        data = await self.logic.info_description(organ_id=organ_id)
         await self.fsm.update_data(organ_id=data.id)
         return await self.answer([
             AnswerBody(
                 text=self.text(data).desc,
                 data=data,
                 reply_markup=self.IKB.organ_back(data.id),
-                is_rich_text=True,
             )
         ])
 
@@ -224,7 +146,6 @@ class OrganService(BaseService):
                 text=self.text.list(page, max_page),
                 data=data,
                 reply_markup=self.IKB.organs(current_page, page, max_page),
-                is_rich_text=True,
             )
         ])
 
@@ -236,14 +157,12 @@ class OrganService(BaseService):
                 text=self.text.top(),
                 data=data,
                 reply_markup=self.IKB.top(data.organs),
-                is_rich_text=True,
             )
         ])
 
-    async def login(self, organ_id: int | None = None):
-        args = OrganIdArg(organ_id=organ_id)
-        if args.organ_id:
-            data = await self.logic.login(organ_id=args.organ_id)
+    async def login(self, organ_id: int):
+        if organ_id:
+            data = await self.logic.login(organ_id=organ_id)
             return await self.answer([
                 AnswerBody(
                     text=self.text(data).login,
@@ -261,7 +180,6 @@ class OrganService(BaseService):
                 text=self.text.to_exit(),
                 data=data,
                 reply_markup=self.IKB.exit(data.organ.id),
-                is_rich_text=True,
             )
         ])
 
@@ -272,7 +190,6 @@ class OrganService(BaseService):
                 text=self.text(data).exit,
                 data=data,
                 reply_markup=self.IKB.organ_back(data.organ.id),
-                is_rich_text=True,
             )
         ])
 
@@ -282,14 +199,12 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text(data).cancel_exit,
                 data=data,
-                is_rich_text=True,
             )
         ])
 
-    async def create(self, name: str | None = None):
-        args = NameArg(name=name)
-        if args.name:
-            data = await self.logic.create(name=args.name)
+    async def create(self, name: str):
+        if name:
+            data = await self.logic.create(name=name)
             return await self.answer([
                 AnswerBody(
                     text=self.text(data).create,
@@ -305,10 +220,7 @@ class OrganService(BaseService):
             await self.logic.info()
         except Exception:
             await self.fsm.set_state(OrganState.create)
-            await self.fsm.save_message(
-                self.message.chat.id,
-                self.message.message_id,
-            )
+            await self.fsm.save_message(self.message.chat.id, self.message.message_id)
             return await self.answer([
                 AnswerBody(
                     text=self.text.to_create(),
@@ -329,7 +241,6 @@ class OrganService(BaseService):
                 text=self.text(data).settings_values(data.values),
                 data=data,
                 reply_markup=self.IKB.settings_values(self.is_bot_message),
-                is_rich_text=True,
             )
         ])
 
@@ -345,7 +256,6 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text.to_enter_paramet(),
                 reply_markup=self.IKB.back(OrganBackValues.settings),
-                is_rich_text=True,
             )
         ])
 
@@ -365,68 +275,29 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text(data).capture,
                 data=data,
-                reply_markup=(
-                    self.IKB.organ_back(data.organ.id)
-                    if self.is_bot_message
-                    else None
-                ),
-                is_rich_text=True,
+                reply_markup=(self.IKB.organ_back(data.organ.id) if self.is_bot_message else None),
             )
         ])
 
-    async def uprank(
-        self,
-        purpose_tg_id: int | None = None,
-        rank: int | None = None,
-    ):
-        args = self._rank_args(purpose_tg_id, rank)
-        data = await self.logic.uprank(
-            purpose_tg_id=args.purpose_tg_id,
-            new_rank=args.rank,
-        )
+    async def uprank( self, purpose_tg_id: int, rank: int):
+        data = await self.logic.uprank(purpose_tg_id=purpose_tg_id, rank=rank)
         return await self.answer([
             AnswerBody(
                 text=self.text(data).uprank(data.new_rank),
                 data=data,
-                reply_markup=(
-                    self.IKB.member_back(data.user.tg_id)
-                    if self.is_bot_message
-                    else None
-                ),
-                is_rich_text=True,
+                reply_markup=(self.IKB.member_back(data.user.tg_id) if self.is_bot_message else None),
             )
         ])
 
-    async def downrank(
-        self,
-        purpose_tg_id: int | None = None,
-        rank: int | None = None,
-    ):
-        args = self._rank_args(purpose_tg_id, rank)
-        data = await self.logic.downrank(
-            purpose_tg_id=args.purpose_tg_id,
-            new_rank=args.rank,
-        )
+    async def downrank( self, purpose_tg_id: int, rank: int):
+        data = await self.logic.downrank(purpose_tg_id=purpose_tg_id, rank=rank)
         return await self.answer([
             AnswerBody(
                 text=self.text(data).downrank(data.new_rank),
                 data=data,
-                reply_markup=(
-                    self.IKB.member_back(data.user.tg_id)
-                    if self.is_bot_message
-                    else None
-                ),
-                is_rich_text=True,
+                reply_markup=(self.IKB.member_back(data.user.tg_id) if self.is_bot_message else None),
             )
         ])
-
-    def _rank_args(
-        self,
-        purpose_tg_id: int | None,
-        rank: int | None,
-    ) -> RankRedactArg:
-        target_tg_id = purpose_tg_id if purpose_tg_id is not None else self.purpose.id
-        return RankRedactArg(purpose_tg_id=target_tg_id, rank=rank)
 
     async def kick(self, purpose_tg_id: int | None = None):
         target_tg_id = purpose_tg_id if purpose_tg_id is not None else self.purpose.id
@@ -436,7 +307,6 @@ class OrganService(BaseService):
                 text=self.text.kick(data),
                 data=data,
                 reply_markup=self.IKB.kick(data, self.is_bot_message),
-                is_rich_text=True,
             )
         ])
 
@@ -447,7 +317,6 @@ class OrganService(BaseService):
                 text=self.text(data).accert_kick,
                 data=data,
                 reply_markup=self.IKB.back(OrganBackValues.members),
-                is_rich_text=True,
             )
         ])
 
@@ -457,65 +326,42 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text(data).cancel_kick,
                 data=data,
-                is_rich_text=True,
             )
         ])
 
     async def titul(
         self,
-        purpose_tg_id: int | None = None,
-        titul: str | None = None,
+        purpose_tg_id: int,
+        titul: str
     ):
         target_tg_id = purpose_tg_id if purpose_tg_id is not None else self.purpose.id
-        args = TitulRedactArg(purpose_tg_id=target_tg_id, titul=titul)
         member = await self.logic.member(self.tg_id)
         if not member.for_buttons.is_redact_titul:
             raise OrganPermissioError()
-        if not args.titul:
+        if not titul:
             return await self.to_titul_redact(target_tg_id)
-        return await self.titul_redact(
-            titul=args.titul,
-            purpose_tg_id=args.purpose_tg_id,
-        )
+        return await self.titul_redact(titul=titul, purpose_tg_id=purpose_tg_id)
 
     async def to_titul_redact(self, purpose_tg_id: int | None = None):
-        target_tg_id = await self.fsm.get_value(
-            'purpose_tg_id',
-            purpose_tg_id if purpose_tg_id is not None else self.tg_id,
-        )
+        target_tg_id = await self.fsm.get_value('purpose_tg_id', purpose_tg_id if purpose_tg_id is not None else self.tg_id)
         await self.fsm.set_state(OrganState.titul)
         await self.fsm.update_data(purpose_tg_id=target_tg_id)
         await self.fsm.save_message(self.message.chat.id, self.message.message_id)
         return await self.answer([
             AnswerBody(
                 text=self.text.redact_titul(),
-                reply_markup=self.IKB.redact_titul(
-                    target_tg_id,
-                    self.is_bot_message,
-                ),
-                is_rich_text=True,
+                reply_markup=self.IKB.redact_titul(target_tg_id, self.is_bot_message),
             )
         ])
 
-    async def titul_redact(
-        self,
-        titul: str | None = None,
-        purpose_tg_id: int | None = None,
-    ):
-        target_tg_id = await self.fsm.get_value(
-            'purpose_tg_id',
-            purpose_tg_id if purpose_tg_id is not None else self.tg_id,
-        )
-        data = await self.logic.titul_redact(
-            target_tg_id,
-            titul or self.message.text,
-        )
+    async def titul_redact(self, titul: str | None = None, purpose_tg_id: int | None = None):
+        target_tg_id = await self.fsm.get_value('purpose_tg_id', purpose_tg_id if purpose_tg_id is not None else self.tg_id)
+        data = await self.logic.titul_redact(target_tg_id, titul or self.message.text)
         return await self.answer([
             AnswerBody(
                 text=self.text(data).titul(data.old_titul, data.new_titul),
                 data=data,
                 reply_markup=self.IKB.member_back(target_tg_id),
-                is_rich_text=True,
             )
         ])
 
@@ -527,7 +373,6 @@ class OrganService(BaseService):
                 text=self.text(data).titul(data.old_titul, data.new_titul),
                 data=data,
                 reply_markup=self.IKB.member_back(data.user.tg_id),
-                is_rich_text=True,
             )
         ])
 
@@ -539,7 +384,6 @@ class OrganService(BaseService):
                 text=self.text.to_give(data),
                 data=data,
                 reply_markup=self.IKB.give(data.user.tg_id, self.is_bot_message),
-                is_rich_text=True,
             )
         ])
 
@@ -550,7 +394,6 @@ class OrganService(BaseService):
                 text=self.text.give(data),
                 data=data,
                 reply_markup=self.IKB.member_back(data.user.tg_id),
-                is_rich_text=True,
             )
         ])
 
@@ -560,6 +403,5 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text(data).cancel_give,
                 data=data,
-                is_rich_text=True,
             )
         ])

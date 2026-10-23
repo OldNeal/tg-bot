@@ -49,3 +49,4 @@ class MainText(BaseText):
     @classmethod
     def state_dont_pop(self):
         return f'❌ Кук не найден'
+        

@@ -14,9 +14,9 @@ Or with uv:
 uv add clientele
 ```
 
-API VERSION: 0.6
+API VERSION: 0.7.x
 OPENAPI VERSION: 3.1.0
-CLIENTELE VERSION: 2.2.2
+CLIENTELE VERSION: 2.3.0
 
 Regenerate using this command:
 

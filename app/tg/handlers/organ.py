@@ -32,7 +32,7 @@ from app.tg.callback.organ import (
 from app.tg.fsm.state import OrganState
 from app.tg.middlewares import ServiceMiddleware
 from app.service.organ import OrganService
-from app.service.utils import RaiseErrorHandler
+from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 
 organ_router = Router()
 organ_router.message.middleware(ServiceMiddleware(OrganService))
@@ -48,9 +48,8 @@ organ_router.callback_query.middleware(ServiceMiddleware(OrganService))
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -59,7 +58,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.member(purpose_tg_id=purpose_tg_id)
 
@@ -74,9 +72,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -86,7 +83,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.member(purpose_tg_id=purpose_tg_id)
 
@@ -111,9 +107,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -124,7 +119,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.search(value=value)
 
@@ -135,7 +129,7 @@ async def call(
     callback_data: OrganBackCall,
     service: OrganService,
 ):
-    await service.search(is_back=True)
+    await service.search()
 
 
 @organ_router.callback_query(OrganSearchCall.filter())
@@ -144,7 +138,7 @@ async def call(
     callback_data: OrganSearchCall,
     service: OrganService,
 ):
-    await service.search()
+    await service.search(is_new_search=True)
 
 
 @organ_router.message(OrganState.search)
@@ -155,8 +149,8 @@ async def text_state(
 ):
     msg0 = await service.fsm.get_message()
     await service.to_search()
-    await service.bot.delete_message(*msg0)
     await service.fsm.set_state()
+    await service.bot.delete_message(*msg0)
     await service.fsm.remove_message()
 
 
@@ -180,9 +174,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -193,7 +186,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.info(organ_id=organ_id, purpose_tg_id=purpose_tg_id)
 
@@ -230,9 +222,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -243,7 +234,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.info_members(organ_id=organ_id)
 
@@ -292,9 +282,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -305,7 +294,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.info_description(organ_id=organ_id)
 
@@ -329,9 +317,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -341,7 +328,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.list()
 
@@ -374,9 +360,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -386,7 +371,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.top()
 
@@ -410,9 +394,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -422,7 +405,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.login(organ_id=organ_id)
 
@@ -437,9 +419,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -449,7 +430,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.login()
 
@@ -472,9 +452,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -483,7 +462,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.to_exit()
 
@@ -498,9 +476,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -510,7 +487,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.to_exit()
 
@@ -550,7 +526,7 @@ async def call(
     name='organ create',
     description='Создать организацию',
     arguments=[Requireds.organ_mode, Optionals.organ_name],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -578,8 +554,8 @@ async def text_state(
 ):
     msg0 = await service.fsm.get_message()
     await service.enter_name_for_create()
-    await service.bot.delete_message(*msg0)
     await service.fsm.set_state()
+    await service.bot.delete_message(*msg0)
     await service.fsm.remove_message()
 
 
@@ -596,9 +572,8 @@ async def text_state(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -608,7 +583,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.get_settings()
 
@@ -657,8 +631,8 @@ async def text_state(
 ):
     msg0 = await service.fsm.get_message()
     await service.redact_settings()
-    await service.bot.delete_message(*msg0)
     await service.fsm.set_state()
+    await service.bot.delete_message(*msg0)
     await service.fsm.remove_message()
 
 
@@ -672,9 +646,8 @@ async def text_state(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -684,7 +657,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.capture()
 
@@ -708,9 +680,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -720,7 +691,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.uprank(purpose_tg_id=purpose_tg_id, rank=rank)
 
@@ -736,9 +706,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -749,7 +718,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.uprank(purpose_tg_id=purpose_tg_id, rank=rank)
 
@@ -764,9 +732,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -776,7 +743,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.downrank(purpose_tg_id=purpose_tg_id, rank=rank)
 
@@ -792,9 +758,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -805,7 +770,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.downrank(purpose_tg_id=purpose_tg_id, rank=rank)
 
@@ -838,9 +802,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -850,7 +813,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.kick(purpose_tg_id=purpose_tg_id)
 
@@ -895,9 +857,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -907,7 +868,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.titul_delete(purpose_tg_id=purpose_tg_id)
 
@@ -926,9 +886,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -939,7 +898,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.titul_delete(purpose_tg_id=purpose_tg_id)
 
@@ -964,9 +922,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -977,7 +934,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.titul(purpose_tg_id=purpose_tg_id, titul=titul)
 
@@ -994,9 +950,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -1008,7 +963,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.titul(purpose_tg_id=purpose_tg_id, titul=titul)
 
@@ -1030,8 +984,8 @@ async def text_state(
 ):
     msg0 = await service.fsm.get_message()
     await service.titul_redact()
-    await service.bot.delete_message(*msg0)
     await service.fsm.set_state()
+    await service.bot.delete_message(*msg0)
     await service.fsm.remove_message()
 
 
@@ -1045,9 +999,8 @@ async def text_state(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -1057,7 +1010,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.titul(purpose_tg_id=purpose_tg_id, titul=titul)
 
@@ -1072,9 +1024,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -1084,7 +1035,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.titul(purpose_tg_id=purpose_tg_id)
 
@@ -1099,9 +1049,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -1111,7 +1060,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.to_give(purpose_tg_id=purpose_tg_id)
 
@@ -1153,9 +1101,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -1165,7 +1112,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.menu()
 
@@ -1180,9 +1126,8 @@ async def cmd(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -1192,7 +1137,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.menu()
 

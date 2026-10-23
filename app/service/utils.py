@@ -1,4 +1,4 @@
-from telegram_click_aio.error_handler import ErrorHandler
+from telegram_click_aio.error_handler import DefaultErrorHandler
 from aiogram.types import Message
 
 def is_natural_int(string: str | None, 
@@ -17,8 +17,8 @@ def is_natural_int(string: str | None,
         raise error_float(f'This user(tg_id={tg_id}) enter float')
     return int(quan)
 
-class RaiseErrorHandler(ErrorHandler):
-    async def on_execution_error(message: Message, error: Exception):
+class RaiseErrorHandler(DefaultErrorHandler):
+    async def on_execution_error(self, message: Message, error: Exception):
         raise error
 
-
+DEFAULT_BOT_ERROR_HANDLER = RaiseErrorHandler()

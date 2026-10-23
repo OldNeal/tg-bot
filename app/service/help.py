@@ -18,6 +18,5 @@ class HelpService(BaseService):
             AnswerBody(
                 text=self.text.main(),
                 reply_markup=self.IKB.main(),
-                is_rich_text=True,
             )
         ])

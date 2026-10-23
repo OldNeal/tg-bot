@@ -4,7 +4,7 @@ from aiogram import Router, F
 from aiogram.filters import Command
 
 from app.service.wiki import WikiService
-from app.service.utils import RaiseErrorHandler
+from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 from app.tg.args import Optionals
 from app.tg.callback.wiki import (
     PathCall,
@@ -34,9 +34,8 @@ wiki_router.callback_query.middleware(ServiceMiddleware(WikiService))
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -45,7 +44,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.menu()
 
@@ -78,9 +76,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -90,7 +87,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.ga(value)
 
@@ -141,9 +137,8 @@ async def call(
         Optionals.to_json,
         Optionals.is_reply,
         Optionals.is_admin,
-        Optionals.is_delay,
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -153,7 +148,6 @@ async def cmd(
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
-    is_delay: bool = False,
 ):
     await service.path(value)
 

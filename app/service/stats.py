@@ -25,7 +25,6 @@ class StatsService(BaseService):
                 text=self.text.all(data),
                 data=data,
                 reply_markup=self.IKB.all(),
-                is_rich_text=True,
             )
         ])
 
@@ -56,7 +55,6 @@ class StatsService(BaseService):
                     value,
                     where=StatsBackValues.all
                 ),
-                is_rich_text=True,
             )
         ])
 
@@ -67,7 +65,6 @@ class StatsService(BaseService):
             AnswerBody(
                 text=self.text.enter_search_value(),
                 reply_markup=self.IKB.back(StatsBackValues.all),
-                is_rich_text=True,
             )
         ])
 

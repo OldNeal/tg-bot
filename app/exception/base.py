@@ -17,7 +17,8 @@ class BotError(Exception):
         self.is_error = is_error
         if is_error:
             super().__init__(*args)
-            getattr(botlog.logger, level)(f'{self.__class__.__name__}, msg: {' '.join(self.args) if len(args) > 0 else self.msg}, kwargs: {self.kwargs}')
+            msg = ' '.join(self.args) if len(self.args) > 0 else self.msg
+            getattr(botlog.logger, level)(f"{self.__class__.__name__}, msg: {msg}, kwargs: {self.kwargs}")
 
     def __str__(self):
         return super().__str__()

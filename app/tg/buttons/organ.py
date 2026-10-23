@@ -139,7 +139,7 @@ class OrganIKB(BotIKB):
 
     def menu(self):
         self.builder.button(text='🃏 Моя организация', callback_data=OrganMyCall(tg_id=self.tg_id))
-        self.builder.button(text='🔎 Поиск организаций', callback_data=OrganBackCall(where=OrganBackValues.search, tg_id=self.tg_id))
+        self.builder.button(text='🔎 Найти организацию', callback_data=OrganBackCall(where=OrganBackValues.search, tg_id=self.tg_id))
         self.builder.button(text='📜 Все организации', callback_data=OrganBackCall(where=OrganBackValues.list, tg_id=self.tg_id))
         self.builder.button(text='🏆 Топ организаций', callback_data=OrganBackCall(where=OrganBackValues.top, tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()

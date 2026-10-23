@@ -93,15 +93,17 @@ class BaseService:
         for body in answer_body_list:
             k += 1
             if body.is_reply_answer:
-                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, reply_to_message_id=body.message_id, chat_id=body.chat_tg_id)
+                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, reply_to_message_id=body.message_id, chat_id=body.chat_tg_id, message_thread_id=body.message_thread_id)
+            if body.reply_message_id:
+                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, reply_to_message_id=body.reply_message_id, chat_id=body.chat_tg_id, message_thread_id=body.message_thread_id)
             elif body.is_rich_text and body.edit_message:
                 msg = await self.bot.edit_message_text(rich_message=InputRichMessage(html=body.text), reply_markup=body.reply_markup, chat_id=body.chat_tg_id, message_id=body.message_id)
             elif body.is_rich_text:
-                msg = await self.bot.send_rich_message(rich_message=InputRichMessage(html=body.text), reply_markup=body.reply_markup, chat_id=body.chat_tg_id)
+                msg = await self.bot.send_rich_message(rich_message=InputRichMessage(html=body.text), reply_markup=body.reply_markup, chat_id=body.chat_tg_id, message_thread_id=body.message_thread_id)
             elif body.edit_message:
                 msg = await self.bot.edit_message_text(text=body.text, reply_markup=body.reply_markup, chat_id=body.chat_tg_id, message_id=body.message_id)
             else:
-                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, chat_id=body.chat_tg_id)
+                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, chat_id=body.chat_tg_id, message_thread_id=body.message_thread_id)
             results.append(msg)
             if k%delay == 0:
                 await asyncio.sleep(2)
@@ -116,12 +118,14 @@ class BaseService:
                 chat_tg_id=self.chat.id,
                 _user_tg_id=self.tg_id,
                 message_id=self.message.message_id,
-                edit_message=self.to_edit_message,
+                edit_message=self.to_edit_message if body.edit_message is None else None,
+                message_thread_id=self.message.message_thread_id,
 
                 text=body.text,
                 reply_markup=body.reply_markup,
                 is_rich_text=body.is_rich_text,
                 is_reply_answer=body.is_reply_answer,
+                reply_message_id=body.reply_message_id
                 ) for body in answer_body_list
                 ])
 

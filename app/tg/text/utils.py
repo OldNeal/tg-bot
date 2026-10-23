@@ -2,6 +2,10 @@ import random, html, json, markdown
 from typing import Any
 from html.parser import HTMLParser
 
+SEP_STR_DEFAULT = '\n'
+SEP_HTML_DEFAULT = '<br>'
+IS_HTML_SEPARATOR = False
+
 class HTMLStripper(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -15,6 +19,15 @@ class HTMLStripper(HTMLParser):
         return ''.join(self.text)
 
 class TextHTMLBase(str):
+    @classmethod
+    def separator(cls, sep: str | None = None, n: int = 1, is_html_separator: bool = IS_HTML_SEPARATOR):
+        if sep:
+            return cls(n*sep)
+        elif is_html_separator:
+            return cls(n*SEP_HTML_DEFAULT)
+        else:
+            return cls(n*SEP_STR_DEFAULT)
+
     def blockquote(self, expandable: bool = False, cite: str | None = None) -> "TextHTML":
         """ Цитата
             - expandable: Позволяет сделать цитату разворачиваемой
@@ -65,11 +78,12 @@ class TextHTMLBase(str):
         return TextHTML(f'<tg-spoiler>{self}</tg-spoiler>')
     
     @classmethod
-    def to_list(cls, items: list[str], type: str = 'num', sep: str = '\n', type_list: list[str] | None = None) -> "TextHTML":
+    def to_list(cls, items: list[str], type: str = 'num', sep: str | None = None, type_list: list[str] | None = None) -> "TextHTML":
         ''' Нумерованный список
             - items: Список элементов 
             - type: Тип списка (num - нумерованный, любой другой - кастомный символ)
             - sep: Разделитель между элементами списка '''
+        sep = cls.separator(sep=sep)
         if type == 'num':
             return cls(sep.join([f'{i+1}. {item}' for i, item in enumerate(items)]))
         elif type == 'path':
@@ -82,10 +96,11 @@ class TextHTMLBase(str):
             return cls(sep.join([f'{type} {item}' for item in items]))
         
     @classmethod
-    def num_list(cls, items: list[str], sep: str = '\n') -> "TextHTML":
+    def num_list(cls, items: list[str], sep: str | None = None) -> "TextHTML":
         ''' Нумерованный список
             - items: Список элементов для нумерации
             - sep: Разделитель между элементами списка '''
+        sep = cls.separator(sep=sep)
         return cls.to_list(items, type='num', sep=sep)
     
     @staticmethod
@@ -184,10 +199,15 @@ class TextHTMLBase(str):
     
     @classmethod
     def br(cls, n: int = 1):
-        return cls(n*"<br>")
+        return cls(cls.separator(n=n, is_html_separator=True))
 
     @classmethod
-    def joined(cls, iter: list, sep: str = '<br>'):
+    def slesh_n(cls, n: int = 1):
+        return cls(cls.separator(n=n, is_html_separator=False))
+
+    @classmethod
+    def joined(cls, iter: list, sep: str | None = None):
+        sep = cls.separator(sep=sep)
         return cls(sep.join(iter))
 
     def to_markered(self, value: str | None):

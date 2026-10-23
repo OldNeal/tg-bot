@@ -20,12 +20,10 @@ class MainService(BaseService):
         return await self.answer([
             AnswerBody(
                 text=self.text(data).first_msg_by_info,
-                is_rich_text=True,
             ),
             AnswerBody(
                 text=self.text(data).info,
                 data=data,
-                is_rich_text=True,
             )
         ])
 
@@ -39,7 +37,7 @@ class MainService(BaseService):
         data = await self.fsm.get_data()
         return await self.answer([
             AnswerBody(
-                text=self.text.html(data),
+                text=self.text.json(data),
                 data=None,
                 reply_markup=self.IKB.my_state(),
                 is_rich_text=True,

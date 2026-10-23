@@ -1,10 +1,7 @@
 from datetime import datetime, timedelta
 
-from pydantic import ValidationError
-
 from app.service.base import BaseService, AnswerBody
 from app.logic.beyonder import BeyonderLogic
-from app.validate.args import DrinkArg, UpDownSeqArg, TimeReplaceArg, TimeRedactArg
 from app.validate.text import RedactSeqTextValidate, UserTextValidate
 from app.tg.text.beyonder import BeyonderText
 from app.tg.buttons.beyonder import BeyonderIKB
@@ -44,19 +41,9 @@ class BeyonderService(BaseService):
         if path_id:
             data = await self.logic.drink(path_id=path_id)
         else:
-            try:
-                args = DrinkArg.model_validate({
-                    'path_name': path_name,
-                    'seq': seq,
-                    'purpose_tg_id': purpose_tg_id
-                })
-            except ValidationError as error:
-                raise DrinkPathNameError() from error
-            data = await self.logic.drink(
-                purpose_tg_id=args.purpose_tg_id,
-                path_name=args.path_name,
-                seq=args.seq
-            )
+            if path_name is None:
+                raise DrinkPathNameError()
+            data = await self.logic.drink(purpose_tg_id=purpose_tg_id, path_name=path_name, seq=seq)
         return await self.answer([
             AnswerBody(
                 text=self.text(
@@ -71,22 +58,8 @@ class BeyonderService(BaseService):
             )
         ])
 
-    async def upseq(
-        self,
-        seq: int | None = None,
-        path_name: str | None = None,
-        purpose_tg_id: int | None = None
-    ):
-        args = UpDownSeqArg.model_validate({
-            'seq': seq,
-            'path_name': path_name,
-            'purpose_tg_id': purpose_tg_id
-        })
-        data = await self.logic.upseq(
-            purpose_tg_id=args.purpose_tg_id,
-            path_name=args.path_name,
-            seq=args.seq
-        )
+    async def upseq(self, seq: int | None = None, path_name: str | None = None, purpose_tg_id: int | None = None):
+        data = await self.logic.upseq(purpose_tg_id=purpose_tg_id, path_name=path_name, seq=seq)
         return await self.answer([
             AnswerBody(
                 text=self.text(
@@ -101,22 +74,8 @@ class BeyonderService(BaseService):
             )
         ])
 
-    async def dowseq(
-        self,
-        seq: int | None = None,
-        path_name: str | None = None,
-        purpose_tg_id: int | None = None
-    ):
-        args = UpDownSeqArg.model_validate({
-            'seq': seq,
-            'path_name': path_name,
-            'purpose_tg_id': purpose_tg_id
-        })
-        data = await self.logic.dowseq(
-            purpose_tg_id=args.purpose_tg_id,
-            path_name=args.path_name,
-            seq=args.seq
-        )
+    async def dowseq(self, seq: int | None = None, path_name: str | None = None, purpose_tg_id: int | None = None):
+        data = await self.logic.dowseq(purpose_tg_id=purpose_tg_id, path_name=path_name, seq=seq)
         return await self.answer([
             AnswerBody(
                 text=self.text(
@@ -179,14 +138,7 @@ class BeyonderService(BaseService):
         ])
 
     async def time_redact(self, duration: timedelta, purpose_tg_id: int | None = None):
-        args = TimeRedactArg.model_validate({
-            'duration': duration,
-            'purpose_tg_id': purpose_tg_id
-        })
-        data = await self.logic.time_redact(
-            duration=args.duration,
-            purpose_tg_id=args.purpose_tg_id
-        )
+        data = await self.logic.time_redact(duration=duration, purpose_tg_id=purpose_tg_id)
         return await self.answer([
             AnswerBody(
                 text=self.text(data).time_redact,
@@ -196,14 +148,7 @@ class BeyonderService(BaseService):
         ])
 
     async def time_replace(self, datetime_arg: datetime, purpose_tg_id: int | None = None):
-        args = TimeReplaceArg.model_validate({
-            'datetime_arg': datetime_arg,
-            'purpose_tg_id': purpose_tg_id
-        })
-        data = await self.logic.time_replace(
-            datetime_arg=args.datetime_arg,
-            purpose_tg_id=args.purpose_tg_id
-        )
+        data = await self.logic.time_replace(datetime_arg=datetime_arg, purpose_tg_id=purpose_tg_id)
         return await self.answer([
             AnswerBody(
                 text=self.text(data).time_replace,
@@ -212,12 +157,7 @@ class BeyonderService(BaseService):
             )
         ])
 
-    async def list(
-        self,
-        path_id: int | None = None,
-        page: int | None = None,
-        where: str | None = None
-    ):
+    async def list(self, path_id: int | None = None, page: int | None = None, where: str | None = None):
         page = page if page is not None else await self.fsm.get_value('page', 0)
         path_id = path_id if path_id is not None else await self.fsm.get_value('path_id')
         data = await self.logic.list(path_id)

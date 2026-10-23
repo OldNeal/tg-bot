@@ -11,3 +11,8 @@ class WikiState(StatesGroup):
 
 class StatsState(StatesGroup):
     search = State()
+
+class NewsPaperState(StatesGroup):
+    search = State()
+    settings = State()
+    create = State()

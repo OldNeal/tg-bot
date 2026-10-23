@@ -66,6 +66,8 @@ class FSMUtils:
         data = await self._state.get_data()
         if self.prefix + key:
             value = data.pop(self.prefix + key, default)
+            state_keys = data.get('state_keys', [])
+            data['state_keys'] = [k for k in state_keys if key not in k]
         else:
             value = default
         await self._state.set_data(data)
@@ -85,3 +87,6 @@ class OrganFSM(FSMUtils):
 
 class StatsFSM(FSMUtils):
     prefixs = ['stats']
+
+class NewsPaperFSM(FSMUtils):
+    prefixs = ['news_paper']

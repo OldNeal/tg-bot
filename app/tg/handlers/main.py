@@ -4,7 +4,7 @@ from aiogram import Router
 from aiogram.filters import Command, CommandObject
 
 from app.service.main import MainService
-from app.service.utils import RaiseErrorHandler
+from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 from app.tg.args import Optionals
 from app.tg.middlewares import ServiceMiddleware
 from app.tg.callback.main import MyStateCall
@@ -12,11 +12,18 @@ from app.tg.handlers.beyonder import beyonder_router
 from app.tg.handlers.wiki import wiki_router
 from app.tg.handlers.organ import organ_router
 from app.tg.handlers.stats import stats_router
+from app.tg.handlers.news_paper import news_paper_router
 
 main_router = Router()
 main_router.message.middleware(ServiceMiddleware(MainService))
 main_router.callback_query.middleware(ServiceMiddleware(MainService))
-main_router.include_routers(beyonder_router, organ_router, wiki_router, stats_router)
+main_router.include_routers(
+    beyonder_router,
+    organ_router,
+    wiki_router,
+    stats_router,
+    news_paper_router,
+)
 
 
 @main_router.message(Command('info'))
@@ -27,10 +34,9 @@ main_router.include_routers(beyonder_router, organ_router, wiki_router, stats_ro
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -38,8 +44,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.info(purpose_tg_id=purpose_tg_id)
 
@@ -52,10 +57,9 @@ async def cmd(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -63,8 +67,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.ping()
 
@@ -77,10 +80,9 @@ async def cmd(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -88,8 +90,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.my_state()
 
@@ -111,10 +112,9 @@ async def call(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -122,8 +122,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.my_state_clear()
 
@@ -136,10 +135,9 @@ async def cmd(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -148,7 +146,6 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.my_state_pop(command)

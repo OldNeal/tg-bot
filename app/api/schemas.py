@@ -17,6 +17,11 @@ class AnswerAllGroupInfo(pydantic.BaseModel):
     groups: list[str]
 
 
+class AnswerAllNewsPaperInfo(pydantic.BaseModel):
+    search_value: typing.Optional[str | None] = None
+    news_papers: list["NewsPaperInfo"]
+
+
 class AnswerAllOrganInfo(pydantic.BaseModel):
     search_value: typing.Optional[str | None] = None
     organs: list["OrganInfo"]
@@ -99,6 +104,34 @@ class AnswerMemberInfo(pydantic.BaseModel):
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
 
 
+class AnswerNewsPaperGive(pydantic.BaseModel):
+    user: "QueryBody"
+    purpose: "AnswerReaderInfo"
+
+
+class AnswerNewsPaperInfo(pydantic.BaseModel):
+    user: "QueryBody"
+    news_paper: "NewsPaperInfo"
+    for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
+
+
+class AnswerNewsPaperInfoReaders(pydantic.BaseModel):
+    user: "QueryBody"
+    id: int
+    name: str
+    readers: list["AnswerReaderInfo"]
+
+
+class AnswerNewsPaperSetting(pydantic.BaseModel):
+    user: "QueryBody"
+    settings: "OrganSettingValidate"
+
+
+class AnswerNewsPaperSettingValues(pydantic.BaseModel):
+    user: "QueryBody"
+    values: dict[str, typing.Any]
+
+
 class AnswerOrganGive(pydantic.BaseModel):
     user: "QueryBody"
     purpose: "AnswerMemberInfo"
@@ -157,10 +190,10 @@ class AnswerPathSearchInfo(pydantic.BaseModel):
     paths: list["AnswerPathInfo"] | None
 
 
-class AnswerRedactRank(pydantic.BaseModel):
+class AnswerReaderInfo(pydantic.BaseModel):
     user: "QueryBody"
-    new_rank: int
-    old_rank: int
+    reader: typing.Optional[typing.Union["ReaderInfo", None]] = None
+    for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
 
 
 class AnswerRedactSeq(pydantic.BaseModel):
@@ -238,13 +271,16 @@ class BeyonderInfo(pydantic.BaseModel):
 
 class ForButtons(pydantic.BaseModel):
     is_member: bool = False
+    is_reader: bool = False
     organ_id: int | None
+    news_paper_id: int | None
     is_redact_setting: bool = False
     is_redact_rank: bool = False
     is_redact_titul: bool = False
     is_kick: bool = False
     is_capture: bool = False
     is_give: bool = False
+    is_news: bool = False
 
 
 class HTTPValidationError(pydantic.BaseModel):
@@ -258,6 +294,15 @@ class MemberInfo(pydantic.BaseModel):
     rank: int | None
     rank_name: str | None
     login_at: str | None
+
+
+class NewsPaperInfo(pydantic.BaseModel):
+    id: int
+    name: str
+    owner: typing.Optional[typing.Union["AnswerReaderInfo", None]] = None
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+    reader_counts: int = 0
 
 
 class OrganInfo(pydantic.BaseModel):
@@ -289,6 +334,26 @@ class QueryBody(pydantic.BaseModel):
     chat_id: typing.Optional[int | None] = None
 
 
+class QueryNewsPaperSetting(pydantic.BaseModel):
+    tg_id: int
+    username: typing.Optional[str | None] = None
+    fullname: typing.Optional[str | None] = None
+    is_admin: bool = False
+    request_id: typing.Optional[str | None] = None
+    chat_id: typing.Optional[int | None] = None
+    parametrs: dict[str, typing.Any]
+
+
+class QueryNewsPaperSettingDefault(pydantic.BaseModel):
+    tg_id: int
+    username: typing.Optional[str | None] = None
+    fullname: typing.Optional[str | None] = None
+    is_admin: bool = False
+    request_id: typing.Optional[str | None] = None
+    chat_id: typing.Optional[int | None] = None
+    to_default: "OrganSettingDefault"
+
+
 class QueryOrganSetting(pydantic.BaseModel):
     tg_id: int
     username: typing.Optional[str | None] = None
@@ -307,6 +372,13 @@ class QueryOrganSettingDefault(pydantic.BaseModel):
     request_id: typing.Optional[str | None] = None
     chat_id: typing.Optional[int | None] = None
     to_default: "OrganSettingDefault"
+
+
+class ReaderInfo(pydantic.BaseModel):
+    news_paper_name: str | None
+    news_paper_id: int | None
+    rank: int | None
+    rank_name: str | None
 
 
 class Sequence(pydantic.BaseModel):
@@ -350,6 +422,19 @@ class ValidationError(pydantic.BaseModel):
     ctx: typing.Optional[dict[str, typing.Any]] = None
 
     model_config = pydantic.ConfigDict(populate_by_name=True)
+
+
+class AppValidateApiNewspaperAnswerredactrank(pydantic.BaseModel):
+    user: "QueryBody"
+    news_paper: "NewsPaperInfo"
+    new_rank: int
+    old_rank: int
+
+
+class AppValidateApiOrganAnswerredactrank(pydantic.BaseModel):
+    user: "QueryBody"
+    new_rank: int
+    old_rank: int
 
 
 class LogsFileGet200Response(pydantic.BaseModel):

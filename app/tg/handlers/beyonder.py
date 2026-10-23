@@ -6,7 +6,7 @@ from aiogram import Router, F
 from aiogram.filters import Command
 
 from app.service.beyonder import BeyonderService
-from app.service.utils import RaiseErrorHandler
+from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 from app.tg.args import Requireds, Optionals
 from app.tg.callback.beyonder import DrinkCall, KillCall, BeyonderListCall, BeyonderListPageCall, BeyonderInfoCall, BeyonderBackCall
 from app.tg.callback.back_values import BeyonderBackValues
@@ -24,11 +24,10 @@ beyonder_router.callback_query.middleware(ServiceMiddleware(BeyonderService))
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
     description='Карточка потустороннего',
-    error_handler=RaiseErrorHandler
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -36,8 +35,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.info(purpose_tg_id)
 
@@ -61,10 +59,9 @@ async def call(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -74,8 +71,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.drink(path_name=path_name, seq=seq, purpose_tg_id=purpose_tg_id)
 
@@ -99,10 +95,9 @@ async def call(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -112,8 +107,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.upseq(seq=seq, path_name=path_name, purpose_tg_id=purpose_tg_id)
 
@@ -128,10 +122,9 @@ async def cmd(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -141,8 +134,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.dowseq(seq=seq, path_name=path_name, purpose_tg_id=purpose_tg_id)
 
@@ -155,10 +147,9 @@ async def cmd(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -166,8 +157,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.kill(purpose_tg_id=purpose_tg_id, is_admin=is_admin)
 
@@ -200,10 +190,9 @@ async def call(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -213,8 +202,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.time_redact(duration=duration, purpose_tg_id=purpose_tg_id)
 
@@ -229,10 +217,9 @@ async def cmd(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -242,8 +229,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.time_replace(datetime_arg=datetime_arg, purpose_tg_id=purpose_tg_id)
 
@@ -257,10 +243,9 @@ async def cmd(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -269,8 +254,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.time_info(purpose_tg_id=purpose_tg_id)
 
@@ -283,10 +267,9 @@ async def cmd(
         Optionals.tg_id,
         Optionals.to_json,
         Optionals.is_reply,
-        Optionals.is_admin,
-        Optionals.is_delay
+        Optionals.is_admin
     ],
-    error_handler=RaiseErrorHandler,
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
 )
 async def cmd(
     message: Message,
@@ -294,8 +277,7 @@ async def cmd(
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
-    is_admin: bool = False,
-    is_delay: bool = False
+    is_admin: bool = False
 ):
     await service.time_info(purpose_tg_id=purpose_tg_id)
 
