@@ -279,7 +279,7 @@ class OrganService(BaseService):
             )
         ])
 
-    async def uprank( self, purpose_tg_id: int, rank: int):
+    async def uprank( self, purpose_tg_id: int, rank: int | None = None):
         data = await self.logic.uprank(purpose_tg_id=purpose_tg_id, rank=rank)
         return await self.answer([
             AnswerBody(
@@ -289,7 +289,7 @@ class OrganService(BaseService):
             )
         ])
 
-    async def downrank( self, purpose_tg_id: int, rank: int):
+    async def downrank( self, purpose_tg_id: int, rank: int | None = None):
         data = await self.logic.downrank(purpose_tg_id=purpose_tg_id, rank=rank)
         return await self.answer([
             AnswerBody(
@@ -332,7 +332,7 @@ class OrganService(BaseService):
     async def titul(
         self,
         purpose_tg_id: int,
-        titul: str
+        titul: str | None = None
     ):
         target_tg_id = purpose_tg_id if purpose_tg_id is not None else self.purpose.id
         member = await self.logic.member(self.tg_id)

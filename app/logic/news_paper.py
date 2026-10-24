@@ -22,6 +22,9 @@ class NewsPaperLogic(BaseLogic):
     async def info(self, news_paper_id: int):
         return await self.client.news_paper_info(self.body, news_paper_id)
 
+    async def info_description(self, news_paper_id: int):
+        return await self.client.news_paper_info_description(self.body, news_paper_id)
+
     async def capture(self, news_paper_id: int):
         return await self.client.news_paper_capture(self.body, news_paper_id)
 

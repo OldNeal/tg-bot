@@ -1,5 +1,5 @@
 from app.tg.text.base import BaseText
-from app.api.schemas import AnswerNewsPaperGive, AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsPaperInfo
+from app.api.schemas import AnswerNewsPaperGive, AnswerNewsPaperInfoDescription, AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsPaperInfo
 from aiogram.types import RichTextMention
 
 class NewsPaperText(BaseText):
@@ -13,11 +13,17 @@ class NewsPaperText(BaseText):
         )
 
     @classmethod
-    def news_papers(cls, count: int, page: int, max_page: int):
+    def my_list(cls, count: int, page: int, max_page: int):
+        if count == 0:
+            return '❌ Вы не подписаны ни на одну газету'
+        return f'📰 Газеты, на которые вы подписаны: {count} [{page + 1}/{max_page} стр.]'
+
+    @classmethod
+    def all(cls, count: int, page: int, max_page: int):
         if count == 0:
             return '❌ Газет нет'
         return f'📰 Все газеты: {count} [{page + 1}/{max_page} стр.]'
-
+    
     @classmethod
     def choose_news_paper(cls, action: str, count: int, page: int, max_page: int):
         if count == 0:
@@ -67,6 +73,12 @@ class NewsPaperText(BaseText):
             f'🏷 ID: {news_paper.id}',
             f'👥 Читателей: {news_paper.reader_counts}',
         ]).blockquote()
+
+    @classmethod
+    def description(cls, data: AnswerNewsPaperInfoDescription):
+        if not data.description:
+            return '🪶 Описание отсутствует'
+        return cls.html('🪶 Описание').h1.br().br() + cls.html(data.description)
 
     @classmethod
     def capture(cls, news_paper: NewsPaperInfo):

@@ -8,6 +8,12 @@ class NewsPaperCall(BaseCall, prefix='news_paper'):
 class NewsPaperSearchCall(NewsPaperCall, prefix='news_paper_search'):
     pass
 
+class NewsPaperCreateCall(NewsPaperCall, prefix='news_paper_create'):
+    pass
+
+class NewsPaperMenuCall(NewsPaperCall, prefix='news_paper_menu'):
+    pass
+
 class NewsPaperPageCall(NewsPaperCall, prefix='news_paper_page'):
     page: int
     mode: Literal[
@@ -47,6 +53,9 @@ class NewsPaperGiveCall(ReaderCall, AccertCancelCall, prefix='news_paper_give'):
 
 class NewsPaperInfoCall(NewsPaperCall, prefix='news_paper_info'):
     news_paper_id: int
+
+class NewsPaperInfoDescCall(NewsPaperInfoCall, prefix='news_paper_info_desc'):
+    pass
 
 class NewsPaperSettingsCall(NewsPaperCall, prefix='news_paper_settings'):
     news_paper_id: int

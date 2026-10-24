@@ -4,11 +4,14 @@ from app.validate.api import AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsP
 from app.tg.buttons.base import BotIKB
 from app.tg.callback.news_paper import (
     NewsPaperInfoCall,
+    NewsPaperInfoDescCall,
     NewsPaperActionCall,
+    NewsPaperCreateCall,
     NewsPaperFireEditorCall,
     NewsPaperGiveCall,
     NewsPaperMakeEditorCall,
     NewsPaperCaptureCall,
+    NewsPaperMenuCall,
     NewsPaperNotifyCall,
     NewsPaperPageCall,
     NewsPaperSearchCall,
@@ -28,6 +31,7 @@ class NewsPaperIKB(BotIKB):
         page: int,
         max_page: int,
         mode: str = 'search',
+        back_to_menu: bool = False
     ):
         for news_paper in news_papers:
             label = f'{news_paper.emodzi or "📰"} {news_paper.name}'
@@ -53,6 +57,10 @@ class NewsPaperIKB(BotIKB):
 
         if mode == 'search':
             self.builder.row(InlineKeyboardButton(text='✒️ Ввести запрос еще раз', callback_data=NewsPaperSearchCall(tg_id=self.tg_id).pack()))
+        elif mode == 'editors':
+            self.builder.row(InlineKeyboardButton(text='➕ Создать газету', callback_data=NewsPaperCreateCall(tg_id=self.tg_id).pack()))
+        if back_to_menu:
+            self.builder.row(InlineKeyboardButton(text='↩️ Назад в меню', callback_data=NewsPaperMenuCall(tg_id=self.tg_id).pack()))
         return self.builder.as_markup()
 
     def news_paper_info(
@@ -62,19 +70,20 @@ class NewsPaperIKB(BotIKB):
         mode: str = 'search',
         page: int = 0,
     ):
-        if for_buttons.is_reader:
-            self.builder.button(text='🔕 Отписаться', callback_data=NewsPaperUnsubscribeCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
-        else:
-            self.builder.button(text='🔔 Подписаться', callback_data=NewsPaperSubscribeCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
+        self.builder.button(text='🪶 Описание', callback_data=NewsPaperInfoDescCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
+        self.builder.button(text='🗞 Читатели', callback_data=NewsPaperPageCall(news_paper_id=news_paper_id, page=0, mode='readers', tg_id=self.tg_id))
+        if for_buttons.is_redact_setting:
+            self.builder.button(text='⚙️ Настройки', callback_data=NewsPaperSettingsCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
         if for_buttons.is_news:
             self.builder.button(text='📣 Выпустить новость', callback_data=NewsPaperNotifyCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
         if for_buttons.is_capture:
             self.builder.button(text='👑 Захватить газету', callback_data=NewsPaperCaptureCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
-        if for_buttons.is_redact_setting:
-            self.builder.button(text='⚙️ Настройки', callback_data=NewsPaperSettingsCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
-        self.builder.button(text='🗞 Читатели', callback_data=NewsPaperPageCall(news_paper_id=news_paper_id, page=0, mode='readers', tg_id=self.tg_id))
+        if for_buttons.is_reader:
+            self.builder.button(text='🔕 Отписаться', callback_data=NewsPaperUnsubscribeCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
+        else:
+            self.builder.button(text='🔔 Подписаться', callback_data=NewsPaperSubscribeCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
         self.builder.button(text='↩️ Назад', callback_data=NewsPaperPageCall(page=page, mode=mode, tg_id=self.tg_id))
-        return self.builder.adjust(1).as_markup()
+        return self.builder.adjust(2, 1).as_markup()
 
     def readers(self, readers: list[AnswerReaderInfo], news_paper_id: int, page: int, max_page: int):
         for reader in readers:
@@ -114,18 +123,17 @@ class NewsPaperIKB(BotIKB):
 
     def create(self, news_paper_id: int):
         return self.builder.button(
-            text='📰 Открыть газету',
+            text='📰 Открыть карточку',
             callback_data=NewsPaperInfoCall(
                 news_paper_id=news_paper_id,
                 tg_id=self.tg_id,
             ),
         ).as_markup()
 
-    def settings_values(self, news_paper_id: int, is_back: bool):
+    def settings_values(self, news_paper_id: int):
         self.builder.button(text='✒️ Изменить', callback_data=NewsPaperSettingsRedactCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
         self.builder.button(text='🔩 Сбросить', callback_data=NewsPaperSettingsDefaultCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
-        if is_back:
-            self.builder.button(text='↩️ Назад', callback_data=NewsPaperInfoCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
+        self.builder.button(text='↩️ Назад', callback_data=NewsPaperInfoCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()
 
     def back_to_settings(self, news_paper_id: int):
@@ -208,6 +216,10 @@ class NewsPaperIKB(BotIKB):
             ),
         )
         return self.builder.adjust(2).as_markup()
+
+    def back_to_menu(self):
+        self.builder.button(text='↩️ Назад в меню', callback_data=NewsPaperMenuCall(tg_id=self.tg_id))
+        return self.builder.as_markup()
 
     def back_to_info(self, news_paper_id: int):
         self.builder.button(text='↩️ Назад', callback_data=NewsPaperInfoCall(news_paper_id=news_paper_id, tg_id=self.tg_id))

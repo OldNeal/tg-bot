@@ -115,6 +115,13 @@ class AnswerNewsPaperInfo(pydantic.BaseModel):
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
 
 
+class AnswerNewsPaperInfoDescription(pydantic.BaseModel):
+    user: "QueryBody"
+    id: int
+    name: str
+    description: typing.Optional[str | None] = None
+
+
 class AnswerNewsPaperInfoReaders(pydantic.BaseModel):
     user: "QueryBody"
     id: int

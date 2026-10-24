@@ -10,7 +10,10 @@ from app.tg.callback.news_paper import (
     NewsPaperFireEditorCall,
     NewsPaperGiveCall,
     NewsPaperInfoCall,
+    NewsPaperInfoDescCall,
     NewsPaperActionCall,
+    NewsPaperCreateCall,
+    NewsPaperMenuCall,
     NewsPaperMakeEditorCall,
     NewsPaperCaptureCall,
     NewsPaperNotifyCall,
@@ -55,6 +58,22 @@ async def search(
 async def search_call(callback: CallbackQuery, callback_data: NewsPaperSearchCall, service: NewsPaperService):
     await service.to_enter_search()
 
+@news_paper_router.callback_query(NewsPaperCreateCall.filter())
+async def create_call(
+    callback: CallbackQuery,
+    callback_data: NewsPaperCreateCall,
+    service: NewsPaperService,
+):
+    await service.to_enter_name_for_create()
+
+@news_paper_router.callback_query(NewsPaperMenuCall.filter())
+async def menu_call(
+    callback: CallbackQuery,
+    callback_data: NewsPaperMenuCall,
+    service: NewsPaperService,
+):
+    await service.menu()
+
 @news_paper_router.callback_query(NewsPaperPageCall.filter())
 async def search_call(callback: CallbackQuery, callback_data: NewsPaperPageCall, service: NewsPaperService):
     if callback_data.mode == 'all':
@@ -89,6 +108,14 @@ async def action_call(
 @news_paper_router.callback_query(NewsPaperInfoCall.filter())
 async def search_call(callback: CallbackQuery, callback_data: NewsPaperInfoCall, service: NewsPaperService):
     await service.info(news_paper_id=callback_data.news_paper_id)
+
+@news_paper_router.callback_query(NewsPaperInfoDescCall.filter())
+async def info_description_call(
+    callback: CallbackQuery,
+    callback_data: NewsPaperInfoDescCall,
+    service: NewsPaperService,
+):
+    await service.info_description(news_paper_id=callback_data.news_paper_id)
 
 @news_paper_router.callback_query(NewsPaperSubscribeCall.filter())
 async def subscribe_call(

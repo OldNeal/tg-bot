@@ -71,8 +71,11 @@ class NewsPaperService(BaseService):
                 page=page,
                 search_value=search_value,
             )
-        elif mode in {'all', 'list'}:
-            text = self.text.news_papers(len(news_papers), page, max_page)
+        elif mode == 'all':
+            text = self.text.all(len(news_papers), page, max_page)
+            await self.fsm.update_data(mode=mode, page=page)
+        elif mode == 'list':
+            text = self.text.my_list(len(news_papers), page, max_page)
             await self.fsm.update_data(mode=mode, page=page)
         else:
             text = self.text.editors(len(news_papers), page, max_page)
@@ -87,6 +90,7 @@ class NewsPaperService(BaseService):
                     page,
                     max_page,
                     mode,
+                    True
                 ),
             )
         ])
@@ -97,7 +101,7 @@ class NewsPaperService(BaseService):
         return await self.answer([
             AnswerBody(
                 text=self.text.to_search(),
-                reply_markup=self.IKB.cancel(),
+                reply_markup=self.IKB.back_to_menu(),
             )
         ])
 
@@ -148,6 +152,17 @@ class NewsPaperService(BaseService):
             )
         ])
 
+    async def info_description(self, news_paper_id: int):
+        data = await self.logic.info_description(news_paper_id)
+        return await self.answer([
+            AnswerBody(
+                text=self.text.description(data),
+                data=data,
+                reply_markup=self.IKB.back_to_info(data.id),
+                is_rich_text=True,
+            )
+        ])
+
     async def capture(self, news_paper_id: int):
         data = await self.logic.capture(news_paper_id)
         mode = await self.fsm.get_value('mode', 'search')
@@ -183,8 +198,7 @@ class NewsPaperService(BaseService):
                 text=self.text.settings_values(data.values),
                 data=data,
                 reply_markup=self.IKB.settings_values(
-                    news_paper_id,
-                    self.is_bot_message,
+                    news_paper_id
                 ),
             )
         ])
