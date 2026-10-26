@@ -8,66 +8,71 @@ class NewsPaperLogic(BaseLogic):
         return await self.client.news_paper_search(name)
 
     async def all(self):
-        return await self.client.news_paper_all(self.body)
+        return await self.client.news_paper_all(await self.body)
     
     async def list(self):
-        return await self.client.news_paper_list(self.body)
+        return await self.client.news_paper_list(await self.body)
 
     async def editors(self):
-        return await self.client.news_paper_list_where_editor(self.body)
+        return await self.client.news_paper_list_where_editor(await self.body)
     
     async def for_subscribe(self):
-        return await self.client.news_paper_for_subscribe(self.body)
+        return await self.client.news_paper_for_subscribe(await self.body)
 
     async def info(self, news_paper_id: int):
-        return await self.client.news_paper_info(self.body, news_paper_id)
+        return await self.client.news_paper_info(await self.body, news_paper_id)
 
     async def info_description(self, news_paper_id: int):
-        return await self.client.news_paper_info_description(self.body, news_paper_id)
+        return await self.client.news_paper_info_description(await self.body, news_paper_id)
 
     async def capture(self, news_paper_id: int):
-        return await self.client.news_paper_capture(self.body, news_paper_id)
+        return await self.client.news_paper_capture(await self.body, news_paper_id)
 
     async def readers(self, news_paper_id: int):
-        return await self.client.news_paper_readers(self.body, news_paper_id)
+        return await self.client.news_paper_readers(await self.body, news_paper_id)
     
     async def reader(self, news_paper_id: int, purpose_tg_id: int | None = None):
-        return await self.client.news_paper_reader(self.body, news_paper_id, purpose_tg_id or self.purpose_tg_id)
+        user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
+        return await self.client.news_paper_reader(await self.body, news_paper_id, user_id)
 
     async def create(self, name: str):
-        return await self.client.news_paper_create(self.body, name)
+        return await self.client.news_paper_create(await self.body, name)
 
     async def subscribe(self, news_paper_id: int):
-        return await self.client.news_paper_subscribe(self.body, news_paper_id)
+        return await self.client.news_paper_subscribe(await self.body, news_paper_id)
 
     async def unsubscribe(self, news_paper_id: int):
-        return await self.client.news_paper_unsubscribe(self.body, news_paper_id)
+        return await self.client.news_paper_unsubscribe(await self.body, news_paper_id)
 
     async def notify(self, news_paper_id: int):
-        return await self.client.news_paper_notify(self.body, news_paper_id)
+        return await self.client.news_paper_notify(await self.body, news_paper_id)
 
     async def make_editor(self, news_paper_id: int, purpose_tg_id: int | None = None):
-        return await self.client.news_paper_make_editor(self.body, news_paper_id, purpose_tg_id or self.purpose_tg_id)
+        user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
+        return await self.client.news_paper_make_editor(await self.body, news_paper_id, user_id)
 
     async def fire_editor(self, news_paper_id: int, purpose_tg_id: int | None = None):
-        return await self.client.news_paper_fire_editor(self.body, news_paper_id, purpose_tg_id or self.purpose_tg_id)
+        user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
+        return await self.client.news_paper_fire_editor(await self.body, news_paper_id, user_id)
 
     async def give(self, news_paper_id: int, purpose_tg_id: int | None = None):
+        user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
         return await self.client.news_paper_give(
-            self.body,
+            await self.body,
             news_paper_id,
-            purpose_tg_id or self.purpose_tg_id,
+            user_id,
         )
 
     async def settings(self, news_paper_id: int):
-        return await self.client.news_paper_settings(self.body, news_paper_id)
+        return await self.client.news_paper_settings(await self.body, news_paper_id)
 
     async def settings_values(self, news_paper_id: int):
-        return await self.client.news_paper_settings_values(self.body, news_paper_id)
+        return await self.client.news_paper_settings_values(await self.body, news_paper_id)
 
     async def settings_redact(self, news_paper_id: int, parametrs: dict):
+        body = await self.body
         data = self.schemas.QueryNewsPaperSetting.model_validate(
-            self.body.model_dump() | {'parametrs': parametrs}
+            body.model_dump() | {'parametrs': parametrs}
         )
         return await self.client.news_paper_settings_redact(data, news_paper_id)
 
@@ -78,8 +83,9 @@ class NewsPaperLogic(BaseLogic):
         group: str | None = None,
         is_all: bool = False,
     ):
+        body = await self.body
         data = self.schemas.QueryNewsPaperSettingDefault.model_validate(
-            self.body.model_dump()
+            body.model_dump()
             | {
                 'to_default': self.schemas.OrganSettingDefault(
                     parametr=parametr,

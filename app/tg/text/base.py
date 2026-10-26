@@ -1,5 +1,6 @@
 import random
 
+from app.api.schemas import AnswerUserBody
 from app.tg.text.utils import TextHTML
 
 class Templates:
@@ -24,6 +25,16 @@ class Templates:
 
 class BaseText:
     html = TextHTML
+
+    @classmethod
+    def answer_user_name(cls, user: AnswerUserBody) -> str:
+        telegram = user.telegram
+        return user.name or (telegram.fullname if telegram else None) or (telegram.username if telegram else None) or str(user.user_id)
+
+    @classmethod
+    def user_mention(cls, user: AnswerUserBody):
+        text = cls.html(cls.answer_user_name(user))
+        return text.openmessage(user.telegram.tg_id) if user.telegram else text
 
     @classmethod
     def json(self, data: dict):

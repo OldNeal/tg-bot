@@ -26,8 +26,7 @@ class BeyonderService(BaseService):
             AnswerBody(
                 text=self.text(data).info,
                 data=data,
-                reply_markup=self.IKB.back(back_where) if back_where else None,
-                is_rich_text=True
+                reply_markup=self.IKB.back(back_where) if back_where else None
             )
         ])
 
@@ -50,11 +49,10 @@ class BeyonderService(BaseService):
                     RedactSeqTextValidate(
                         seq_name=data.new.seq,
                         path_name=data.new.path,
-                        name=data.user.fullname
+                        name=self.text.answer_user_name(data.purpose)
                     )
                 ).drink,
-                data=data,
-                is_rich_text=True
+                data=data
             )
         ])
 
@@ -66,11 +64,10 @@ class BeyonderService(BaseService):
                     RedactSeqTextValidate(
                         seq_name=data.new.seq,
                         path_name=data.new.path,
-                        name=data.user.fullname
+                        name=self.text.answer_user_name(data.purpose)
                     )
                 ).upseq,
-                data=data,
-                is_rich_text=True
+                data=data
             )
         ])
 
@@ -82,11 +79,10 @@ class BeyonderService(BaseService):
                     RedactSeqTextValidate(
                         seq_name=data.new.seq,
                         path_name=data.new.path,
-                        name=data.user.fullname
+                        name=self.text.answer_user_name(data.purpose)
                     )
                 ).downseq,
-                data=data,
-                is_rich_text=True
+                data=data
             )
         ])
 
@@ -99,8 +95,7 @@ class BeyonderService(BaseService):
                     is_admin=is_admin and self.tg_id_in_admins
                 ),
                 data=data,
-                reply_markup=self.IKB.accert_kill(data.user.tg_id),
-                is_rich_text=True
+                reply_markup=self.IKB.accert_kill(purpose_tg_id or self.purpose.id)
             )
         ])
 
@@ -111,9 +106,8 @@ class BeyonderService(BaseService):
         )
         return await self.answer([
             AnswerBody(
-                text=self.text(UserTextValidate(name=data.user.fullname)).accert_kill,
-                data=data,
-                is_rich_text=True
+                text=self.text(UserTextValidate(name=self.text.answer_user_name(data.purpose))).accert_kill,
+                data=data
             )
         ])
 
@@ -122,8 +116,7 @@ class BeyonderService(BaseService):
         return await self.answer([
             AnswerBody(
                 text=self.text(data).cancel_kill,
-                data=data,
-                is_rich_text=True
+                data=data
             )
         ])
 
@@ -132,8 +125,7 @@ class BeyonderService(BaseService):
         return await self.answer([
             AnswerBody(
                 text=self.text(data).time_info,
-                data=data,
-                is_rich_text=True
+                data=data
             )
         ])
 
@@ -142,8 +134,7 @@ class BeyonderService(BaseService):
         return await self.answer([
             AnswerBody(
                 text=self.text(data).time_redact,
-                data=data,
-                is_rich_text=True
+                data=data
             )
         ])
 
@@ -152,8 +143,7 @@ class BeyonderService(BaseService):
         return await self.answer([
             AnswerBody(
                 text=self.text(data).time_replace,
-                data=data,
-                is_rich_text=True
+                data=data
             )
         ])
 
@@ -178,7 +168,6 @@ class BeyonderService(BaseService):
                     max_page,
                     data.path.path_id,
                     where=where
-                ),
-                is_rich_text=True
+                )
             )
         ])

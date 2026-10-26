@@ -7,7 +7,7 @@ class OrganText(BaseText):
 
     @property
     def user_name(self):
-        return self.html(self.data.user.fullname).openmessage(self.data.user.tg_id)
+        return self.user_mention(self.data.user)
 
     @property
     def organ_name(self):
@@ -38,7 +38,7 @@ class OrganText(BaseText):
         organ = self.data.organ
         return f'{self.html(organ.emodzi or '🏛').emoji(organ.custom_emodzi_id)} {organ.name}' + self.html(self.html.joined([
             f'🏷 ID: {organ.id}',            
-            f'👑 Глава: {(self.html(organ.owner.user.fullname or organ.owner.user.username).openmessage(organ.owner.user.tg_id)) if organ.owner else "❌"}',           
+            f'👑 Глава: {self.user_mention(organ.owner.user) if organ.owner else "❌"}',
             f'👥 Участников: {organ.member_counts}',
         ])).blockquote()
 
@@ -57,9 +57,12 @@ class OrganText(BaseText):
                 member.append(f'🎖 Титул: {user.member.titul}')
             #f'⌛ Состоит в организации дней: {(datetime.now() - datetime.fromisoformat(user.member.login_at)).days}'
 
-        return '🎎 ' + self.html(user.user.fullname).openmessage(user.user.tg_id) + self.html(self.html.joined([
-            f'🏷 ID: {user.user.tg_id}',
-            f'🔗 Юз: {self.html(user.user.username or '❌').openmessage(user.user.tg_id)}'
+        telegram = user.purpose.telegram
+        user_id = telegram.tg_id if telegram else user.purpose.user_id
+        username = telegram.username if telegram else None
+        return '🎎 ' + self.user_mention(user.purpose) + self.html(self.html.joined([
+            f'🏷 ID: {user_id} ({user.purpose.user_id})',
+            f'🔗 Юз: {self.html(username or '❌').openmessage(telegram.tg_id) if telegram else '❌'}'
             ] + member)).blockquote()
     
     @classmethod
@@ -131,7 +134,7 @@ class OrganText(BaseText):
 
     @classmethod
     def kick(self, purpose: AnswerMemberInfo):
-        return f'🥊 Вы хотите выгнать {self.html(purpose.user.fullname).openmessage(purpose.user.tg_id)} из организации {purpose.member.organ_name}?'
+        return f'🥊 Вы хотите выгнать {self.user_mention(purpose.purpose)} из организации {purpose.member.organ_name}?'
 
     @property
     def accert_kick(self):
@@ -154,11 +157,13 @@ class OrganText(BaseText):
 
     @classmethod
     def give(self, data: AnswerOrganGive):
-        return f'👑 {self.html(data.user.fullname).openmessage(data.user.tg_id)} передал организацию "{data.purpose.member.organ_name}" пользователю {self.html(data.purpose.user.fullname).openmessage(data.purpose.user.tg_id)}'
+        if data.purpose is None:
+            raise ValueError('API response is missing the recipient')
+        return f'👑 {self.user_mention(data.user)} передал организацию пользователю {self.user_mention(data.purpose)}'
 
     @classmethod
     def to_give(self, purpose: AnswerMemberInfo):        
-        return f'👑 Вы хотите передать организацию "{purpose.member.organ_name}" пользователю {self.html(purpose.user.fullname).openmessage(purpose.user.tg_id)}'
+        return f'👑 Вы хотите передать организацию "{purpose.member.organ_name}" пользователю {self.user_mention(purpose.user)}'
 
     @property
     def cancel_give(self):

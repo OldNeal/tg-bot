@@ -7,28 +7,35 @@ class MainText(BaseText):
 
     @property
     def info(self):
-        member = [f'🏛 В организации не состоит']
-        beyonder = [f'🔮 Обычный смертный']
+        member_text = [f'🏛 В организации не состоит']
+        beyonder_text = [f'🔮 Обычный смертный']
 
-        if self.data.member:
-            member = [f'🏛 Организация: {self.data.member.organ_name}',
-            f'⚜️ Ранг: {self.data.member.rank_name} ({self.data.member.rank})']
-            if self.data.member.titul:
-                member.append(f'🎖 Титул: {self.data.member.titul}')
+        member = self.data.member
+        beyonder = self.data.beyonder
+        user = self.data.purpose
+        telegram = user.telegram
 
-        if self.data.beyonder:
-            if self.data.beyonder.seq > 0:
-                beyonder = [f'🔮 Путь: {self.data.beyonder.path_name}',
-                f'🧪 Последовательноcть: {self.data.beyonder.seq} - {self.data.beyonder.seq_name}']
-            elif self.data.beyonder.seq == 0:
-                beyonder = [f'🎗 {self.data.beyonder.seq_name}']
-            elif self.data.beyonder.seq < 0:
-                beyonder = [f'🏵 {self.data.beyonder.seq_name}']
+        if member:
+            member_text = [f'🏛 Организация: {member.organ_name}',
+            f'⚜️ Ранг: {member.rank_name} ({member.rank})']
+            if member.titul:
+                member_text.append(f'🎖 Титул: {member.titul}')
 
-        return self.html(self.data.user.fullname or self.data.user.username or 'Неизвестный').openmessage(self.data.user.tg_id) + self.html(self.html.joined([
-            f'🏷 ID: {self.data.user.tg_id}',
-            f'🔗 Юз: {self.html(self.data.user.username or '❌').openmessage(self.data.user.tg_id)}'
-            ] + member + beyonder)).blockquote()
+        if beyonder:
+            if beyonder.seq > 0:
+                beyonder_text = [f'🔮 Путь: {beyonder.path_name}',
+                f'🧪 Последовательноcть: {beyonder.seq} - {beyonder.seq_name}']
+            elif beyonder.seq == 0:
+                beyonder_text = [f'🎗 {beyonder.seq_name}']
+            elif beyonder.seq < 0:
+                beyonder_text = [f'🏵 {beyonder.seq_name}']
+
+        user_id = telegram.tg_id if telegram else user.user_id
+        username = telegram.username if telegram else None
+        return self.user_mention(user) + self.html(self.html.joined([
+            f'🏷 ID: {user_id} ({user.user_id})',
+            f'🔗 Юз: {self.html(username or '❌').openmessage(telegram.tg_id) if telegram else '❌'}'
+            ] + member_text + beyonder_text)).blockquote()
 
     @property
     def first_msg_by_info(self):

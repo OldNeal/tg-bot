@@ -4,11 +4,13 @@ from datetime import datetime
 from aiogram import BaseMiddleware
 from aiogram.types import Message, CallbackQuery, User, Update
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
+from telegram_click_aio.parser import parse_command_args
 
 from config import settings
 from app.logging.base import botlog
 from app.tg.text.utils import TextHTML
 from app.tg.callback.base import BaseCall
+from app.tg.args import to_json, is_admin, is_reply
 from app.exception.base import BotError, PythonError, ALienCallbackError
 from app.service.base import BaseService
 
@@ -105,7 +107,7 @@ class ExceptionCallbackQueryMiddleware(BaseMiddleware):
             botlog.logger.error(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
             show_alert = True
             if event.from_user.id == settings.owner:
-                answer_text = f'{PythonError.msg}: {(TextHTML(str_e).escape())[:4000]}'
+                answer_text = f'{PythonError.msg}: {str_e[:4000]}'
             else:
                 answer_text = f'{PythonError.msg}'
             raise e
@@ -130,5 +132,17 @@ class ServiceMiddleware(BaseMiddleware):
         event: Update,
         data: Dict[str, Any]
     ) -> Any:
-        data['service'] = self.service(user=data.get('event_from_user'), chat=data.get('event_chat'), message=data.get('event_update').message, callback=data.get('event_update').callback_query, state=data.get('state'), request_id=data.get('request_id'))
+        message: Message | None = data.get('event_update').message
+        kwargs = {'request_id':data.get('request_id')}
+        if message:
+            kwargs |= parse_command_args(message.text, [to_json, is_admin, is_reply])
+            print(kwargs)
+        data['service'] = self.service(
+            user=data.get('event_from_user'), 
+            chat=data.get('event_chat'), 
+            message=data.get('event_update').message, 
+            callback=data.get('event_update').callback_query, 
+            state=data.get('state'), 
+            **kwargs
+            )
         return await handler(event, data)

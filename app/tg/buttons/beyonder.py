@@ -16,7 +16,11 @@ class BeyonderIKB(BotIKB):
 
     def list(self, datas: list[AnswerBeyonderInfo], page: int, max_page: int, path_id: int, where: str | None = None):
         for data in datas:
-            self.builder.button(text=f'{data.beyonder.seq if data.beyonder.seq >= 0 else '🏵'} - {data.user.fullname or data.user.username or 'Неизвестный'}', callback_data=BeyonderInfoCall(purpose_tg_id=data.user.tg_id, tg_id=self.tg_id))
+            telegram = data.purpose.telegram
+            if telegram is None:
+                continue
+            name = data.purpose.name or telegram.fullname or telegram.username or 'Неизвестный'
+            self.builder.button(text=f'{data.beyonder.seq if data.beyonder.seq >= 0 else '🏵'} - {name}', callback_data=BeyonderInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         self.builder.adjust(1)
         pages = []
         if page > 0:

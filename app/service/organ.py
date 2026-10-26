@@ -36,8 +36,7 @@ class OrganService(BaseService):
             return await self.answer([
                 AnswerBody(
                     text=self.text.my_organ(),
-                    reply_markup=self.IKB.my_organ(),
-                    is_rich_text=True,
+                    reply_markup=self.IKB.my_organ()
                 )
             ])
 
@@ -167,8 +166,7 @@ class OrganService(BaseService):
                 AnswerBody(
                     text=self.text(data).login,
                     data=data,
-                    reply_markup=self.IKB.organ_back(data.organ.id),
-                    is_rich_text=True,
+                    reply_markup=self.IKB.organ_back(data.organ.id)
                 )
             ])
         return await self.search()
@@ -209,8 +207,7 @@ class OrganService(BaseService):
                 AnswerBody(
                     text=self.text(data).create,
                     data=data,
-                    reply_markup=self.IKB.create(data.organ.id),
-                    is_rich_text=True,
+                    reply_markup=self.IKB.create(data.organ.id)
                 )
             ])
         return await self.to_enter_name_for_create()
@@ -224,8 +221,7 @@ class OrganService(BaseService):
             return await self.answer([
                 AnswerBody(
                     text=self.text.to_create(),
-                    reply_markup=self.IKB.cancel(),
-                    is_rich_text=True,
+                    reply_markup=self.IKB.cancel()
                 )
             ])
         raise OrganPermissioError()
@@ -285,7 +281,7 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text(data).uprank(data.new_rank),
                 data=data,
-                reply_markup=(self.IKB.member_back(data.user.tg_id) if self.is_bot_message else None),
+                reply_markup=(self.IKB.member_back(purpose_tg_id) if self.is_bot_message else None),
             )
         ])
 
@@ -295,7 +291,7 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text(data).downrank(data.new_rank),
                 data=data,
-                reply_markup=(self.IKB.member_back(data.user.tg_id) if self.is_bot_message else None),
+                reply_markup=(self.IKB.member_back(purpose_tg_id) if self.is_bot_message else None),
             )
         ])
 
@@ -372,7 +368,7 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text(data).titul(data.old_titul, data.new_titul),
                 data=data,
-                reply_markup=self.IKB.member_back(data.user.tg_id),
+                reply_markup=self.IKB.member_back(target_tg_id),
             )
         ])
 
@@ -383,7 +379,7 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text.to_give(data),
                 data=data,
-                reply_markup=self.IKB.give(data.user.tg_id, self.is_bot_message),
+                reply_markup=self.IKB.give(target_tg_id, self.is_bot_message),
             )
         ])
 
@@ -393,7 +389,7 @@ class OrganService(BaseService):
             AnswerBody(
                 text=self.text.give(data),
                 data=data,
-                reply_markup=self.IKB.member_back(data.user.tg_id),
+                reply_markup=self.IKB.member_back(purpose_tg_id),
             )
         ])
 

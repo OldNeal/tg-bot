@@ -34,6 +34,10 @@ class Settings:
     state_ttl = int(os.getenv('state_ttl', 60*60*24))
     data_ttl = int(os.getenv('data_ttl', 60*60*24))
 
+    redis_host = os.getenv('redis_host', 'localhost')   
+    redis_port = int(os.getenv('redis_port', 6379))
+    redis_password = os.getenv('redis_password')
+
     docs_url = os.getenv('docs_url')
 
     log_files_path = os.getenv('log_files_path', 'logs/')
@@ -91,17 +95,18 @@ cmds = {
     'member':'🎎 Карточка участника',
     'titul':'🎖️ Изменить титул участника',
     'exit':'🚪 Покинуть организацию',
-
-    'wiki':'📚 Меню вики',
-    'path':'📜 Информация о путях',
-    'ga':'📜 Информация о ВД',
-    'stats':'📊 Получить статистику',
-    'help':'📚 Получить справку',
-
+    
     'newspaper':'📰 Меню газет',
     'sub':'🔔 Подписаться на газету',
     'unsub':'🔕 Отписаться от газеты',
     'notify':'📣 Уведомить читателей газеты',
+
+    'wiki':'📚 Меню вики',
+    'path':'📜 Информация о путях',
+    'ga':'📜 Информация о ВД',
+    
+    'stats':'📊 Получить статистику',
+    'help':'📚 Получить справку',
 }
 
 admin_cmds = cmds | {

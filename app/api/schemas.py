@@ -45,13 +45,15 @@ class AnswerAllStats(pydantic.BaseModel):
 
 
 class AnswerBaseInfo(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
     member: typing.Optional[typing.Union["MemberInfo", None]] = None
 
 
 class AnswerBeyonderInfo(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
 
@@ -60,6 +62,11 @@ class AnswerBeyonderList(pydantic.BaseModel):
     path: "AnswerPathInfo"
     ga: typing.Optional[typing.Union["AnswerBeyonderInfo", None]] = None
     beyonders: list["AnswerBeyonderInfo"]
+
+
+class AnswerBody(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
 
 
 class AnswerGAFullInfo(pydantic.BaseModel):
@@ -99,78 +106,89 @@ class AnswerMain(pydantic.BaseModel):
 
 
 class AnswerMemberInfo(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     member: typing.Optional[typing.Union["MemberInfo", None]] = None
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
 
 
 class AnswerNewsPaperGive(pydantic.BaseModel):
-    user: "QueryBody"
-    purpose: "AnswerReaderInfo"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
 
 
 class AnswerNewsPaperInfo(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     news_paper: "NewsPaperInfo"
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
 
 
 class AnswerNewsPaperInfoDescription(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     id: int
     name: str
     description: typing.Optional[str | None] = None
 
 
 class AnswerNewsPaperInfoReaders(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     id: int
     name: str
     readers: list["AnswerReaderInfo"]
 
 
 class AnswerNewsPaperSetting(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     settings: "OrganSettingValidate"
 
 
 class AnswerNewsPaperSettingValues(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     values: dict[str, typing.Any]
 
 
 class AnswerOrganGive(pydantic.BaseModel):
-    user: "QueryBody"
-    purpose: "AnswerMemberInfo"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
 
 
 class AnswerOrganInfo(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     organ: "OrganInfo"
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
 
 
 class AnswerOrganInfoDescription(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     id: int
     name: str
     description: typing.Optional[str | None] = None
 
 
 class AnswerOrganInfoMembers(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     id: int
     name: str
     members: list["AnswerMemberInfo"]
 
 
 class AnswerOrganSetting(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     settings: "OrganSettingValidate"
 
 
 class AnswerOrganSettingValues(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     values: dict[str, typing.Any]
 
 
@@ -198,20 +216,23 @@ class AnswerPathSearchInfo(pydantic.BaseModel):
 
 
 class AnswerReaderInfo(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     reader: typing.Optional[typing.Union["ReaderInfo", None]] = None
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
 
 
 class AnswerRedactSeq(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     old: typing.Optional[typing.Union["Sequence", None]] = None
     new: typing.Optional[typing.Union["Sequence", None]] = None
     operation: str
 
 
 class AnswerRedactTitul(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     new_titul: typing.Optional[str | None] = None
     old_titul: typing.Optional[str | None] = None
 
@@ -237,14 +258,16 @@ class AnswerSeqSearchInfo(pydantic.BaseModel):
 
 
 class AnswerTimeInfo(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     next_upseq: str | None
     last_upseq: str
     upseq_days: int | None
 
 
 class AnswerTimeRedact(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     old_time: str
     new_time: str
     seconds: int
@@ -252,13 +275,16 @@ class AnswerTimeRedact(pydantic.BaseModel):
 
 
 class AnswerTimeReplace(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     old_time: str
     new_time: str
 
 
 class AnswerUserBody(pydantic.BaseModel):
-    user: "QueryBody"
+    user_id: int
+    name: typing.Optional[str | None] = None
+    telegram: typing.Optional[typing.Union["TelegramBody", None]] = None
 
 
 class BaseExceptionResponse(pydantic.BaseModel):
@@ -333,52 +359,44 @@ class OrganSettingValidate(pydantic.BaseModel):
 
 
 class QueryBody(pydantic.BaseModel):
-    tg_id: int
-    username: typing.Optional[str | None] = None
-    fullname: typing.Optional[str | None] = None
+    user_id: int
     is_admin: bool = False
     request_id: typing.Optional[str | None] = None
-    chat_id: typing.Optional[int | None] = None
 
 
 class QueryNewsPaperSetting(pydantic.BaseModel):
-    tg_id: int
-    username: typing.Optional[str | None] = None
-    fullname: typing.Optional[str | None] = None
+    user_id: int
     is_admin: bool = False
     request_id: typing.Optional[str | None] = None
-    chat_id: typing.Optional[int | None] = None
     parametrs: dict[str, typing.Any]
 
 
 class QueryNewsPaperSettingDefault(pydantic.BaseModel):
-    tg_id: int
-    username: typing.Optional[str | None] = None
-    fullname: typing.Optional[str | None] = None
+    user_id: int
     is_admin: bool = False
     request_id: typing.Optional[str | None] = None
-    chat_id: typing.Optional[int | None] = None
     to_default: "OrganSettingDefault"
 
 
 class QueryOrganSetting(pydantic.BaseModel):
-    tg_id: int
-    username: typing.Optional[str | None] = None
-    fullname: typing.Optional[str | None] = None
+    user_id: int
     is_admin: bool = False
     request_id: typing.Optional[str | None] = None
-    chat_id: typing.Optional[int | None] = None
     parametrs: dict[str, typing.Any]
 
 
 class QueryOrganSettingDefault(pydantic.BaseModel):
-    tg_id: int
-    username: typing.Optional[str | None] = None
-    fullname: typing.Optional[str | None] = None
+    user_id: int
     is_admin: bool = False
     request_id: typing.Optional[str | None] = None
-    chat_id: typing.Optional[int | None] = None
     to_default: "OrganSettingDefault"
+
+
+class QueryUserUpdate(pydantic.BaseModel):
+    user_id: int
+    is_admin: bool = False
+    request_id: typing.Optional[str | None] = None
+    telegram: typing.Optional[typing.Union["TelegramBody", None]] = None
 
 
 class ReaderInfo(pydantic.BaseModel):
@@ -421,6 +439,12 @@ class SettingParametrValidate(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
 
+class TelegramBody(pydantic.BaseModel):
+    tg_id: int
+    username: typing.Optional[str | None] = None
+    fullname: typing.Optional[str | None] = None
+
+
 class ValidationError(pydantic.BaseModel):
     loc: list[str | int]
     msg: str
@@ -432,14 +456,16 @@ class ValidationError(pydantic.BaseModel):
 
 
 class AppValidateApiNewspaperAnswerredactrank(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     news_paper: "NewsPaperInfo"
     new_rank: int
     old_rank: int
 
 
 class AppValidateApiOrganAnswerredactrank(pydantic.BaseModel):
-    user: "QueryBody"
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     new_rank: int
     old_rank: int
 

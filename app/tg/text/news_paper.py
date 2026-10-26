@@ -99,9 +99,12 @@ class NewsPaperText(BaseText):
             f'📰 Газета: {user.reader.news_paper_name}',
             f'👤 Кто: {user.reader.rank_name}'
             ]
-        return '🗞 ' + self.html(user.user.fullname).openmessage(user.user.tg_id) + self.html(self.html.joined([
-            f'🏷 ID: {user.user.tg_id}',
-            f'🔗 Юз: {self.html(user.user.username or '❌').openmessage(user.user.tg_id)}'
+        telegram = user.purpose.telegram
+        user_id = telegram.tg_id if telegram else user.purpose.user_id
+        username = telegram.username if telegram else None
+        return '🗞 ' + self.user_mention(user.purpose) + self.html(self.html.joined([
+            f'🏷 ID: {user_id}',
+            f'🔗 Юз: {self.html(username or '❌').openmessage(telegram.tg_id) if telegram else '❌'}'
             ] + reader)).blockquote()
 
     @classmethod
@@ -130,13 +133,13 @@ class NewsPaperText(BaseText):
 
     @classmethod
     def to_give(cls, reader: AnswerReaderInfo):
-        name = reader.user.fullname or reader.user.username or str(reader.user.tg_id)
-        return f'👑 Передать газету пользователю {cls.html(name).openmessage(reader.user.tg_id)}?'
+        return f'👑 Передать газету пользователю {cls.user_mention(reader.user)}?'
 
     @classmethod
     def give(cls, data: AnswerNewsPaperGive):
-        name = data.purpose.user.fullname or data.purpose.user.username or str(data.purpose.user.tg_id)
-        return f'👑 Газета передана пользователю {cls.html(name).openmessage(data.purpose.user.tg_id)}'
+        if data.purpose is None:
+            raise ValueError('API response is missing the recipient')
+        return f'👑 Газета передана пользователю {cls.user_mention(data.purpose)}'
 
     @classmethod
     def notify(self, datas: dict[int, str]):

@@ -84,6 +84,10 @@ class BaseService:
         return self.kwargs.get('is_admin', False) and self.tg_id_in_admins
 
     @property
+    def to_json(self):
+        return self.kwargs.get('to_json', False)
+
+    @property
     def tg_id_in_admins(self):
         return self.tg_id in self.settings.admins
 

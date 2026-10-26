@@ -87,7 +87,11 @@ class NewsPaperIKB(BotIKB):
 
     def readers(self, readers: list[AnswerReaderInfo], news_paper_id: int, page: int, max_page: int):
         for reader in readers:
-            self.builder.button(text=f'{reader.user.fullname or reader.user.username} ({reader.reader.rank_name})', callback_data=ReaderCall(purpose_tg_id=reader.user.tg_id, news_paper_id=news_paper_id, tg_id=self.tg_id))
+            telegram = reader.purpose.telegram
+            if telegram is None:
+                continue
+            name = reader.purpose.name or telegram.fullname or telegram.username or 'Неизвестный'
+            self.builder.button(text=f'{name} ({reader.reader.rank_name})', callback_data=ReaderCall(purpose_tg_id=telegram.tg_id, news_paper_id=news_paper_id, tg_id=self.tg_id))
         self.builder.adjust(1)
         pages = []
         if page > 0:

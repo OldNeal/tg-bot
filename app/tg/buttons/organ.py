@@ -69,24 +69,29 @@ class OrganIKB(BotIKB):
 
     def member(self, data: AnswerMemberInfo):
         row = []
-        if data.member.organ_id == data.for_buttons.organ_id and data.user.tg_id != self.tg_id:
+        telegram = data.purpose.telegram
+        if telegram and data.member.organ_id == data.for_buttons.organ_id and telegram.tg_id != self.tg_id:
             if data.for_buttons.is_redact_rank:
-                self.builder.button(text='➕ Повысить', callback_data=OrganRankRedactCall(operation='up', purpose_tg_id=data.user.tg_id, tg_id=self.tg_id))
-                self.builder.button(text='➖ Понизить', callback_data=OrganRankRedactCall(operation='down', purpose_tg_id=data.user.tg_id, tg_id=self.tg_id))
+                self.builder.button(text='➕ Повысить', callback_data=OrganRankRedactCall(operation='up', purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
+                self.builder.button(text='➖ Понизить', callback_data=OrganRankRedactCall(operation='down', purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
                 row.append(2)
             if data.for_buttons.is_redact_titul:
-                self.builder.button(text='🎖️ Поменять титул', callback_data=OrganTitulRedactCall(purpose_tg_id=data.user.tg_id, tg_id=self.tg_id))
+                self.builder.button(text='🎖️ Поменять титул', callback_data=OrganTitulRedactCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
             if data.for_buttons.is_give:
-                self.builder.button(text='👑 Передать организацию', callback_data=OrganGiveCall(purpose_tg_id=data.user.tg_id, tg_id=self.tg_id))
+                self.builder.button(text='👑 Передать организацию', callback_data=OrganGiveCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
             if data.for_buttons.is_kick:
-                self.builder.button(text='🚪 Выгнать', callback_data=OrganKickCall(purpose_tg_id=data.user.tg_id, tg_id=self.tg_id))
+                self.builder.button(text='🚪 Выгнать', callback_data=OrganKickCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         row.append(1)
         self.builder.button(text='↩️ Назад', callback_data=OrganInfoMembersCall(organ_id=data.member.organ_id, tg_id=self.tg_id))
         return self.builder.adjust(*row).as_markup()
 
     def members(self, members: list[AnswerMemberInfo], page: int, max_page: int, organ_id: int):
         for mbr in members:
-            self.builder.button(text=f'{mbr.member.rank} - {self.ogr_name(mbr.user.fullname or mbr.user.fullname)} ({mbr.member.rank_name})', callback_data=OrganMemberCall(purpose_tg_id=mbr.user.tg_id, tg_id=self.tg_id))
+            telegram = mbr.purpose.telegram
+            if telegram is None:
+                continue
+            name = mbr.purpose.name or telegram.fullname or telegram.username or 'Неизвестный'
+            self.builder.button(text=f'{mbr.member.rank} - {self.ogr_name(name)} ({mbr.member.rank_name})', callback_data=OrganMemberCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         self.builder.adjust(1)
         pages = []
         if page > 0:
@@ -99,11 +104,14 @@ class OrganIKB(BotIKB):
         return self.builder.as_markup()       
 
     def kick(self, purpose: AnswerMemberInfo, is_back: bool = False):
-        self.builder.button(text='✅ Да', callback_data=OrganKickCall(accert=True, purpose_tg_id=purpose.user.tg_id, tg_id=self.tg_id))
+        telegram = purpose.purpose.telegram
+        if telegram is None:
+            return self.builder.as_markup()
+        self.builder.button(text='✅ Да', callback_data=OrganKickCall(accert=True, purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         if is_back:
-            self.builder.button(text='❌ Нет', callback_data=OrganMemberCall(purpose_tg_id=purpose.user.tg_id, tg_id=self.tg_id))
+            self.builder.button(text='❌ Нет', callback_data=OrganMemberCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         else:
-            self.builder.button(text='❌ Нет', callback_data=OrganKickCall(cancel=True, purpose_tg_id=purpose.user.tg_id, tg_id=self.tg_id))
+            self.builder.button(text='❌ Нет', callback_data=OrganKickCall(cancel=True, purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         return self.builder.adjust(2).as_markup()
 
     def redact_titul(self, purpose_tg_id: int, is_back: bool = False):

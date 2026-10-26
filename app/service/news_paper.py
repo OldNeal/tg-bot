@@ -159,7 +159,6 @@ class NewsPaperService(BaseService):
                 text=self.text.description(data),
                 data=data,
                 reply_markup=self.IKB.back_to_info(data.id),
-                is_rich_text=True,
             )
         ])
 
@@ -369,8 +368,7 @@ class NewsPaperService(BaseService):
                 AnswerBody(
                     text=self.text.created(data.news_paper),
                     data=data,
-                    reply_markup=self.IKB.create(data.news_paper.id),
-                    is_rich_text=True,
+                    reply_markup=self.IKB.create(data.news_paper.id)
                 )
             ])
         return await self.to_enter_name_for_create()
@@ -430,7 +428,11 @@ class NewsPaperService(BaseService):
         data = await self.logic.notify(news_paper_id)
         return await self.answer([
             AnswerBody(
-                text=self.text.notify({r.user.tg_id:r.user.fullname for r in readers}),
+                text=self.text.notify({
+                    reader.user.telegram.tg_id: self.text.answer_user_name(reader.user)
+                    for reader in readers
+                    if reader.user.telegram
+                }),
                 reply_message_id=reply_message_id
             ) for readers in self.to_pages(data.readers)
         ])
@@ -447,8 +449,8 @@ class NewsPaperService(BaseService):
         data = await self.logic.make_editor(news_paper_id, purpose_tg_id)
         return await self.answer([
             AnswerBody(
-                text=self.text.make(self.tg_id, data.user.tg_id, data.user.fullname, data.news_paper.name),
-                reply_markup=self.IKB.back_to_reader(data.news_paper.id, data.user.tg_id),
+                text=self.text.make(self.tg_id, purpose_tg_id, self.text.answer_user_name(data.purpose), data.news_paper.name),
+                reply_markup=self.IKB.back_to_reader(data.news_paper.id, purpose_tg_id),
             )
         ])
 
@@ -456,7 +458,7 @@ class NewsPaperService(BaseService):
         data = await self.logic.fire_editor(news_paper_id, purpose_tg_id)
         return await self.answer([
             AnswerBody(
-                text=self.text.fire(self.tg_id, data.user.tg_id, data.user.fullname, data.news_paper.name),
-                reply_markup=self.IKB.back_to_reader(data.news_paper.id, data.user.tg_id),
+                text=self.text.fire(self.tg_id, purpose_tg_id, self.text.answer_user_name(data.purpose), data.news_paper.name),
+                reply_markup=self.IKB.back_to_reader(data.news_paper.id, purpose_tg_id),
             )
         ])

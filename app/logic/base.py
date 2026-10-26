@@ -3,12 +3,14 @@ from datetime import datetime
 from app.api import client, schemas
 from app.logging.base import botlog
 from app.exception.base import ApiTimeoutError
-from app.logic.utils import class_decor
+from app.logic.utils import class_decor, BaseExceptionResponse
+from app.redis.links import links as redis_links
 
 @class_decor
 class BaseLogic:
     client = client
     schemas = schemas
+    links = redis_links
 
     def __init__(self, tg_id: int, username: str | None = None, fullname: str | None = None, purpose_tg_id: int | None = None, **kwargs):
         self.tg_id = tg_id
@@ -18,8 +20,26 @@ class BaseLogic:
         self.kwargs = kwargs
 
     @property
-    def body(self):
-        return self.schemas.QueryBody(tg_id=self.tg_id, username=self.username, fullname=self.fullname, is_admin=self.is_admin, request_id=self.request_id, chat_id=self.chat_id)
+    async def body(self):
+        return self.schemas.QueryBody(user_id=await self.get_user_id(self.tg_id), is_admin=self.is_admin, request_id=self.request_id)
+
+    async def get_user_id(self, tg_id: int):
+        user_id = await self.links.get_user_id(tg_id)
+        if user_id is None:
+            user = await self.client.user_telegram(tg_id=tg_id)
+            if isinstance(user, BaseExceptionResponse):
+                user = await self.client.user_new(
+                    self.schemas.QueryUserUpdate(
+                        user_id=0, 
+                        request_id=self.request_id, 
+                        telegram=self.schemas.TelegramBody(
+                            tg_id=tg_id,
+                            username=self.username,
+                            fullname=self.fullname
+                        ))) 
+            return user.user_id
+        return user_id
+
 
     @property
     def is_admin(self):
@@ -34,7 +54,8 @@ class BaseLogic:
         return self.kwargs.get('chat_id')
 
     async def info(self, purpose_tg_id: int | None = None):
-        return await self.client.get_info(purpose_tg_id or self.purpose_tg_id)
+        user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
+        return await self.client.get_info(user_id)
         
     @classmethod
     async def test_api_connect(cls, logged: bool = True):
