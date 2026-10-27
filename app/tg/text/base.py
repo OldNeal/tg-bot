@@ -33,7 +33,7 @@ class BaseText:
 
     @classmethod
     def user_mention(cls, user: AnswerUserBody):
-        text = cls.html(cls.answer_user_name(user))
+        text = cls.html(cls.answer_user_name(user)).escape()
         return text.openmessage(user.telegram.tg_id) if user.telegram else text
 
     @classmethod

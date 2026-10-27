@@ -15,15 +15,21 @@ class MainService(BaseService):
     IKB: MainIKB
     fsm: FSMUtils
 
+    async def menu(self):
+        return await self.answer([
+            AnswerBody(
+                text=self.text.menu(),
+                reply_markup=self.IKB.menu(),
+            )
+        ])
+
     async def info(self, purpose_tg_id: int | None = None):
         data = await self.logic.info(purpose_tg_id=purpose_tg_id)
         return await self.answer([
             AnswerBody(
-                text=self.text(data).first_msg_by_info,
-            ),
-            AnswerBody(
                 text=self.text(data).info,
                 data=data,
+                reply_markup=self.IKB.info(data),
             )
         ])
 

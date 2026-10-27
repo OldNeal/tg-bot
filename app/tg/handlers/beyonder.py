@@ -8,7 +8,16 @@ from aiogram.filters import Command
 from app.service.beyonder import BeyonderService
 from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 from app.tg.args import Requireds, Optionals
-from app.tg.callback.beyonder import DrinkCall, KillCall, BeyonderListCall, BeyonderListPageCall, BeyonderInfoCall, BeyonderBackCall
+from app.tg.callback.beyonder import (
+    BeyonderBackCall,
+    BeyonderInfoCall,
+    BeyonderListCall,
+    BeyonderListPageCall,
+    BeyonderTimeInfoCall,
+    BeyonderUpSeqCall,
+    DrinkCall,
+    KillCall,
+)
 from app.tg.callback.back_values import BeyonderBackValues
 from app.tg.middlewares import ServiceMiddleware
 
@@ -82,7 +91,25 @@ async def call(
     callback_data: DrinkCall,
     service: BeyonderService
 ):
-    await service.drink(path_id=callback_data.path_id)
+    await service.drink(path_id=callback_data.path_id, purpose_tg_id=callback_data.purpose_tg_id, seq=callback_data.seq or 9)
+
+
+@beyonder_router.callback_query(BeyonderTimeInfoCall.filter())
+async def call(
+    callback: CallbackQuery,
+    callback_data: BeyonderTimeInfoCall,
+    service: BeyonderService
+):
+    await service.time_info(purpose_tg_id=callback_data.purpose_tg_id)
+
+
+@beyonder_router.callback_query(BeyonderUpSeqCall.filter())
+async def call(
+    callback: CallbackQuery,
+    callback_data: BeyonderUpSeqCall,
+    service: BeyonderService
+):
+    await service.upseq(seq=callback_data.seq, purpose_tg_id=callback_data.purpose_tg_id)
 
 
 @beyonder_router.message(Command('upseq'))

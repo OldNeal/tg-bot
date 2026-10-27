@@ -8,6 +8,7 @@ from app.tg.handlers.main import main_router
 from app.tg.handlers.help import help_router
 from app.tg.text.utils import TextHTML
 from app.tg.callback.base import CancelCall
+from app.tg.buttons.text import TextKeyboardMarkup, TextKeyboardButton
 
 import asyncio
 
@@ -52,7 +53,11 @@ async def cmd(message: Message):
 
 @base_router.message(Command('test'))
 async def cmd(message: Message):
-    await message.answer_rich(InputRichMessage(html=TextHTML("""<tag>Tag</tag>, a & b, "quotes", 'single'""").pre()))
+    await message.answer_rich(
+        InputRichMessage(
+            html=TextHTML('Кнопка') + TextKeyboardMarkup([TextKeyboardButton(text='Первая', url=settings.docs_url)]).as_makrup() + TextHTML('Текст после кнопки')
+            )
+        )
 
 @base_router.callback_query(CancelCall.filter())     
 async def call(

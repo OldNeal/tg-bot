@@ -108,4 +108,5 @@ class WikiIKB(BotIKB):
         self.builder.button(text=f'🔍 Поиск {'Пути' if wiki_type == 'path' else 'ВД'}', callback_data=WikiSearchCall(type=wiki_type, tg_id=self.tg_id))
         self.builder.button(text=f'{'✅' if wiki_type == 'path' else ''} Пути', callback_data=WikiMenuCall(type='path', tg_id=self.tg_id))
         self.builder.button(text=f'{'✅' if wiki_type == 'ga' else ''} ВД', callback_data=WikiMenuCall(type='ga', tg_id=self.tg_id))
-        return self.builder.adjust(1, 1, 2).as_markup()
+        self.builder.button(text='↩️ В главное меню', callback_data=MenuCall(where='main', tg_id=self.tg_id))
+        return self.builder.adjust(1, 1, 2, 1).as_markup()

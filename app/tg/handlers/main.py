@@ -1,13 +1,14 @@
 from telegram_click_aio.decorator import command
 from aiogram.types import Message, CallbackQuery
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command, CommandObject
 
 from app.service.main import MainService
 from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 from app.tg.args import Optionals
 from app.tg.middlewares import ServiceMiddleware
-from app.tg.callback.main import MyStateCall
+from app.tg.callback.base import MenuCall
+from app.tg.callback.main import MainInfoCall, MyStateCall
 from app.tg.handlers.beyonder import beyonder_router
 from app.tg.handlers.wiki import wiki_router
 from app.tg.handlers.organ import organ_router
@@ -24,6 +25,26 @@ main_router.include_routers(
     stats_router,
     news_paper_router,
 )
+
+
+@main_router.message(Command('menu'))
+async def menu(message: Message, service: MainService):
+    await service.menu()
+
+
+@main_router.callback_query(MenuCall.filter(F.where == 'main'))
+async def menu_call(callback: CallbackQuery, callback_data: MenuCall, service: MainService):
+    await service.menu()
+
+
+@main_router.callback_query(MenuCall.filter(F.where == 'info'))
+async def info_call(callback: CallbackQuery, callback_data: MenuCall, service: MainService):
+    await service.info()
+
+
+@main_router.callback_query(MainInfoCall.filter())
+async def main_info_call(callback: CallbackQuery, callback_data: MainInfoCall, service: MainService):
+    await service.info(purpose_tg_id=callback_data.purpose_tg_id)
 
 
 @main_router.message(Command('info'))

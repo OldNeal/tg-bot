@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton
 
 from app.validate.api import AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsPaperInfo, ForButtons
-from app.tg.buttons.base import BotIKB
+from app.tg.buttons.base import BotIKB, MenuCall
 from app.tg.callback.news_paper import (
     NewsPaperInfoCall,
     NewsPaperInfoDescCall,
@@ -238,4 +238,5 @@ class NewsPaperIKB(BotIKB):
         self.builder.button(text='🗞 Меню читателя', callback_data=NewsPaperPageCall(page=0, mode='list', tg_id=self.tg_id))
         self.builder.button(text='🔎 Найти газету', callback_data=NewsPaperSearchCall(tg_id=self.tg_id))
         self.builder.button(text='📜 Все газеты', callback_data=NewsPaperPageCall(page=0, mode='all', tg_id=self.tg_id))
+        self.builder.button(text='↩️ В главное меню', callback_data=MenuCall(where='main', tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()

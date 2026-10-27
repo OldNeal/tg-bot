@@ -11,7 +11,9 @@ class StatsIKB(BotIKB):
         return self.builder.button(text='↩️ Назад', callback_data=StatsBackCall(where=where, tg_id=self.tg_id)).as_markup()
 
     def all(self):
-        return self.builder.button(text='🔍 Статистика путей', callback_data=StatsPathsCall(tg_id=self.tg_id)).as_markup()
+        self.builder.button(text='🔍 Статистика путей', callback_data=StatsPathsCall(tg_id=self.tg_id))
+        self.builder.button(text='↩️ В главное меню', callback_data=MenuCall(where='main', tg_id=self.tg_id))
+        return self.builder.adjust(1).as_markup()
         
     def paths(self, paths: list[AnswerPathInfo], max_page: int, page: int, value: str, where: str | None = None):
         for path in sorted(paths, key=lambda x: x.path_id):

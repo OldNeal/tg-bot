@@ -6,6 +6,7 @@ from aiogram.filters import Command
 from app.service.stats import StatsService
 from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 from app.tg.args import Optionals
+from app.tg.callback.base import MenuCall
 from app.tg.callback.stats import StatsBackCall, BackCall, StatsPageCall, StatsPathsCall
 from app.tg.callback.back_values import StatsBackValues
 from app.tg.fsm.state import StatsState
@@ -14,6 +15,11 @@ from app.tg.middlewares import ServiceMiddleware
 stats_router = Router()
 stats_router.message.middleware(ServiceMiddleware(StatsService))
 stats_router.callback_query.middleware(ServiceMiddleware(StatsService))
+
+
+@stats_router.callback_query(MenuCall.filter(F.where == 'stats'))
+async def main_menu_call(callback: CallbackQuery, callback_data: MenuCall, service: StatsService):
+    await service.all()
 
 
 @stats_router.message(Command('stats'))

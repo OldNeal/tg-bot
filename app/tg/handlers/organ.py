@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from app.tg.args import Optionals, Requireds
+from app.tg.callback.base import MenuCall
 from app.tg.callback.back_values import OrganBackValues
 from app.tg.callback.organ import (
     OrganBackCall,
@@ -37,6 +38,11 @@ from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 organ_router = Router()
 organ_router.message.middleware(ServiceMiddleware(OrganService))
 organ_router.callback_query.middleware(ServiceMiddleware(OrganService))
+
+
+@organ_router.callback_query(MenuCall.filter(F.where == 'organ'))
+async def menu_call(callback: CallbackQuery, callback_data: MenuCall, service: OrganService):
+    await service.menu()
 
 
 @organ_router.message(Command('member'))
@@ -132,6 +138,15 @@ async def call(
     await service.search()
 
 
+@organ_router.callback_query(OrganBackCall.filter(F.where == OrganBackValues.menu))
+async def call(
+    callback: CallbackQuery,
+    callback_data: OrganBackCall,
+    service: OrganService,
+):
+    await service.menu()
+
+
 @organ_router.callback_query(OrganSearchCall.filter())
 async def call(
     callback: CallbackQuery,
@@ -160,7 +175,7 @@ async def call(
     callback_data: OrganPageCall,
     service: OrganService,
 ):
-    await service.search(is_back=True, page=callback_data.page)
+    await service.search(page=callback_data.page)
 
 
 @organ_router.message(Command('organ'), F.text.contains('info'))

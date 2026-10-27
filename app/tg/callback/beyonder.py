@@ -5,12 +5,27 @@ class BeyonderCall(BaseCall, prefix='beyonder'):
 
 class BeyonderInfoCall(BaseCall, prefix='beyonder_info'):
     purpose_tg_id: int
+    path_id: int | None = None
+    page: int | None = None
+    where: str | None = None
 
 class BeyonderBackCall(BackCall, prefix='beyonder_back'):
-    pass
+    path_id: int | None = None
+    page: int | None = None
 
 class DrinkCall(BeyonderCall, prefix='drink'):
-    path_id: int
+    path_id: int | None = None
+    path_name: str | None = None
+    purpose_tg_id: int | None = None
+    seq: int | None = None
+
+class BeyonderTimeInfoCall(BaseCall, prefix='beyonder_time_info'):
+    purpose_tg_id: int
+
+class BeyonderUpSeqCall(BaseCall, prefix='beyonder_upseq'):
+    purpose_tg_id: int | None = None
+    path_name: str | None = None
+    seq: int | None = None
 
 class KillCall(AccertCancelCall, prefix='kill'):
     purpose_tg_id: int
@@ -21,3 +36,5 @@ class BeyonderListCall(AccertCancelCall, prefix='beyonder_list'):
 class BeyonderListPageCall(PageCall, prefix='beyonder_list_page'):
     path_id: int
     where: str | None = None
+    return_value: str | None = None
+    return_page: int | None = None

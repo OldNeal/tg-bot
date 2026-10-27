@@ -6,6 +6,7 @@ from telegram_click_aio.decorator import command
 from app.service.news_paper import NewsPaperService
 from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 from app.tg.args import Optionals, Requireds
+from app.tg.callback.base import MenuCall
 from app.tg.callback.news_paper import (
     NewsPaperFireEditorCall,
     NewsPaperGiveCall,
@@ -32,6 +33,11 @@ from app.tg.middlewares import ServiceMiddleware
 news_paper_router = Router()
 news_paper_router.message.middleware(ServiceMiddleware(NewsPaperService))
 news_paper_router.callback_query.middleware(ServiceMiddleware(NewsPaperService))
+
+
+@news_paper_router.callback_query(MenuCall.filter(F.where == 'newspaper'))
+async def main_menu_call(callback: CallbackQuery, callback_data: MenuCall, service: NewsPaperService):
+    await service.menu()
 
 
 @news_paper_router.message(Command('newspaper'), F.text.contains('search'))

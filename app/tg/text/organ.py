@@ -20,8 +20,13 @@ class OrganText(BaseText):
 
     @classmethod
     def search(self, value: str, count: int, page: int, max_page: int):
-        return f'🔎 По запросу "{value}" были найдены организации ({count} шт.) [{page + 1}/{max_page} стр.]' if count > 0 else '❌ Ничего не найдено'
-    
+        if count == 0:
+            return f'❌ По запросу «{self.html(value).escape()}» ничего не найдено'
+        return (
+            f'🔎 По запросу «{self.html(value).escape()}» найдено организаций: {count} '
+            f'[{page + 1}/{max_page} стр.]'
+        )
+
     @classmethod
     def to_search(self):
         return '✒️ Введите поисковой запрос'
@@ -44,7 +49,7 @@ class OrganText(BaseText):
 
     @property
     def desc(self):
-        return (self.html('🪶 Описание').h1.br().br() + self.html(self.data.description)) if self.data.description else '🪶 Описание отсуствует'
+        return (self.html('🪶 Описание').separator(n=2) + self.html(self.data.description).escape()) if self.data.description else '🪶 Описание отсуствует'
 
     @classmethod
     def member(self, user: AnswerMemberInfo):
@@ -54,7 +59,7 @@ class OrganText(BaseText):
             member = [f'🏛 Организация: {user.member.organ_name}',
             f'⚜️ Ранг: {user.member.rank_name} ({user.member.rank})']
             if user.member.titul:
-                member.append(f'🎖 Титул: {user.member.titul}')
+                member.append(f'🎖 Титул: {self.html(user.member.titul).escape()}')
             #f'⌛ Состоит в организации дней: {(datetime.now() - datetime.fromisoformat(user.member.login_at)).days}'
 
         telegram = user.purpose.telegram
@@ -62,7 +67,7 @@ class OrganText(BaseText):
         username = telegram.username if telegram else None
         return '🎎 ' + self.user_mention(user.purpose) + self.html(self.html.joined([
             f'🏷 ID: {user_id} ({user.purpose.user_id})',
-            f'🔗 Юз: {self.html(username or '❌').openmessage(telegram.tg_id) if telegram else '❌'}'
+            f'🔗 Юз: {self.html(username or '❌').escape().openmessage(telegram.tg_id) if telegram else '❌'}'
             ] + member)).blockquote()
     
     @classmethod
@@ -111,7 +116,7 @@ class OrganText(BaseText):
 
     @classmethod
     def settings_values(self, values: dict):
-        return '⚙️ Настройки' + self.html.json_format(values, indent=4).code().pre('json')   
+        return '⚙️ Настройки' + self.html.json_format(values, indent=4).escape().code().pre('json')   
     
     @property
     def capture(self):

@@ -1,6 +1,5 @@
 from app.tg.text.base import BaseText
 from app.api.schemas import AnswerNewsPaperGive, AnswerNewsPaperInfoDescription, AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsPaperInfo
-from aiogram.types import RichTextMention
 
 class NewsPaperText(BaseText):
     @classmethod
@@ -78,7 +77,7 @@ class NewsPaperText(BaseText):
     def description(cls, data: AnswerNewsPaperInfoDescription):
         if not data.description:
             return '🪶 Описание отсутствует'
-        return cls.html('🪶 Описание').h1.br().br() + cls.html(data.description)
+        return cls.html('🪶 Описание').separator(n=2) + cls.html(data.description).escape()
 
     @classmethod
     def capture(cls, news_paper: NewsPaperInfo):
@@ -86,7 +85,7 @@ class NewsPaperText(BaseText):
 
     @classmethod
     def settings_values(cls, values: dict):
-        return '⚙️ Настройки' + cls.html.json_format(values, indent=4).code().pre('json')
+        return '⚙️ Настройки' + cls.html.json_format(values, indent=4).escape().code().pre('json')
 
     @classmethod
     def to_enter_settings(cls):
@@ -103,8 +102,8 @@ class NewsPaperText(BaseText):
         user_id = telegram.tg_id if telegram else user.purpose.user_id
         username = telegram.username if telegram else None
         return '🗞 ' + self.user_mention(user.purpose) + self.html(self.html.joined([
-            f'🏷 ID: {user_id}',
-            f'🔗 Юз: {self.html(username or '❌').openmessage(telegram.tg_id) if telegram else '❌'}'
+            f'🏷 ID: {user_id} ({user.purpose.user_id})',
+            f'🔗 Юз: {self.html(username or '❌').escape().openmessage(telegram.tg_id) if telegram else '❌'}'
             ] + reader)).blockquote()
 
     @classmethod

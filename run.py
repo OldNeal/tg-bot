@@ -23,26 +23,31 @@ async def update_bot_info():
 
 @botlog.logger.catch(reraise=True)
 async def main():
-    botlog.logger.info('Бот запускается')
-    bot_info = await update_bot_info()
-    await redis_ping()
-    await logic.test_api_connect(True)
-    if bot_info:
-        dp.message.middleware(BotLogMessageMiddleware())
-        dp.callback_query.middleware(BotLogCallbackQueryMiddleware())
-        dp.message.middleware(ExceptionMessageMiddleware())
-        dp.callback_query.middleware(ExceptionCallbackQueryMiddleware())
-        dp.include_router(base_router)
-        botlog.start()
-        await bot.delete_webhook(drop_pending_updates=True)
-        await to_menu_cmds()
-        await dp.start_polling(bot)
+    try:
+        botlog.logger.info('Бот запускается')
+        bot_info = await update_bot_info()
+        await redis_ping()
+        await logic.test_api_connect(True)
+        if bot_info:
+            dp.message.middleware(BotLogMessageMiddleware())
+            dp.callback_query.middleware(BotLogCallbackQueryMiddleware())
+            dp.message.middleware(ExceptionMessageMiddleware())
+            dp.callback_query.middleware(ExceptionCallbackQueryMiddleware())
+            dp.include_router(base_router)
+            botlog.start()
+            await bot.delete_webhook(drop_pending_updates=True)
+            await to_menu_cmds()
+            await dp.start_polling(bot)
+    except:
+        pass
+    finally:
+        botlog.stop()
+
 
 @dp.shutdown()
 async def stop(bot):
     await dp.storage.close()
     await redis_client.aclose()
-    botlog.stop()
 
 if __name__ == "__main__": 
     try:

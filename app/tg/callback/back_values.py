@@ -2,6 +2,7 @@ class BackValues:
     stats_paths = 'stats_paths'
 
 class OrganBackValues(BackValues):
+    menu = 'organ_menu'
     search = 'organ_search'
     list = 'organ_list'
     info = 'organ_info'

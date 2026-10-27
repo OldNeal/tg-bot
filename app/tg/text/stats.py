@@ -15,9 +15,14 @@ class StatsText(BaseText):
         ]).blockquote()
     
     @classmethod
-    def search(cls, max_page: int, page: int, value: str, results: int = 0):
-        return f'🔎 По запросу "{value}" найдены пути ({results} шт.) {f'[{page+1}/{max_page} стр.]' if max_page > 1 else ''}' if results > 0 else '❌ Ничего не найдено'
-    
+    def search(cls, value: str, count: int, page: int, max_page: int):
+        if count == 0:
+            return f'❌ По запросу «{cls.html(value).escape()}» ничего не найдено'
+        return (
+            f'🔎 По запросу «{cls.html(value).escape()}» найдено путей: {count} '
+            f'[{page + 1}/{max_page} стр.]'
+        )
+
     @classmethod
     def enter_search_value(self):
         return '✒️ Отправьте поисковой запрос'

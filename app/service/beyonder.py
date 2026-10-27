@@ -22,11 +22,14 @@ class BeyonderService(BaseService):
     async def info(self, purpose_tg_id: int | None = None):
         back_where = await self.fsm.get_value('back_where')
         data = await self.logic.info(purpose_tg_id=purpose_tg_id)
+        reply_markup = self.IKB.info_card(data, where=back_where) if data.purpose and data.purpose.telegram else None
+        if back_where and reply_markup is None:
+            reply_markup = self.IKB.back(back_where)
         return await self.answer([
             AnswerBody(
                 text=self.text(data).info,
                 data=data,
-                reply_markup=self.IKB.back(back_where) if back_where else None
+                reply_markup=reply_markup
             )
         ])
 
@@ -125,7 +128,8 @@ class BeyonderService(BaseService):
         return await self.answer([
             AnswerBody(
                 text=self.text(data).time_info,
-                data=data
+                data=data,
+                reply_markup=self.IKB.back_to_card(purpose_tg_id)
             )
         ])
 

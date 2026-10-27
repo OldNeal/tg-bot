@@ -27,12 +27,18 @@ from app.tg.callback.organ import (OrganBackCall,
                                         OrganCreateCall,
                                         OrganMyCall)
 from app.tg.callback.back_values import OrganBackValues
+from app.tg.callback.main import MainInfoCall
 from app.validate.api import OrganSettingValidate, AnswerMemberInfo, OrganInfo, AnswerOrganInfo
 
 
 class OrganIKB(BotIKB):    
     def back(self, where: str):
         return self.builder.button(text='↩️ Назад', callback_data=OrganBackCall(where=where, tg_id=self.tg_id)).as_markup()
+
+    def back_menu(self):
+        self.builder.button(text='❌ Отменить', callback_data=CancelCall(tg_id=self.tg_id))
+        self.builder.button(text='↩️ В меню', callback_data=OrganBackCall(where=OrganBackValues.menu, tg_id=self.tg_id))
+        return self.builder.adjust(1).as_markup()
     
     def ogr_name(self, name: str, ogr: int = 30):
         return f'{name[:ogr+1]}...' if len(name) > ogr else f'{name}'
@@ -65,6 +71,7 @@ class OrganIKB(BotIKB):
             self.builder.row(*pages)        
         if where:
             self.builder.row(InlineKeyboardButton(text='✒️ Ввести запрос еще раз', callback_data=OrganSearchCall(tg_id=self.tg_id).pack()))
+        self.builder.row(InlineKeyboardButton(text='↩️ В меню', callback_data=OrganBackCall(where=OrganBackValues.menu, tg_id=self.tg_id).pack()))
         return self.builder.as_markup()       
 
     def member(self, data: AnswerMemberInfo):
@@ -81,6 +88,12 @@ class OrganIKB(BotIKB):
                 self.builder.button(text='👑 Передать организацию', callback_data=OrganGiveCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
             if data.for_buttons.is_kick:
                 self.builder.button(text='🚪 Выгнать', callback_data=OrganKickCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
+        if telegram:
+            self.builder.button(
+                text='💳 Главная карточка',
+                callback_data=MainInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id),
+            )
+            row.append(1)
         row.append(1)
         self.builder.button(text='↩️ Назад', callback_data=OrganInfoMembersCall(organ_id=data.member.organ_id, tg_id=self.tg_id))
         return self.builder.adjust(*row).as_markup()
@@ -150,11 +163,13 @@ class OrganIKB(BotIKB):
         self.builder.button(text='🔎 Найти организацию', callback_data=OrganBackCall(where=OrganBackValues.search, tg_id=self.tg_id))
         self.builder.button(text='📜 Все организации', callback_data=OrganBackCall(where=OrganBackValues.list, tg_id=self.tg_id))
         self.builder.button(text='🏆 Топ организаций', callback_data=OrganBackCall(where=OrganBackValues.top, tg_id=self.tg_id))
+        self.builder.button(text='↩️ В главное меню', callback_data=MenuCall(where='main', tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()
     
     def top(self, organs: list[OrganInfo]):
         for n, organ in enumerate(organs, start=1):
             self.builder.button(text=f'{n}. {organ.emodzi or '🏛'} {self.ogr_name(organ.name)} ({organ.member_counts} участ.)', icon_custom_emoji_id=organ.custom_emodzi_id, callback_data=OrganInfoCall(organ_id=organ.id, tg_id=self.tg_id))
+        self.builder.row(InlineKeyboardButton(text='↩️ В меню', callback_data=OrganBackCall(where=OrganBackValues.menu, tg_id=self.tg_id).pack()))
         return self.builder.adjust(1).as_markup()
 
     def give(self, purpose_tg_id: int, is_back: bool = False):
@@ -168,6 +183,7 @@ class OrganIKB(BotIKB):
     def my_organ(self):
         self.builder.button(text='➕ Создать', callback_data=OrganCreateCall(tg_id=self.tg_id))
         self.builder.button(text='🔍 Найти', callback_data=OrganSearchCall(tg_id=self.tg_id))
+        self.builder.button(text='↩️ В меню', callback_data=OrganBackCall(where=OrganBackValues.menu, tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()
 
     def create(self, organ_id: int):

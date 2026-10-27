@@ -21,6 +21,7 @@ class OrganService(BaseService):
     fsm: OrganFSM
 
     async def menu(self):
+        await self.fsm.set_state()
         await self.fsm.remove_value('back_where2')
         return await self.answer([
             AnswerBody(
@@ -31,6 +32,7 @@ class OrganService(BaseService):
 
     async def my_organ(self):
         try:
+            await self.fsm.update_data(back_where2=OrganBackValues.menu)
             return await self.info()
         except Exception:
             return await self.answer([
@@ -96,7 +98,7 @@ class OrganService(BaseService):
         return await self.answer([
             AnswerBody(
                 text=self.text.to_search(),
-                reply_markup=self.IKB.cancel(),
+                reply_markup=self.IKB.back_menu(),
             )
         ])
 

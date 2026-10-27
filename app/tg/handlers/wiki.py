@@ -6,6 +6,7 @@ from aiogram.filters import Command
 from app.service.wiki import WikiService
 from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 from app.tg.args import Optionals
+from app.tg.callback.base import MenuCall
 from app.tg.callback.wiki import (
     PathCall,
     GroupCall,
@@ -23,6 +24,11 @@ from app.tg.middlewares import ServiceMiddleware
 wiki_router = Router()
 wiki_router.message.middleware(ServiceMiddleware(WikiService))
 wiki_router.callback_query.middleware(ServiceMiddleware(WikiService))
+
+
+@wiki_router.callback_query(MenuCall.filter(F.where == 'wiki'))
+async def main_menu_call(callback: CallbackQuery, callback_data: MenuCall, service: WikiService):
+    await service.menu()
 
 
 @wiki_router.message(Command('wiki'))

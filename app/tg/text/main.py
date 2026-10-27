@@ -5,6 +5,10 @@ class MainText(BaseText):
     def __init__(self, data: AnswerBaseInfo):
         self.data: AnswerBaseInfo = data
 
+    @classmethod
+    def menu(self):
+        return '🧭 Главное меню'
+
     @property
     def info(self):
         member_text = [f'🏛 В организации не состоит']
@@ -19,7 +23,7 @@ class MainText(BaseText):
             member_text = [f'🏛 Организация: {member.organ_name}',
             f'⚜️ Ранг: {member.rank_name} ({member.rank})']
             if member.titul:
-                member_text.append(f'🎖 Титул: {member.titul}')
+                member_text.append(f'🎖 Титул: {self.html(member.titul).escape()}')
 
         if beyonder:
             if beyonder.seq > 0:
@@ -34,7 +38,7 @@ class MainText(BaseText):
         username = telegram.username if telegram else None
         return self.user_mention(user) + self.html(self.html.joined([
             f'🏷 ID: {user_id} ({user.user_id})',
-            f'🔗 Юз: {self.html(username or '❌').openmessage(telegram.tg_id) if telegram else '❌'}'
+            f'🔗 Юз: {self.html(username or '❌').escape().openmessage(telegram.tg_id) if telegram else '❌'}'
             ] + member_text + beyonder_text)).blockquote()
 
     @property

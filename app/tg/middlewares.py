@@ -136,7 +136,6 @@ class ServiceMiddleware(BaseMiddleware):
         kwargs = {'request_id':data.get('request_id')}
         if message:
             kwargs |= parse_command_args(message.text, [to_json, is_admin, is_reply])
-            print(kwargs)
         data['service'] = self.service(
             user=data.get('event_from_user'), 
             chat=data.get('event_chat'), 

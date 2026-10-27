@@ -76,8 +76,8 @@ class BeyonderText(BaseText):
                 beyonder = [f'🏵 {self.data.beyonder.seq_name}']
 
         return self.user_mention(self.data.purpose) + self.html(self.html.joined([
-            f'🏷 ID: {user.tg_id} ({self.data.id})',
-            f'🔗 Юз: {self.html(user.username or '❌').openmessage(user.tg_id)}'
+            f'🏷 ID: {user.tg_id} ({self.data.purpose.user_id})',
+            f'🔗 Юз: {self.html(user.username or '❌').escape().openmessage(user.tg_id)}'
             ] + beyonder)).blockquote()
     
     def list(self, max_page: int, page: int):
