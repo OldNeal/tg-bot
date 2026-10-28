@@ -38,6 +38,10 @@ class BotLogCallbackQueryMiddleware(BaseMiddleware):
         data: Dict[str, Any]
     ) -> Any:
         callback = event
+        try:
+            await callback.answer()
+        except TelegramBadRequest:
+            pass
         request_id = uuid.uuid4().hex
         with botlog.logger.contextualize(tg_id=callback.from_user.id, chat_id=callback.message.chat.id, request_id=request_id):
             botlog.callback(callback.data)
@@ -86,40 +90,30 @@ class ExceptionCallbackQueryMiddleware(BaseMiddleware):
         event: CallbackQuery,
         data: Dict[str, Any]
     ) -> Any:
-        callback_data: BaseCall = data.get('callback_data', BaseCall(tg_id=0, is_check=True))
-        check_is_user = True
+        callback_data: BaseCall = data.get('callback_data')
+        check_is_user = True            
+        answer_text = ''
         try:
             if check_is_user and callback_data.is_check:
                 if event.from_user.id != callback_data.tg_id:
                     raise ALienCallbackError(f'This user enter is alien event keyboard', tg_id=event.from_user.id, chat_id=event.message.chat.id)
-            answer_text = ''
-            show_alert = None
             result = await handler(event, data)
             return result, event
         except BotError as bote:
             botlog.logger.trace(f'AioPartPath: {bote}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
-            show_alert = True
-            answer_text = (TextHTML(bote.to_msg).escape())[:4000]
+            await event.message.answer(f'{TextHTML(bote.to_msg).escape()[:4000]}')
         except (TelegramBadRequest, TelegramForbiddenError) as e:
             botlog.logger.warning(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
+            await event.message.answer(f'⚠️ {(TextHTML(e).escape())[:4000]}')
         except Exception as e:
             str_e = str(e)
             botlog.logger.error(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
-            show_alert = True
             if event.from_user.id == settings.owner:
                 answer_text = f'{PythonError.msg}: {str_e[:4000]}'
             else:
                 answer_text = f'{PythonError.msg}'
+            await event.message.answer(f'⚠️ {(TextHTML(e).escape())[:4000]} \n \n {answer_text}')
             raise e
-        finally:
-            try:
-                await event.answer(answer_text, show_alert=show_alert)
-            except Exception as e:
-                botlog.logger.error(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
-                if event.from_user.id == settings.owner:
-                    await event.message.answer(f'⚠️ {(TextHTML(e).escape())[:4000]} \n \n {answer_text}')
-                else:
-                    await event.answer(f'{PythonError.msg}', show_alert=True)
 
 class ServiceMiddleware(BaseMiddleware):
     def __init__(self, service: type[BaseService]):

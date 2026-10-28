@@ -136,3 +136,8 @@ class BaseService:
     def redact_kwargs(self, **new_kwargs):
         self.kwargs |= new_kwargs
         return self
+
+    def check_is_not_none(self, *objs):
+        for obj in objs:
+            if not obj is None:
+                return obj

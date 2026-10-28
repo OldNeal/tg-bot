@@ -1,6 +1,6 @@
-import loguru, sys, inspect
+import loguru, sys
 from functools import wraps
-from datetime import time
+import time
 from typing import Literal
 
 from app.logging.paths import PurePath, LogPaths
@@ -94,44 +94,22 @@ class BotLog:
  
     def decor(self, timer: bool = False, arg: bool = False, logger_kwargs: dict = {}):
         def decorator(func):
-            is_async = inspect.iscoroutinefunction(func)
             logger = self.logger.bind(**logger_kwargs, module=func.__module__)
-            
-            if is_async:
-                @wraps(func)
-                async def async_wrapped(*args, **kwargs):
-                    start_time = time()
-                    try:
-
-                        result = await func(*args, **kwargs)
-                        end_time = time()
-
-                        log_method = logger.debug if timer else logger.trace
-                        log_method(f"Функция {func.__name__} выполнена за {end_time - start_time}")
-                        log_method = logger.debug if arg else logger.trace
-                        log_method(f"args: {args}, kwargs: {kwargs}")
-                        return result
-                    except Exception as e:
-                        logger.exception(e)
-                        raise
-                return async_wrapped
-            else:
-                @wraps(func)
-                def sync_wrapped(*args, **kwargs):
-                    start_time = time()
-                    try:
-                        result = func(*args, **kwargs)
-                        end_time = time()
-
-                        log_method = logger.debug if timer else logger.trace
-                        log_method(f"Функция {func.__name__} выполнена за {end_time - start_time}")
-                        log_method = logger.debug if arg else logger.trace
-                        log_method(f"args: {args}, kwargs: {kwargs}")
-                        return result
-                    except Exception as e:
-                        logger.exception(e)
-                        raise
-                return sync_wrapped
+            @wraps(func)
+            def sync_wrapped(*args, **kwargs):
+                start_time = time.perf_counter()
+                try:
+                    result = func(*args, **kwargs)
+                    end_time = time.perf_counter()
+                    log_method = logger.debug if timer else logger.trace
+                    log_method(f"Функция {func.__name__} выполнена за {end_time - start_time:.4f}")
+                    log_method = logger.debug if arg else logger.trace
+                    log_method(f"args: {args}, kwargs: {kwargs}")
+                    return result
+                except Exception as e:
+                    logger.warning(e)
+                    raise
+            return sync_wrapped
         return decorator
 
     def message(self, msg: str, **kwargs):

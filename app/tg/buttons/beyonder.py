@@ -27,16 +27,14 @@ class BeyonderIKB(BotIKB):
             return self.builder.as_markup()
 
         telegram = purpose.telegram
-        if telegram.tg_id != self.tg_id:
-            return self.builder.adjust(1).as_markup()
-
-        if data.beyonder is None:
-            self.builder.button(text='🧪 Выпить зелье', callback_data=DrinkCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id, seq=9))
-        if data.beyonder:
-            if data.beyonder.seq >= 0:
-                self.builder.button(text='🚀 Продвинуться', callback_data=BeyonderUpSeqCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
-            self.builder.button(text='⏱ Дата продвижения', callback_data=BeyonderTimeInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
-            self.builder.button(text='☠️ Потерять контроль', callback_data=KillCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
+        if telegram.tg_id == self.tg_id:
+            if data.beyonder is None:
+                self.builder.button(text='🧪 Выпить зелье', callback_data=DrinkCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id, seq=9))
+            if data.beyonder:
+                if data.beyonder.seq >= 0:
+                    self.builder.button(text='🚀 Продвинуться', callback_data=BeyonderUpSeqCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
+                self.builder.button(text='⏱ Дата продвижения', callback_data=BeyonderTimeInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
+                self.builder.button(text='☠️ Потерять контроль', callback_data=KillCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         if where:
             self.builder.button(text='↩️ Назад', callback_data=BeyonderBackCall(where=where, tg_id=self.tg_id))
         self.builder.button(

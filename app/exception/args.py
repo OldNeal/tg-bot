@@ -30,3 +30,9 @@ class SeqError(BotError):
     faq = """Примеры:
     - 1
     - 7"""
+
+class UserSearchValueError(BotError):
+    msg = 'Введите поисковый запрос'
+
+class UserSearchIdError(BotError):
+    msg = 'ID должен быть положительным числом'

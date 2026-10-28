@@ -9,7 +9,14 @@ tg_id = Argument(
             optional=True
         )
 
+user_id = Argument(
+            name=['user_id', 'id'],
+            description='Внутренний ID пользователя',
+            type=int,
+            validator=lambda x: x > 0,
+            example='123',
+        )
+
 to_json = Flag(['to_json', 'json', 'j'], 'Показать в формате json')
 is_reply = Flag(['is_reply', 'r'], 'Команда выполняется с учетом ответа (явно)')
 is_admin = Flag(['is_admin', 'a'], 'Команда выполняется от лица админа (явно)')
-

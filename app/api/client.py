@@ -35,6 +35,32 @@ async def user_telegram(result: schemas.AnswerUserBody | schemas.BaseExceptionRe
 
 
 
+@client.get("/user/search", response_map={200: schemas.AnswerUsersBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+
+async def user_search(result: schemas.AnswerUsersBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: typing.Optional[int] = None, tg_id: typing.Optional[int] = None, username: typing.Optional[str] = None, name: typing.Optional[str] = None) -> schemas.AnswerUsersBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """User Search
+    """
+    return result
+
+
+
+@client.get("/user/list", response_map={200: schemas.AnswerUsersBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+
+async def user_list(result: schemas.AnswerUsersBody | schemas.BaseExceptionResponse) -> schemas.AnswerUsersBody | schemas.BaseExceptionResponse:
+    """User List
+    """
+    return result
+
+
+@client.patch("/user/delete", response_map={200: schemas.AnswerUserBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+
+async def user_delete(result: schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int) -> schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """User Delete
+    """
+    return result
+
+
+
 @client.get("/beyonder/info", response_map={200: schemas.AnswerBeyonderInfo, 400: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
 
 async def beyonder_info(result: schemas.AnswerBeyonderInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int) -> schemas.AnswerBeyonderInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:

@@ -20,8 +20,12 @@ class BaseLogic:
         self.kwargs = kwargs
 
     @property
+    async def user_id(self):
+        return await self.get_user_id(self.tg_id)
+
+    @property
     async def body(self):
-        return self.schemas.QueryBody(user_id=await self.get_user_id(self.tg_id), is_admin=self.is_admin, request_id=self.request_id)
+        return self.schemas.QueryBody(user_id=await self.user_id, is_admin=self.is_admin, request_id=self.request_id)
 
     async def get_user_id(self, tg_id: int):
         user_id = await self.links.get_user_id(tg_id)
@@ -75,3 +79,8 @@ class BaseLogic:
     def redact_kwargs(self, **new_kwargs):
         self.kwargs |= new_kwargs
         return self
+
+    def check_is_not_none(self, *objs):
+        for obj in objs:
+            if not obj is None:
+                return obj

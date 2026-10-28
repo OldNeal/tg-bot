@@ -1,10 +1,15 @@
 from aiogram.filters import CommandObject
+from functools import cache
 
+from app.exception.base import PermissionError
+from app.exception.args import UserSearchIdError, UserSearchValueError
 from app.service.base import BaseService, AnswerBody
 from app.logic.main import MainLogic
 from app.tg.text.main import MainText
 from app.tg.buttons.main import MainIKB
-from app.tg.fsm.utils import FSMUtils
+from app.tg.fsm.state import MainState
+from app.tg.fsm.utils import MainFSM
+from app.validate.api import AnswerUsersBody
 
 class MainService(BaseService):
     logic_class: type[MainLogic] = MainLogic
@@ -13,7 +18,8 @@ class MainService(BaseService):
     text: type[MainText]
     ikb_class: type[MainIKB] = MainIKB
     IKB: MainIKB
-    fsm: FSMUtils
+    fsm_class: type[MainFSM] = MainFSM
+    fsm: MainFSM
 
     async def menu(self):
         return await self.answer([
@@ -29,7 +35,7 @@ class MainService(BaseService):
             AnswerBody(
                 text=self.text(data).info,
                 data=data,
-                reply_markup=self.IKB.info(data),
+                reply_markup=self.IKB.info(data)
             )
         ])
 
@@ -71,4 +77,142 @@ class MainService(BaseService):
             text = self.text.state_dont_pop()
         return await self.answer([
             AnswerBody(text=text, data=None, is_rich_text=True)
+        ])
+
+    async def users(self, page: int | None = None, notice: str | None = None):
+        await self.fsm.set_state()
+        await self.fsm.remove_value('search')
+        data = await self.logic.users_list()
+        return await self.show_users(data, page=page or 0, notice=notice)
+
+    async def users_search_fields(self):
+        await self.fsm.set_state()
+        return await self.answer([
+            AnswerBody(
+                text=self.text.users_search_fields(),
+                reply_markup=self.IKB.users_search_fields(),
+            )
+        ])
+
+    async def to_users_search(self, field: str):
+        if field not in self.IKB.search_fields:
+            return await self.users_search_fields()
+        await self.fsm.set_state(MainState.users_search)
+        await self.fsm.update_data(search_field=field)
+        await self.fsm.save_message(self.message.chat.id, self.message.message_id)
+        return await self.answer([
+            AnswerBody(
+                text=self.text.users_search_input(field),
+                reply_markup=self.IKB.back_to_list(),
+            )
+        ])
+
+    async def search_users(self):
+        field = await self.fsm.get_value('search_field')
+        if field not in self.IKB.search_fields:
+            await self.fsm.set_state()
+            return await self.users_search_fields()
+
+        value = (self.message.text or '').strip()
+        if not value:
+            raise UserSearchValueError()
+        if field in ('user_id', 'tg_id'):
+            try:
+                parsed_value = int(value)
+            except ValueError:
+                raise UserSearchIdError() from None
+            if parsed_value <= 0:
+                raise UserSearchIdError()
+        else:
+            parsed_value = value.removeprefix('@') if field == 'username' else value
+            if not parsed_value:
+                raise UserSearchValueError()
+
+        criteria = {field: parsed_value}
+        data = await self.logic.users_search(**criteria)
+        await self.fsm.update_data(search=criteria, page=0)
+        await self.fsm.set_state()
+        saved_message = await self.fsm.get_message()
+        if saved_message[0] and saved_message[1]:
+            await self.bot.delete_message(*saved_message)
+        await self.fsm.remove_message()
+        return await self.show_users(data, page=0, is_search=True)
+
+    async def users_page(self, page: int):
+        criteria = await self.fsm.get_value('search')
+        if criteria:
+            data = await self.logic.users_search(**criteria)
+            return await self.show_users(data, page=page, is_search=True)
+        data = await self.logic.users_list()
+        return await self.show_users(data, page=page)
+
+    async def show_users(
+        self,
+        data: AnswerUsersBody,
+        page: int = 0,
+        is_search: bool = False,
+        notice: str | None = None,
+    ):  
+        users = data.users
+        pages = self.to_pages(users)
+        max_page = len(pages)
+        page = min(max(page, 0), max(max_page - 1, 0))
+        await self.fsm.update_data(page=page)
+        current_page = list(pages[page]) if pages else []
+        if is_search:
+            text = self.text.users_search_results(len(users), page, max_page)
+        else:
+            text = self.text.users_list(len(users), page, max_page)
+        if notice:
+            text = f'{notice}\n\n{text}'
+        return await self.answer([
+            AnswerBody(
+                text=text,
+                data=data,
+                reply_markup=self.IKB.users(current_page, page, max_page),
+            )
+        ])
+
+    async def confirm_user_delete(self, user_id: int):
+        data = await self.logic.user_info(user_id=user_id)
+        return await self.answer([
+            AnswerBody(
+                text=self.text.user_delete_confirm(data.purpose),
+                data=data,
+                reply_markup=self.IKB.confirm_user_delete(user_id),
+            )
+        ])
+
+    async def user_info(self, user_id: int | None = None):
+        data = await self.logic.user_info(user_id if not user_id is None else await self.logic.user_id)
+        return await self.answer([
+            AnswerBody(
+                text=self.text.user_info(data.purpose),
+                data=data,
+                reply_markup=self.IKB.user_info(data)
+            )
+        ])
+
+    async def delete_user(self, user_id: int | None = None, confirmed: bool = False):
+        my_user_id = await self.logic.user_id
+        if user_id is None:
+            user_id = my_user_id
+        if user_id != my_user_id and not self.is_admin:
+            raise PermissionError()
+        if not confirmed:
+            return await self.user_info(user_id)
+
+        user = await self.logic.user_delete(user_id)
+        criteria = await self.fsm.get_value('search')
+        data = (
+            await self.logic.users_search(**criteria)
+            if criteria else await self.logic.users_list()
+        )
+
+        return await self.answer([
+            AnswerBody(
+                text=self.text.user_deleted(user),
+                data=data,
+                reply_markup=self.IKB.back('main'),
+            )
         ])

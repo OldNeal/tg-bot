@@ -287,6 +287,11 @@ class AnswerUserBody(pydantic.BaseModel):
     telegram: typing.Optional[typing.Union["TelegramBody", None]] = None
 
 
+class AnswerUsersBody(pydantic.BaseModel):
+    search_value: typing.Optional[str | int | None] = None
+    users: list["AnswerUserBody"]
+
+
 class BaseExceptionResponse(pydantic.BaseModel):
     message: str
     status_code: int

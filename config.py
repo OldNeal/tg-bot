@@ -115,6 +115,8 @@ admin_cmds = cmds | {
     'downseq':'⬇️ Понизить последовательность',
     'mystate':'🗂️ Ваши куки',
     'mystateclear':'🗑️ Очистить куки',
+    'users':'👥 Список пользователей',
+    'deleteuser':'🗑️ Удалить аккаунт пользователя',
 }
 
 async def to_menu_cmds():

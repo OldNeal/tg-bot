@@ -1,5 +1,8 @@
 from aiogram.fsm.state import State, StatesGroup
 
+class MainState(StatesGroup):
+    users_search = State()
+
 class OrganState(StatesGroup):
     create = State()
     settings = State()
