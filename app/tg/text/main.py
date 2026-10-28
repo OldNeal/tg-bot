@@ -104,4 +104,4 @@ class MainText(BaseText):
 
     @classmethod
     def user_delete_confirm(cls, user: AnswerUserBody):
-        return f'🗑 {cls.html('Вы').escape().openmessage(user.telegram.tg_id)} хотите удалить свой аккаунт?'
+        return f'🗑 {cls.html('Вы').escape().openmessage(user.telegram.tg_id)} хотите удалить свой аккаунт? После удаления все ваши данные удаляются и сбрасывается прогресс. Позже их уже нельзя будет востановить'

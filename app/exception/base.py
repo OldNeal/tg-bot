@@ -25,7 +25,7 @@ class BotError(Exception):
     
     @property
     def to_msg(self):
-        return f'{self.emodzi} {self.name}: {self.msg}'
+        return f'{self.emodzi} {self.name}: {self.msg.format_map(self.kwargs)}'
      
     @property
     def name(self):

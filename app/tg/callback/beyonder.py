@@ -25,7 +25,9 @@ class BeyonderTimeInfoCall(BaseCall, prefix='beyonder_time_info'):
 class BeyonderUpSeqCall(BaseCall, prefix='beyonder_upseq'):
     purpose_tg_id: int | None = None
     path_name: str | None = None
+    path_id: int | None = None
     seq: int | None = None
+    confirmed: bool | None = None
 
 class KillCall(AccertCancelCall, prefix='kill'):
     purpose_tg_id: int

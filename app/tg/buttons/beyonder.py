@@ -14,7 +14,7 @@ from app.tg.callback.beyonder import (
     KillCall,
 )
 from app.tg.callback.wiki import PathCall
-from app.validate.api import AnswerBeyonderInfo
+from app.validate.api import AnswerBeyonderInfo, AnswerPathInfo
 
 
 class BeyonderIKB(BotIKB):
@@ -47,6 +47,39 @@ class BeyonderIKB(BotIKB):
         self.builder.button(text='✅ Да', callback_data=KillCall(accert=True, purpose_tg_id=(purpose_tg_id or self.tg_id), tg_id=self.tg_id))
         self.builder.button(text='❌ Нет', callback_data=KillCall(cancel=True, purpose_tg_id=(purpose_tg_id or self.tg_id), tg_id=self.tg_id))
         return self.builder.adjust(2).as_markup()
+
+    def confirm_upseq(self, paths: list[AnswerPathInfo], path_id: int, purpose_tg_id: int, seq: int | None = None):
+        for path in sorted(paths, key=lambda item: item.path_id):
+            self.builder.button(
+                text=f'{"✅ " if path.path_id == path_id else ""}{path.name}',
+                icon_custom_emoji_id=path.custom_emodzi_id,
+                callback_data=BeyonderUpSeqCall(
+                    purpose_tg_id=purpose_tg_id,
+                    path_id=path.path_id,
+                    seq=seq,
+                    tg_id=self.tg_id,
+                ),
+            )
+        self.builder.adjust(3, 2)
+        self.builder.row(*[InlineKeyboardButton(
+            text='✅ Продвинуться',
+            callback_data=BeyonderUpSeqCall(
+                purpose_tg_id=purpose_tg_id,
+                path_id=path_id,
+                seq=seq,
+                confirmed=True,
+                tg_id=self.tg_id,
+            ).pack(),
+        ),
+        InlineKeyboardButton(
+            text='❌ Отмена',
+            callback_data=BeyonderUpSeqCall(
+                purpose_tg_id=purpose_tg_id,
+                confirmed=False,
+                tg_id=self.tg_id,
+            ).pack(),
+        )], width=1)
+        return self.builder.as_markup()
 
     def list(self, datas: list[AnswerBeyonderInfo], page: int, max_page: int, path_id: int, where: str | None = None):
         for data in datas:

@@ -6,8 +6,8 @@ from app.validate.text import RedactSeqTextValidate, UserTextValidate
 from app.tg.text.beyonder import BeyonderText
 from app.tg.buttons.beyonder import BeyonderIKB
 from app.tg.callback.back_values import BeyonderBackValues
+from app.tg.callback.wiki import WikiSearchCall
 from app.tg.fsm.utils import BeyonderFSM
-from app.exception.args import DrinkPathNameError
 
 class BeyonderService(BaseService):
     logic_class: type[BeyonderLogic] = BeyonderLogic
@@ -44,7 +44,15 @@ class BeyonderService(BaseService):
             data = await self.logic.drink(path_id=path_id)
         else:
             if path_name is None:
-                raise DrinkPathNameError()
+                return await self.answer([
+                    AnswerBody(
+                        text='Путь не указан. Нажмите кнопку ниже, чтобы найти его.',
+                        reply_markup=self.IKB.builder.button(
+                            text='🔍 Найти путь',
+                            callback_data=WikiSearchCall(type='path', tg_id=self.tg_id),
+                        ).as_markup(),
+                    )
+                ])
             data = await self.logic.drink(purpose_tg_id=purpose_tg_id, path_name=path_name, seq=seq)
         return await self.answer([
             AnswerBody(
@@ -59,8 +67,49 @@ class BeyonderService(BaseService):
             )
         ])
 
-    async def upseq(self, seq: int | None = None, path_name: str | None = None, purpose_tg_id: int | None = None):
-        data = await self.logic.upseq(purpose_tg_id=purpose_tg_id, path_name=path_name, seq=seq)
+    async def upseq(
+        self,
+        seq: int | None = None,
+        path_name: str | None = None,
+        path_id: int | None = None,
+        purpose_tg_id: int | None = None,
+    ):
+        info = await self.logic.time_info(purpose_tg_id=purpose_tg_id, to_raise=True)
+        if path_id is not None:
+            path = await self.logic.path(id=path_id)
+        else:
+            current_path_name = path_name or info.beyonder.path_name
+            path = await self.logic.path(name=current_path_name)
+        ga = await self.logic.ga(id=path.ga.ga_id)
+        paths = ga.paths
+        if not any(item.path_id == path.path_id for item in paths):
+            paths = [*paths, path]
+        return await self.answer([
+            AnswerBody(
+                text=(
+                    f'🚀 Подтвердите продвижение {self.text.user_mention(info.purpose)} '
+                    f'по пути «{path.name}»'
+                    + (f' до последовательности {seq}' if seq is not None else '')
+                ),
+                data=info,
+                reply_markup=self.IKB.confirm_upseq(
+                    paths,
+                    path.path_id,
+                    info.purpose.telegram.tg_id
+                    if info.purpose and info.purpose.telegram
+                    else purpose_tg_id or self.purpose.id,
+                    seq,
+                ),
+            )
+        ])
+
+    async def confirm_upseq(self, seq: int | None = None, path_id: int | None = None, purpose_tg_id: int | None = None):
+        path = await self.logic.path(id=path_id) if path_id is not None else None
+        data = await self.logic.upseq(
+            purpose_tg_id=purpose_tg_id,
+            path_name=path.name if path else None,
+            seq=seq,
+        )
         return await self.answer([
             AnswerBody(
                 text=self.text(
@@ -72,6 +121,11 @@ class BeyonderService(BaseService):
                 ).upseq,
                 data=data
             )
+        ])
+
+    async def cancel_upseq(self):
+        return await self.answer([
+            AnswerBody(text='❌ Продвижение отменено.')
         ])
 
     async def dowseq(self, seq: int | None = None, path_name: str | None = None, purpose_tg_id: int | None = None):
@@ -129,7 +183,7 @@ class BeyonderService(BaseService):
             AnswerBody(
                 text=self.text(data).time_info,
                 data=data,
-                reply_markup=self.IKB.back_to_card(purpose_tg_id)
+                reply_markup=self.IKB.back_to_card(purpose_tg_id) if not purpose_tg_id is None else None
             )
         ])
 

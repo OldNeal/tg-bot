@@ -15,6 +15,7 @@ user_id = Argument(
             type=int,
             validator=lambda x: x > 0,
             example='123',
+            optional=True
         )
 
 to_json = Flag(['to_json', 'json', 'j'], 'Показать в формате json')

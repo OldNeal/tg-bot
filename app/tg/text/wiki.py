@@ -13,11 +13,11 @@ class PathText(BaseText):
         return self.html(f'{self.html(self.data.emodzi or '🎗️').emoji(self.data.custom_emodzi_id)} {self.data.ga.name}') + self.html.joined([f'{s.number} - {s.name}' for s in sorted(self.data.seqs, key=lambda x: x.number)]).blockquote()
 
     @classmethod
-    def search(cls, value: str, count: int, page: int, max_page: int):
-        if count == 0:
+    def search(cls, max_page: int, page: int, value: str, results: int = 0):
+        if results == 0:
             return f'❌ По запросу «{cls.html(value).escape()}» ничего не найдено'
         return (
-            f'🔎 По запросу «{cls.html(value).escape()}» найдено путей: {count} '
+            f'🔎 По запросу «{cls.html(value).escape()}» найдено путей: {results} '
             f'[{page + 1}/{max_page} стр.]'
         )
 

@@ -109,7 +109,21 @@ async def call(
     callback_data: BeyonderUpSeqCall,
     service: BeyonderService
 ):
-    await service.upseq(seq=callback_data.seq, purpose_tg_id=callback_data.purpose_tg_id)
+    if callback_data.confirmed is True:
+        await service.confirm_upseq(
+            seq=callback_data.seq,
+            path_id=callback_data.path_id,
+            purpose_tg_id=callback_data.purpose_tg_id,
+        )
+    elif callback_data.confirmed is False:
+        await service.cancel_upseq()
+    else:
+        await service.upseq(
+            seq=callback_data.seq,
+            path_name=callback_data.path_name,
+            path_id=callback_data.path_id,
+            purpose_tg_id=callback_data.purpose_tg_id,
+        )
 
 
 @beyonder_router.message(Command('upseq'))
@@ -197,7 +211,6 @@ async def call(
 ):
     await service.accert_kill(callback_data.purpose_tg_id)
 
-
 @beyonder_router.callback_query(KillCall.filter(F.cancel == True))
 async def call(
     callback: CallbackQuery,
@@ -205,6 +218,14 @@ async def call(
     service: BeyonderService
 ):
     await service.cancel_kill(callback_data.purpose_tg_id)
+
+@beyonder_router.callback_query(KillCall.filter())
+async def call(
+    callback: CallbackQuery,
+    callback_data: KillCall,
+    service: BeyonderService
+):
+    await service.kill(callback_data.purpose_tg_id)
 
 
 @beyonder_router.message(Command('time'), F.text.contains('redact'))

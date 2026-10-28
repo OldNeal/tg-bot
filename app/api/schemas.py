@@ -260,6 +260,8 @@ class AnswerSeqSearchInfo(pydantic.BaseModel):
 class AnswerTimeInfo(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
+    for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
     next_upseq: str | None
     last_upseq: str
     upseq_days: int | None
@@ -415,6 +417,8 @@ class Sequence(pydantic.BaseModel):
     seq: str
     number: int
     path: str
+    path_id: int
+    ga_id: int
     emodzi: typing.Optional[str | None] = None
     custom_emodzi_id: typing.Optional[str | None] = None
 

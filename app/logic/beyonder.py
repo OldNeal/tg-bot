@@ -9,6 +9,12 @@ class BeyonderLogic(BaseLogic):
         user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
         return await self.client.beyonder_info(user_id)
 
+    async def path(self, name: str | None = None, id: int | None = None):
+        return await self.client.get_path(name=name, id=id)
+
+    async def ga(self, name: str | None = None, id: int | None = None):
+        return await self.client.get_ga(name=name, id=id)
+
     async def drink(self, purpose_tg_id: int | None = None, path_name: str | None = None, path_id: int | None = None, seq: int | None = None):
         user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
         return await self.client.beyonder_drink(await self.body, user_id, path_name, path_id, seq)
@@ -26,9 +32,9 @@ class BeyonderLogic(BaseLogic):
         body = (await self.body).model_copy(update={'is_admin': is_admin})
         return await self.client.beyonder_kill(body, user_id)
 
-    async def time_info(self, purpose_tg_id: int | None = None):
+    async def time_info(self, purpose_tg_id: int | None = None, to_raise: bool | None = None):
         user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
-        return await self.client.beyonder_time_info(user_id)
+        return await self.client.beyonder_time_info(user_id, to_raise)
     
     async def time_redact(self, duration: timedelta, operator: str = '+', purpose_tg_id: int | None = None):
         seconds = duration.total_seconds()
