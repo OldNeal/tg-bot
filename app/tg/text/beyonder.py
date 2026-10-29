@@ -80,8 +80,8 @@ class BeyonderText(BaseText):
             f'🔗 Юз: {self.html(user.username or '❌').escape().openmessage(user.tg_id)}'
             ] + beyonder)).blockquote()
     
-    def list(self, max_page: int, page: int):
+    def list(self, max_page: int, page: int, count: int):
         return f'📊 Статистика пути "{self.html(f'{self.html(self.data.path.emodzi or '🎗️').emoji(self.data.path.custom_emodzi_id)} {self.data.path.name}')}" {f'[{page+1}/{max_page} стр.]' if max_page > 1 else ''}' + self.html.joined([
             f'🏵 ВД: {self.user_mention(self.data.ga.user) if self.data.ga else '❌'}',
-            f'🧪 Потусторонних: {len(self.data.beyonders)}'
+            f'🧪 Потусторонних: {count}'
         ]).blockquote()

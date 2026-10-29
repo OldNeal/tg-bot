@@ -1,7 +1,8 @@
 import asyncio
 from aiogram.exceptions import TelegramBadRequest
+from aiogram_sentinel import Sentinel
 
-from config import dp, bot, to_menu_cmds, settings
+from config import dp, bot, to_menu_cmds, settings, sentinel_config
 from app.tg.handlers.base import base_router
 from app.tg.middlewares import (BotLogMessageMiddleware,
                                 BotLogCallbackQueryMiddleware,
@@ -33,7 +34,7 @@ async def main():
             dp.callback_query.middleware(BotLogCallbackQueryMiddleware())
             dp.message.middleware(ExceptionMessageMiddleware())
             dp.callback_query.middleware(ExceptionCallbackQueryMiddleware())
-            dp.include_router(base_router)
+            await Sentinel().setup(dp, sentinel_config, base_router)
             botlog.start()
             await bot.delete_webhook(drop_pending_updates=True)
             await to_menu_cmds()

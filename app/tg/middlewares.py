@@ -104,7 +104,6 @@ class ExceptionCallbackQueryMiddleware(BaseMiddleware):
             await event.message.answer(f'{TextHTML(bote.to_msg).escape()[:4000]}')
         except (TelegramBadRequest, TelegramForbiddenError) as e:
             botlog.logger.warning(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
-            await event.message.answer(f'⚠️ {(TextHTML(e).escape())[:4000]}')
         except Exception as e:
             str_e = str(e)
             botlog.logger.error(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.message.chat.id)

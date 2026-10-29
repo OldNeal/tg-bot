@@ -71,11 +71,11 @@ class OrganService(BaseService):
         page = page if page is not None else await self.fsm.get_value('page', 0)
         value = await self.fsm.get_value('search_value', value)
         if value and not is_new_search:
-            data = await self.logic.search(value=value)
+            data = await self.logic.search(value=value, page=page)
         else:
             return await self.to_enter_search()
-        pages = self.to_pages(data.organs)
-        max_page = len(pages)
+        max_page = data.page.max
+        page = data.page.number
         if len(data.organs) == 0:
             await self.fsm.update_data(back_where2=OrganBackValues.search,page=page,)
         else:
@@ -84,11 +84,10 @@ class OrganService(BaseService):
                 back_where2=OrganBackValues.search,
                 page=page,
             )
-        current_page = pages[page if page < max_page else 0] if pages else []
         return await self.answer([
-            AnswerBody(text=self.text.search(data.search_value, len(data.organs), page, max_page),
+            AnswerBody(text=self.text.search(data.search_value, data.count, page, max_page),
                 data=data,
-                reply_markup=self.IKB.organs(current_page, page, max_page, OrganBackValues.search),
+                reply_markup=self.IKB.organs(data.organs, page, max_page, OrganBackValues.search),
             )
         ])
 
@@ -103,7 +102,7 @@ class OrganService(BaseService):
         ])
 
     async def to_search(self):
-        return await self.search(self.message.text)
+        return await self.search(self.message.text, page=0)
 
     async def enter_search(self):
         await self.fsm.remove_value('search_value')
@@ -111,16 +110,15 @@ class OrganService(BaseService):
 
     async def info_members(self, organ_id: int, page: int | None = None):
         page = page if page is not None else await self.fsm.get_value('info_members_page', 0)
-        data = await self.logic.info_members(organ_id=organ_id)
-        pages = self.to_pages(sorted(data.members, key=lambda x: x.member.rank))
-        max_page = len(pages)
+        data = await self.logic.info_members(organ_id=organ_id, page=page)
+        max_page = data.page.max
+        page = data.page.number
         await self.fsm.update_data(organ_id=data.id, info_members_page=page)
-        current_page = pages[page if page < max_page else 0] if pages else []
         return await self.answer([
             AnswerBody(
                 text=self.text(data).members(page, max_page),
                 data=data,
-                reply_markup=self.IKB.members(current_page, page, max_page, data.id),
+                reply_markup=self.IKB.members(data.members, page, max_page, data.id),
             )
         ])
 
@@ -137,16 +135,15 @@ class OrganService(BaseService):
 
     async def list(self, page: int | None = None):
         page = page if page is not None else await self.fsm.get_value('page', 0)
-        data = await self.logic.list()
-        pages = self.to_pages(data.organs)
-        max_page = len(pages)
+        data = await self.logic.list(page=page)
+        max_page = data.page.max
+        page = data.page.number
         await self.fsm.update_data(back_where2=OrganBackValues.list, page=page)
-        current_page = pages[page if page < max_page else 0] if pages else []
         return await self.answer([
             AnswerBody(
                 text=self.text.list(page, max_page),
                 data=data,
-                reply_markup=self.IKB.organs(current_page, page, max_page),
+                reply_markup=self.IKB.organs(data.organs, page, max_page),
             )
         ])
 

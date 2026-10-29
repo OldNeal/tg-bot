@@ -47,5 +47,5 @@ class BeyonderLogic(BaseLogic):
         user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
         return await self.client.beyonder_time_replace(await self.body, datetime_arg.isoformat(), user_id)
 
-    async def list(self, path_id: int):
-        return await self.client.beyonder_list(path_id)
+    async def list(self, path_id: int, page: int | None = None):
+        return await self.client.beyonder_list(path_id, page=page)

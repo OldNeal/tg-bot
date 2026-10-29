@@ -1,4 +1,4 @@
-from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup, DisabledButton
 
 from app.tg.buttons.base import BotIKB, MenuCall, CancelCall
 from app.tg.callback.organ import (OrganBackCall, 
@@ -64,11 +64,20 @@ class OrganIKB(BotIKB):
         self.builder.adjust(1)
         pages = []
         if page > 0:
+            page_back = page - 10
+            pages.append(InlineKeyboardButton(text='⏪', callback_data=OrganPageCall(page=page_back if page_back > 0 else 0, is_search=bool(where), tg_id=self.tg_id).pack()))
             pages.append(InlineKeyboardButton(text='⬅️', callback_data=OrganPageCall(page=page-1, is_search=bool(where), tg_id=self.tg_id).pack()))
-        if page != max_page - 1 and max_page != 0:
+        else:
+            pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
+            pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
+        if page < max_page - 1:
             pages.append(InlineKeyboardButton(text='➡️', callback_data=OrganPageCall(page=page+1, is_search=bool(where), tg_id=self.tg_id).pack()))
-        if len(pages) > 0: 
-            self.builder.row(*pages)        
+            page_next = page + 10
+            pages.append(InlineKeyboardButton(text='⏩', callback_data=OrganPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, is_search=bool(where), tg_id=self.tg_id).pack()))
+        else:
+            pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
+            pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
+        self.builder.row(*pages)
         if where:
             self.builder.row(InlineKeyboardButton(text='✒️ Ввести запрос еще раз', callback_data=OrganSearchCall(tg_id=self.tg_id).pack()))
         self.builder.row(InlineKeyboardButton(text='↩️ В меню', callback_data=OrganBackCall(where=OrganBackValues.menu, tg_id=self.tg_id).pack()))
@@ -108,11 +117,20 @@ class OrganIKB(BotIKB):
         self.builder.adjust(1)
         pages = []
         if page > 0:
+            page_back = page - 10
+            pages.append(InlineKeyboardButton(text='⏪', callback_data=OrganMemberPageCall(page=page_back if page_back > 0 else 0, organ_id=organ_id, tg_id=self.tg_id).pack()))
             pages.append(InlineKeyboardButton(text='⬅️', callback_data=OrganMemberPageCall(page=page-1, organ_id=organ_id, tg_id=self.tg_id).pack()))
-        if page != max_page - 1 and max_page != 0:
+        else:
+            pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
+            pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
+        if page < max_page - 1:
             pages.append(InlineKeyboardButton(text='➡️', callback_data=OrganMemberPageCall(page=page+1, organ_id=organ_id, tg_id=self.tg_id).pack()))
-        if len(pages) > 0: 
-            self.builder.row(*pages)        
+            page_next = page + 10
+            pages.append(InlineKeyboardButton(text='⏩', callback_data=OrganMemberPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, organ_id=organ_id, tg_id=self.tg_id).pack()))
+        else:
+            pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
+            pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
+        self.builder.row(*pages)
         self.builder.row(InlineKeyboardButton(text='↩️ Назад', callback_data=OrganInfoCall(organ_id=organ_id, tg_id=self.tg_id).pack()))
         return self.builder.as_markup()       
 

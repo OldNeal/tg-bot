@@ -8,23 +8,23 @@ class OrganLogic(BaseLogic):
         user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
         return await self.client.organ_member(await self.body, user_id)
 
-    async def search(self, value: str):
-        return await self.client.organ_search(value)
+    async def search(self, value: str, page: int | None = None):
+        return await self.client.organ_search(value, page=page)
 
     async def info(self, organ_id: int | None = None, purpose_tg_id: int | None = None):
         user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
         return await self.client.organ_info(await self.body, organ_id, user_id)
 
-    async def info_members(self, organ_id: int | None = None, purpose_tg_id: int | None = None):
+    async def info_members(self, organ_id: int | None = None, purpose_tg_id: int | None = None, page: int | None = None):
         user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
-        return await self.client.organ_info_members(await self.body, organ_id, user_id)
+        return await self.client.organ_info_members(await self.body, organ_id, user_id, page=page)
 
     async def info_description(self, organ_id: int | None = None, purpose_tg_id: int | None = None):
         user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
         return await self.client.organ_info_description(await self.body, organ_id, user_id)
     
-    async def list(self):
-        return await self.client.organ_list()
+    async def list(self, page: int | None = None):
+        return await self.client.organ_list(page=page)
 
     async def top_members(self):
         return await self.client.organ_top_members()

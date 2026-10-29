@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, DisabledButton
 
 from app.validate.api import AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsPaperInfo, ForButtons
 from app.tg.buttons.base import BotIKB, MenuCall
@@ -49,11 +49,20 @@ class NewsPaperIKB(BotIKB):
 
         pages = []
         if page > 0:
+            page_back = page - 10
+            pages.append(InlineKeyboardButton(text='⏪', callback_data=NewsPaperPageCall(page=page_back if page_back > 0 else 0, mode=mode, tg_id=self.tg_id).pack()))
             pages.append(InlineKeyboardButton(text='⬅️', callback_data=NewsPaperPageCall(page=page - 1, mode=mode, tg_id=self.tg_id).pack()))
+        else:
+            pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
+            pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
         if page < max_page - 1:
             pages.append(InlineKeyboardButton(text='➡️', callback_data=NewsPaperPageCall(page=page + 1, mode=mode, tg_id=self.tg_id).pack()))
-        if pages:
-            self.builder.row(*pages)
+            page_next = page + 10
+            pages.append(InlineKeyboardButton(text='⏩', callback_data=NewsPaperPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, mode=mode, tg_id=self.tg_id).pack()))
+        else:
+            pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
+            pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
+        self.builder.row(*pages)
 
         if mode == 'search':
             self.builder.row(InlineKeyboardButton(text='✒️ Ввести запрос еще раз', callback_data=NewsPaperSearchCall(tg_id=self.tg_id).pack()))
@@ -95,6 +104,16 @@ class NewsPaperIKB(BotIKB):
         self.builder.adjust(1)
         pages = []
         if page > 0:
+            page_back = page - 10
+            pages.append(InlineKeyboardButton(
+                text='⏪',
+                callback_data=NewsPaperPageCall(
+                    page=page_back if page_back > 0 else 0,
+                    mode='readers',
+                    news_paper_id=news_paper_id,
+                    tg_id=self.tg_id,
+                ).pack(),
+            ))
             pages.append(InlineKeyboardButton(
                 text='⬅️',
                 callback_data=NewsPaperPageCall(
@@ -104,6 +123,9 @@ class NewsPaperIKB(BotIKB):
                     tg_id=self.tg_id,
                 ).pack(),
             ))
+        else:
+            pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
+            pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
         if page < max_page - 1:
             pages.append(InlineKeyboardButton(
                 text='➡️',
@@ -114,8 +136,20 @@ class NewsPaperIKB(BotIKB):
                     tg_id=self.tg_id,
                 ).pack(),
             ))
-        if pages:
-            self.builder.row(*pages)
+            page_next = page + 10
+            pages.append(InlineKeyboardButton(
+                text='⏩',
+                callback_data=NewsPaperPageCall(
+                    page=page_next if page_next < max_page - 1 else max_page - 1,
+                    mode='readers',
+                    news_paper_id=news_paper_id,
+                    tg_id=self.tg_id,
+                ).pack(),
+            ))
+        else:
+            pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
+            pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
+        self.builder.row(*pages)
         self.builder.row(InlineKeyboardButton(
             text='↩️ К газете',
             callback_data=NewsPaperInfoCall(

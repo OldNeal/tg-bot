@@ -13,8 +13,8 @@ class WikiLogic(BaseLogic):
     async def all_paths(self):
         return await self.client.get_paths()
     
-    async def search_path(self, value: str):
-        return await self.client.search_path(value)
+    async def search_path(self, value: str, page: int | None = None):
+        return await self.client.search_path(value, page=page)
 
 
     async def ga(self, name: str | None = None, id: int | None = None):
@@ -23,8 +23,8 @@ class WikiLogic(BaseLogic):
     async def all_gas(self):
         return await self.client.get_gas()
 
-    async def search_ga(self, value: str):
-        return await self.client.search_ga(value)
+    async def search_ga(self, value: str, page: int | None = None):
+        return await self.client.search_ga(value, page=page)
     
     
     async def all_groups(self):

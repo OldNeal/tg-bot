@@ -33,23 +33,21 @@ class StatsService(BaseService):
         if value is None:
             return await self.to_enter_path()
         page = page if page is not None else await self.fsm.get_value('page', 0)
-        data = await self.logic.search_path(value)
-        pages = self.to_pages(data.paths)
-        max_page = len(pages)
-        if page >= max_page:
-            page = 0
+        data = await self.logic.search_path(value, page=page)
+        max_page = data.page.max
+        page = data.page.number
         await self.fsm.update_data(value=value, page=page)
         return await self.answer([
             AnswerBody(
                 text=self.text.search(
-                    max_page,
-                    page,
                     value,
-                    len(data.paths) if data.paths else 0
+                    data.count,
+                    page,
+                    max_page,
                 ),
                 data=data,
                 reply_markup=self.IKB.paths(
-                    pages[page] if pages else [],
+                    data.paths or [],
                     max_page,
                     page,
                     value,

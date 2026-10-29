@@ -4,20 +4,20 @@ from app.logic.utils import class_decor
 
 @class_decor
 class NewsPaperLogic(BaseLogic):
-    async def search(self, name: str):
-        return await self.client.news_paper_search(name)
+    async def search(self, name: str, page: int | None = None):
+        return await self.client.news_paper_search(name, page=page)
 
-    async def all(self):
-        return await self.client.news_paper_all(await self.body)
+    async def all(self, page: int | None = None):
+        return await self.client.news_paper_all(await self.body, page=page)
     
-    async def list(self):
-        return await self.client.news_paper_list(await self.body)
+    async def list(self, page: int | None = None):
+        return await self.client.news_paper_list(await self.body, page=page)
 
-    async def editors(self):
-        return await self.client.news_paper_list_where_editor(await self.body)
+    async def editors(self, page: int | None = None):
+        return await self.client.news_paper_list_where_editor(await self.body, page=page)
     
-    async def for_subscribe(self):
-        return await self.client.news_paper_for_subscribe(await self.body)
+    async def for_subscribe(self, page: int | None = None):
+        return await self.client.news_paper_for_subscribe(await self.body, page=page)
 
     async def info(self, news_paper_id: int):
         return await self.client.news_paper_info(await self.body, news_paper_id)
@@ -28,8 +28,8 @@ class NewsPaperLogic(BaseLogic):
     async def capture(self, news_paper_id: int):
         return await self.client.news_paper_capture(await self.body, news_paper_id)
 
-    async def readers(self, news_paper_id: int):
-        return await self.client.news_paper_readers(await self.body, news_paper_id)
+    async def readers(self, news_paper_id: int, page: int | None = None):
+        return await self.client.news_paper_readers(await self.body, news_paper_id, page=page)
     
     async def reader(self, news_paper_id: int, purpose_tg_id: int | None = None):
         user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)

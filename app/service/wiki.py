@@ -45,22 +45,19 @@ class WikiService(BaseService):
         ])
 
     async def search_ga(self, value: str | None = None, page: int | None = None, where: str | None = None):
-        if value:
-            data = await self.logic.search_ga(value)
-        else:
+        if not value:
             return await self.to_enter_search_value('ga')
         page = page if page is not None else await self.fsm.get_value('page', 0)
-        pages = self.to_pages(data.gas)
-        max_page = len(pages)
-        if page >= max_page:
-            page = 0
+        data = await self.logic.search_ga(value, page=page)
+        max_page = data.page.max
+        page = data.page.number
         await self.fsm.update_data(back_where=WikiBackValues.search, page=page, value=value, is_all=False)
         return await self.answer([
             AnswerBody(
-                text=self.text.ga.search(max_page, page, value, len(data.gas) if data.gas else 0),
+                text=self.text.ga.search(max_page, page, value, data.count),
                 data=data,
                 reply_markup=(
-                    self.IKB.gas(pages[page], max_page, page, value, where=where)
+                    self.IKB.gas(data.gas, max_page, page, value, where=where)
                     if data.gas
                     else self.IKB.search('ga')
                 ),
@@ -127,22 +124,19 @@ class WikiService(BaseService):
         ])
 
     async def search_path(self, value: str | None = None, page: int | None = None, where: str | None = None):
-        if value:
-            data = await self.logic.search_path(value)
-        else:
+        if not value:
             return await self.to_enter_search_value('path')
         page = page if page is not None else await self.fsm.get_value('page', 0)
-        pages = self.to_pages(data.paths)
-        max_page = len(pages)
-        if page >= max_page:
-            page = 0
+        data = await self.logic.search_path(value, page=page)
+        max_page = data.page.max
+        page = data.page.number
         await self.fsm.update_data(back_where=WikiBackValues.search, page=page, value=value, is_all=False)
         return await self.answer([
             AnswerBody(
-                text=self.text.path.search(max_page, page, value, len(data.paths) if data.paths else 0),
+                text=self.text.path.search(max_page, page, value, data.count),
                 data=data,
                 reply_markup=(
-                    self.IKB.paths(pages[page], max_page, page, value, where=where)
+                    self.IKB.paths(data.paths, max_page, page, value, where=where)
                     if data.paths
                     else self.IKB.search('path')
                 ),
@@ -177,9 +171,9 @@ class WikiService(BaseService):
         msg0 = await self.fsm.get_message()
         search_type = await self.fsm.get_value('search_type', 'path')
         if search_type == 'path':
-            await self.search_path(self.message.text)
+            await self.search_path(self.message.text, page=0)
         else:
-            await self.search_ga(self.message.text)
+            await self.search_ga(self.message.text, page=0)
         await self.fsm.set_state()
         await self.bot.delete_message(*msg0)
         await self.fsm.remove_message()

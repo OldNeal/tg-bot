@@ -208,20 +208,17 @@ class BeyonderService(BaseService):
     async def list(self, path_id: int | None = None, page: int | None = None, where: str | None = None):
         page = page if page is not None else await self.fsm.get_value('page', 0)
         path_id = path_id if path_id is not None else await self.fsm.get_value('path_id')
-        data = await self.logic.list(path_id)
-        if data.ga:
-            data.beyonders = [data.ga] + data.beyonders
-        pages = self.to_pages(data.beyonders)
-        max_page = len(pages)
-        if page >= max_page:
-            page = 0
+        data = await self.logic.list(path_id, page=page)
+        max_page = data.page.max
+        page = data.page.number
         await self.fsm.update_data(back_where=BeyonderBackValues.list, page=page, path_id=path_id)
+        current_page = ([data.ga] if data.ga and page == 0 else []) + data.beyonders
         return await self.answer([
             AnswerBody(
-                text=self.text(data).list(max_page, page),
+                text=self.text(data).list(max_page, page, data.count),
                 data=data,
                 reply_markup=self.IKB.list(
-                    pages[page] if pages else [],
+                    current_page,
                     page,
                     max_page,
                     data.path.path_id,

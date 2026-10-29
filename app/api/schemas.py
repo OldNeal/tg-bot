@@ -11,28 +11,40 @@ from clientele.schemas import ListResponse  # noqa
 
 class AnswerAllGAInfo(pydantic.BaseModel):
     gas: list["AnswerGAInfo"] | None
+    page: typing.Union["Page", None]
+    count: int = 0
 
 
 class AnswerAllGroupInfo(pydantic.BaseModel):
     groups: list[str]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
 
 
 class AnswerAllNewsPaperInfo(pydantic.BaseModel):
     search_value: typing.Optional[str | None] = None
     news_papers: list["NewsPaperInfo"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
 
 
 class AnswerAllOrganInfo(pydantic.BaseModel):
     search_value: typing.Optional[str | None] = None
     organs: list["OrganInfo"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
 
 
 class AnswerAllPathInfo(pydantic.BaseModel):
     paths: list["AnswerPathInfo"] | None
+    page: typing.Union["Page", None]
+    count: int = 0
 
 
 class AnswerAllSeqInfo(pydantic.BaseModel):
     seqs: list["AnswerSeqInfo"] | None
+    page: typing.Union["Page", None]
+    count: int = 0
 
 
 class AnswerAllStats(pydantic.BaseModel):
@@ -62,6 +74,8 @@ class AnswerBeyonderList(pydantic.BaseModel):
     path: "AnswerPathInfo"
     ga: typing.Optional[typing.Union["AnswerBeyonderInfo", None]] = None
     beyonders: list["AnswerBeyonderInfo"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
 
 
 class AnswerBody(pydantic.BaseModel):
@@ -89,6 +103,8 @@ class AnswerGAInfo(pydantic.BaseModel):
 class AnswerGASearchInfo(pydantic.BaseModel):
     search_value: str | None
     gas: list["AnswerGAInfo"] | None
+    page: typing.Union["Page", None]
+    count: int = 0
 
 
 class AnswerGroupInfo(pydantic.BaseModel):
@@ -138,6 +154,8 @@ class AnswerNewsPaperInfoReaders(pydantic.BaseModel):
     id: int
     name: str
     readers: list["AnswerReaderInfo"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
 
 
 class AnswerNewsPaperSetting(pydantic.BaseModel):
@@ -178,6 +196,8 @@ class AnswerOrganInfoMembers(pydantic.BaseModel):
     id: int
     name: str
     members: list["AnswerMemberInfo"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
 
 
 class AnswerOrganSetting(pydantic.BaseModel):
@@ -213,6 +233,8 @@ class AnswerPathInfo(pydantic.BaseModel):
 class AnswerPathSearchInfo(pydantic.BaseModel):
     search_value: str | None
     paths: list["AnswerPathInfo"] | None
+    page: typing.Union["Page", None]
+    count: int = 0
 
 
 class AnswerReaderInfo(pydantic.BaseModel):
@@ -255,6 +277,8 @@ class AnswerSeqInfo(pydantic.BaseModel):
 class AnswerSeqSearchInfo(pydantic.BaseModel):
     search_value: str | None
     seqs: list["AnswerSeqInfo"] | None
+    page: typing.Union["Page", None]
+    count: int = 0
 
 
 class AnswerTimeInfo(pydantic.BaseModel):
@@ -292,6 +316,8 @@ class AnswerUserBody(pydantic.BaseModel):
 class AnswerUsersBody(pydantic.BaseModel):
     search_value: typing.Optional[str | int | None] = None
     users: list["AnswerUserBody"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
 
 
 class BaseExceptionResponse(pydantic.BaseModel):
@@ -363,6 +389,11 @@ class OrganSettingDefault(pydantic.BaseModel):
 
 class OrganSettingValidate(pydantic.BaseModel):
     groups: list["SettingGroupValidate"]
+
+
+class Page(pydantic.BaseModel):
+    number: int
+    max: int
 
 
 class QueryBody(pydantic.BaseModel):

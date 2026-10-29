@@ -1,5 +1,4 @@
 from aiogram.filters import CommandObject
-from functools import cache
 
 from app.exception.base import PermissionError
 from app.exception.args import UserSearchIdError, UserSearchValueError
@@ -82,8 +81,8 @@ class MainService(BaseService):
     async def users(self, page: int | None = None, notice: str | None = None):
         await self.fsm.set_state()
         await self.fsm.remove_value('search')
-        data = await self.logic.users_list()
-        return await self.show_users(data, page=page or 0, notice=notice)
+        data = await self.logic.users_list(page=page or 0)
+        return await self.show_users(data, notice=notice)
 
     async def users_search_fields(self):
         await self.fsm.set_state()
@@ -129,42 +128,41 @@ class MainService(BaseService):
                 raise UserSearchValueError()
 
         criteria = {field: parsed_value}
-        data = await self.logic.users_search(**criteria)
-        await self.fsm.update_data(search=criteria, page=0)
+        data = await self.logic.users_search(page=0, **criteria)
+        await self.fsm.update_data(search=criteria, page=data.page.number)
         await self.fsm.set_state()
         saved_message = await self.fsm.get_message()
         if saved_message[0] and saved_message[1]:
             await self.bot.delete_message(*saved_message)
         await self.fsm.remove_message()
-        return await self.show_users(data, page=0, is_search=True)
+        return await self.show_users(data, is_search=True)
 
     async def users_page(self, page: int):
         criteria = await self.fsm.get_value('search')
         if criteria:
-            data = await self.logic.users_search(**criteria)
-            return await self.show_users(data, page=page, is_search=True)
-        data = await self.logic.users_list()
-        return await self.show_users(data, page=page)
+            data = await self.logic.users_search(page=page, **criteria)
+            return await self.show_users(data, is_search=True)
+        data = await self.logic.users_list(page=page)
+        return await self.show_users(data)
 
     async def show_users(
         self,
         data: AnswerUsersBody,
-        page: int = 0,
         is_search: bool = False,
         notice: str | None = None,
     ):  
-        users = data.users
-        pages = self.to_pages(users)
-        max_page = len(pages)
-        page = min(max(page, 0), max(max_page - 1, 0))
+        current_page = data.users
+        max_page = data.page.max
+        page = data.page.number
+        count = data.count
         await self.fsm.update_data(page=page)
-        current_page = list(pages[page]) if pages else []
         if is_search:
-            text = self.text.users_search_results(len(users), page, max_page)
+            text = self.text.users_search_results(count, page, max_page)
         else:
-            text = self.text.users_list(len(users), page, max_page)
+            text = self.text.users_list(count, page, max_page)
         if notice:
             text = f'{notice}\n\n{text}'
+        print(data, len(data.users))
         return await self.answer([
             AnswerBody(
                 text=text,

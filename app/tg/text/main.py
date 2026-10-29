@@ -88,9 +88,9 @@ class MainText(BaseText):
         telegram = user.telegram
         details = [
             f'🏷 Внутренний ID: {user.user_id}',
-            f'🪦 Имя: {cls.html(user.name or "❌").escape().openmessage(user.telegram.tg_id)}',
+            f'🪦 Имя: {cls.user_mention(user)}',
             f'🆔 Telegram ID: {telegram.tg_id if telegram else "❌"}',
-            f'🔗 Username: {cls.user_mention(user)}',
+            f'🔗 Username: {cls.html(telegram.username or '❌').escape().openmessage(telegram.tg_id) if telegram else '❌'}',
         ]
         return '👤 Аккаунт' + cls.html(cls.html.joined(details)).blockquote()
 

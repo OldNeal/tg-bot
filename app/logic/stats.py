@@ -6,5 +6,5 @@ class StatsLogic(BaseLogic):
     async def all(self):
         return await self.client.stats_all()
 
-    async def search_path(self, value: str):
-        return await self.client.search_path(value)
+    async def search_path(self, value: str, page: int | None = None):
+        return await self.client.search_path(value, page=page)

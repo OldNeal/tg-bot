@@ -1,4 +1,4 @@
-from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup, DisabledButton
 
 from app.tg.buttons.base import BotIKB, MenuCall
 from app.tg.callback.beyonder import BeyonderInfoCall
@@ -92,14 +92,42 @@ class MainIKB(BotIKB):
 
         pages = []
         if page > 0:
+            page_back = page - 10
+            pages.append(InlineKeyboardButton(
+                text='⏪',
+                callback_data=MainUsersPageCall(page=page_back if page_back > 0 else 0, tg_id=self.tg_id).pack(),
+            ))
             pages.append(InlineKeyboardButton(
                 text='⬅️',
                 callback_data=MainUsersPageCall(page=page - 1, tg_id=self.tg_id).pack(),
+            ))
+        else:
+            pages.append(InlineKeyboardButton(
+                text='⏪',
+                disabled=DisabledButton(),
+            ))
+            pages.append(InlineKeyboardButton(
+                text='⬅️',
+                disabled=DisabledButton(),
             ))
         if page < max_page - 1:
             pages.append(InlineKeyboardButton(
                 text='➡️',
                 callback_data=MainUsersPageCall(page=page + 1, tg_id=self.tg_id).pack(),
+            ))
+            page_next = page + 10
+            pages.append(InlineKeyboardButton(
+                text='⏩',
+                callback_data=MainUsersPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, tg_id=self.tg_id).pack(),
+            ))
+        else:
+            pages.append(InlineKeyboardButton(
+                text='➡️',
+                disabled=DisabledButton(),
+            ))
+            pages.append(InlineKeyboardButton(
+                text='⏩',
+                disabled=DisabledButton(),
             ))
         if pages:
             self.builder.row(*pages)

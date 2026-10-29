@@ -13,6 +13,7 @@ from aiogram.types import (BotCommand,
                            BotCommandScopeAllGroupChats,
                            BotCommandScopeAllChatAdministrators,
                            User)
+from aiogram_sentinel import SentinelConfig
 
 load_dotenv(Path(__file__).parent / '.env')
 
@@ -41,6 +42,10 @@ class Settings:
     docs_url = os.getenv('docs_url')
 
     log_files_path = os.getenv('log_files_path', 'logs/')
+
+    throttling_default_max=int(os.getenv('throttling_default_max', 10))
+    throttling_default_per_seconds=int(os.getenv('throttling_default_per_seconds', 60))
+    debounce_default_window=int(os.getenv('debounce_default_window', 2))
 
     info: dict = {}
 
@@ -82,6 +87,13 @@ else:
 
 bot = Bot(token=settings.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML, link_preview_is_disabled=True), session=bot_session)
 dp = Dispatcher(storage=storage)
+sentinel_config = SentinelConfig(
+    throttling_default_max=settings.throttling_default_max,      # 10 сообщений
+    throttling_default_per_seconds=settings.throttling_default_per_seconds, # за 60 секунд
+    debounce_default_window=settings.debounce_default_window,      # игнорировать дубли 2 секунды    
+    backend="redis" if settings.use_redis else 'memory',
+    redis_url=settings.redis_url,
+)
 
 cmds = {
     'info':'💳 Получить свою карточку',

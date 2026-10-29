@@ -46,7 +46,7 @@ class NewsPaperService(BaseService):
         if not value:
             return await self.to_enter_search()
         page = page if page is not None else await self.fsm.get_value('page', 0)
-        data = await self.logic.search(name=value)
+        data = await self.logic.search(name=value, page=page)
         return await self._show_news_papers(data, 'search', page, value)
 
     async def _show_news_papers(
@@ -57,36 +57,34 @@ class NewsPaperService(BaseService):
         value: str | None = None,
     ):
         news_papers = data.news_papers
-        pages = self.to_pages(news_papers)
-        max_page = len(pages)
-        if max_page == 0 or page < 0 or page >= max_page:
-            page = 0
+        max_page = data.page.max
+        page = data.page.number
+        count = data.count
         if mode == 'search':
             search_value = data.search_value or value
             if search_value is None:
                 raise ValueError('Не указан поисковый запрос для списка газет')
-            text = self.text.search(search_value, len(news_papers), page, max_page)
+            text = self.text.search(search_value, count, page, max_page)
             await self.fsm.update_data(
                 mode=mode,
                 page=page,
                 search_value=search_value,
             )
         elif mode == 'all':
-            text = self.text.all(len(news_papers), page, max_page)
+            text = self.text.all(count, page, max_page)
             await self.fsm.update_data(mode=mode, page=page)
         elif mode == 'list':
-            text = self.text.my_list(len(news_papers), page, max_page)
+            text = self.text.my_list(count, page, max_page)
             await self.fsm.update_data(mode=mode, page=page)
         else:
-            text = self.text.editors(len(news_papers), page, max_page)
+            text = self.text.editors(count, page, max_page)
             await self.fsm.update_data(mode=mode, page=page)
-        current_page = pages[page] if pages else []
         return await self.answer([
             AnswerBody(
                 text=text,
                 data=data,
                 reply_markup=self.IKB.news_papers(
-                    current_page,
+                    news_papers,
                     page,
                     max_page,
                     mode,
@@ -122,17 +120,17 @@ class NewsPaperService(BaseService):
 
     async def all(self, page: int | None = None):
         page = await self._page_for_mode('all', page)
-        data = await self.logic.all()
+        data = await self.logic.all(page=page)
         return await self._show_news_papers(data, 'all', page)
     
     async def list(self, page: int | None = None):
         page = await self._page_for_mode('list', page)
-        data = await self.logic.list()
+        data = await self.logic.list(page=page)
         return await self._show_news_papers(data, 'list', page)
 
     async def editors(self, page: int | None = None):
         page = await self._page_for_mode('editors', page)
-        data = await self.logic.editors()
+        data = await self.logic.editors(page=page)
         return await self._show_news_papers(data, 'editors', page)
 
     async def info(self, news_paper_id: int):
@@ -262,21 +260,19 @@ class NewsPaperService(BaseService):
             await self.fsm.update_data(action_purpose_tg_id=self.logic.purpose_tg_id)
 
         if action == NewsPaperAction.subscribe:
-            data = await self.logic.for_subscribe()
+            data = await self.logic.for_subscribe(page=page)
         elif action == NewsPaperAction.unsubscribe:
-            data = await self.logic.list()
+            data = await self.logic.list(page=page)
         else:
-            data = await self.logic.editors()  
-        pages = self.to_pages(data.news_papers)
-        max_page = len(pages)
-        if max_page == 0 or page < 0 or page >= max_page:
-            page = 0
+            data = await self.logic.editors(page=page)
+        max_page = data.page.max
+        page = data.page.number
         return await self.answer([
             AnswerBody(
-                text=self.text.choose_news_paper(action, len(data.news_papers), page, max_page),
+                text=self.text.choose_news_paper(action, data.count, page, max_page),
                 data=data,
                 reply_markup=self.IKB.news_papers(
-                    pages[page] if pages else [],
+                    data.news_papers,
                     page,
                     max_page,
                     action,
@@ -304,12 +300,9 @@ class NewsPaperService(BaseService):
         return await self.fire_editor(news_paper_id, purpose_tg_id)
 
     async def _show_readers(self, news_paper_id: int, page: int):
-        data: AnswerNewsPaperInfoReaders = await self.logic.readers(news_paper_id)
-        pages = self.to_pages(data.readers)
-        max_page = len(pages)
-        if page < 0 or page >= max_page:
-            page = 0
-        current_page = pages[page] if pages else []
+        data: AnswerNewsPaperInfoReaders = await self.logic.readers(news_paper_id, page=page)
+        max_page = data.page.max
+        page = data.page.number
         await self.fsm.update_data(
             news_paper_id=news_paper_id,
             readers_page=page
@@ -318,7 +311,7 @@ class NewsPaperService(BaseService):
             AnswerBody(
                 text=self.text.readers(data.name, page, max_page),
                 data=data,
-                reply_markup=self.IKB.readers(current_page, news_paper_id, page, max_page),
+                reply_markup=self.IKB.readers(data.readers, news_paper_id, page, max_page),
             )
         ])
 
