@@ -27,8 +27,8 @@ async def main():
     try:
         botlog.logger.info('Бот запускается')
         bot_info = await update_bot_info()
-        await redis_ping()
         await logic.test_api_connect(True)
+        await redis_ping(True)
         if bot_info:
             dp.message.middleware(BotLogMessageMiddleware())
             dp.callback_query.middleware(BotLogCallbackQueryMiddleware())

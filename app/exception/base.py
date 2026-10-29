@@ -39,6 +39,10 @@ class ALienCallbackError(BotError):
     msg = 'Это не ваша кнопка'
     emodzi = '❌'
 
+class RedisError(BotError):
+    msg = 'Redis не работает'
+    emodzi = '❌'
+
 class ApiError(BotError):
     msg = None
 
