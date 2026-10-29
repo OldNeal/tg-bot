@@ -32,21 +32,26 @@ class WikiIKB(BotIKB):
     def paths(self, paths: list[AnswerPathInfo], max_page: int, page: int, value: str, where: str | None = None):
         self.paths_buttons(paths, 1)
         pages = []
-        if page > 0:
-            page_back = page - 10
-            pages.append(InlineKeyboardButton(text='⏪', callback_data=PathsPageCall(page=page_back if page_back > 0 else 0, value=value, tg_id=self.tg_id).pack()))
-            pages.append(InlineKeyboardButton(text='⬅️', callback_data=PathsPageCall(page=page-1, value=value, tg_id=self.tg_id).pack()))
-        else:
-            pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
-            pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
-        if page < max_page - 1:
-            pages.append(InlineKeyboardButton(text='➡️', callback_data=PathsPageCall(page=page+1, value=value, tg_id=self.tg_id).pack()))
-            page_next = page + 10
-            pages.append(InlineKeyboardButton(text='⏩', callback_data=PathsPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, value=value, tg_id=self.tg_id).pack()))
-        else:
-            pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
-            pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
-        self.builder.row(*pages)
+        if max_page > 1:
+            if page > 0:
+                if max_page >= 3:
+                    page_back = page - 10
+                    pages.append(InlineKeyboardButton(text='⏪', callback_data=PathsPageCall(page=page_back if page_back > 0 else 0, value=value, tg_id=self.tg_id).pack()))
+                pages.append(InlineKeyboardButton(text='⬅️', callback_data=PathsPageCall(page=page-1, value=value, tg_id=self.tg_id).pack()))
+            else:
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
+                pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
+            if page < max_page - 1:
+                pages.append(InlineKeyboardButton(text='➡️', callback_data=PathsPageCall(page=page+1, value=value, tg_id=self.tg_id).pack()))
+                if max_page >= 3:
+                    page_next = page + 10
+                    pages.append(InlineKeyboardButton(text='⏩', callback_data=PathsPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, value=value, tg_id=self.tg_id).pack()))
+            else:
+                pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
+            self.builder.row(*pages)
         if where:
             self.builder.row(InlineKeyboardButton(text='↩️ Назад', callback_data=WikiBackCall(where=where, tg_id=self.tg_id).pack()))
         return self.builder.as_markup()
@@ -75,21 +80,26 @@ class WikiIKB(BotIKB):
     def gas(self, gas: list[AnswerGAInfo], max_page: int, page: int, value: str, where: str | None = None):
         self.gas_buttons(gas, 1)
         pages = []
-        if page > 0:
-            page_back = page - 10
-            pages.append(InlineKeyboardButton(text='⏪', callback_data=GasPageCall(page=page_back if page_back > 0 else 0, value=value, tg_id=self.tg_id).pack()))
-            pages.append(InlineKeyboardButton(text='⬅️', callback_data=GasPageCall(page=page-1, value=value, tg_id=self.tg_id).pack()))
-        else:
-            pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
-            pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
-        if page < max_page - 1:
-            pages.append(InlineKeyboardButton(text='➡️', callback_data=GasPageCall(page=page+1, value=value, tg_id=self.tg_id).pack()))
-            page_next = page + 10
-            pages.append(InlineKeyboardButton(text='⏩', callback_data=GasPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, value=value, tg_id=self.tg_id).pack()))
-        else:
-            pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
-            pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
-        self.builder.row(*pages)
+        if max_page > 1:
+            if page > 0:
+                if max_page >= 3:
+                    page_back = page - 10
+                    pages.append(InlineKeyboardButton(text='⏪', callback_data=GasPageCall(page=page_back if page_back > 0 else 0, value=value, tg_id=self.tg_id).pack()))
+                pages.append(InlineKeyboardButton(text='⬅️', callback_data=GasPageCall(page=page-1, value=value, tg_id=self.tg_id).pack()))
+            else:
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
+                pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
+            if page < max_page - 1:
+                pages.append(InlineKeyboardButton(text='➡️', callback_data=GasPageCall(page=page+1, value=value, tg_id=self.tg_id).pack()))
+                if max_page >= 3:
+                    page_next = page + 10
+                    pages.append(InlineKeyboardButton(text='⏩', callback_data=GasPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, value=value, tg_id=self.tg_id).pack()))
+            else:
+                pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
+            self.builder.row(*pages)
         if where:
             self.builder.row(InlineKeyboardButton(text='↩️ Назад', callback_data=WikiBackCall(where=where, tg_id=self.tg_id).pack()))
         return self.builder.as_markup()

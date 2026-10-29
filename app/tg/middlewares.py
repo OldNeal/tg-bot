@@ -101,7 +101,7 @@ class ExceptionCallbackQueryMiddleware(BaseMiddleware):
             return result, event
         except BotError as bote:
             botlog.logger.trace(f'AioPartPath: {bote}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
-            await event.message.answer(f'{TextHTML(bote.to_msg).escape()[:4000]}')
+            await event.answer(f'{TextHTML(bote.to_msg).escape()[:4000]}')
         except (TelegramBadRequest, TelegramForbiddenError) as e:
             botlog.logger.warning(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
         except Exception as e:
@@ -111,7 +111,7 @@ class ExceptionCallbackQueryMiddleware(BaseMiddleware):
                 answer_text = f'{PythonError.msg}: {str_e[:4000]}'
             else:
                 answer_text = f'{PythonError.msg}'
-            await event.message.answer(f'⚠️ {(TextHTML(e).escape())[:4000]} \n \n {answer_text}')
+            await event.answer(f'⚠️ {(TextHTML(e).escape())[:4000]} \n \n {answer_text}')
             raise e
 
 class ServiceMiddleware(BaseMiddleware):

@@ -48,21 +48,26 @@ class NewsPaperIKB(BotIKB):
         self.builder.adjust(1)
 
         pages = []
-        if page > 0:
-            page_back = page - 10
-            pages.append(InlineKeyboardButton(text='⏪', callback_data=NewsPaperPageCall(page=page_back if page_back > 0 else 0, mode=mode, tg_id=self.tg_id).pack()))
-            pages.append(InlineKeyboardButton(text='⬅️', callback_data=NewsPaperPageCall(page=page - 1, mode=mode, tg_id=self.tg_id).pack()))
-        else:
-            pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
-            pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
-        if page < max_page - 1:
-            pages.append(InlineKeyboardButton(text='➡️', callback_data=NewsPaperPageCall(page=page + 1, mode=mode, tg_id=self.tg_id).pack()))
-            page_next = page + 10
-            pages.append(InlineKeyboardButton(text='⏩', callback_data=NewsPaperPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, mode=mode, tg_id=self.tg_id).pack()))
-        else:
-            pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
-            pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
-        self.builder.row(*pages)
+        if max_page > 1:
+            if page > 0:
+                if max_page >= 3:
+                    page_back = page - 10
+                    pages.append(InlineKeyboardButton(text='⏪', callback_data=NewsPaperPageCall(page=page_back if page_back > 0 else 0, mode=mode, tg_id=self.tg_id).pack()))
+                pages.append(InlineKeyboardButton(text='⬅️', callback_data=NewsPaperPageCall(page=page - 1, mode=mode, tg_id=self.tg_id).pack()))
+            else:
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
+                pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
+            if page < max_page - 1:
+                pages.append(InlineKeyboardButton(text='➡️', callback_data=NewsPaperPageCall(page=page + 1, mode=mode, tg_id=self.tg_id).pack()))
+                if max_page >= 3:
+                    page_next = page + 10
+                    pages.append(InlineKeyboardButton(text='⏩', callback_data=NewsPaperPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, mode=mode, tg_id=self.tg_id).pack()))
+            else:
+                pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
+            self.builder.row(*pages)
 
         if mode == 'search':
             self.builder.row(InlineKeyboardButton(text='✒️ Ввести запрос еще раз', callback_data=NewsPaperSearchCall(tg_id=self.tg_id).pack()))
@@ -103,53 +108,58 @@ class NewsPaperIKB(BotIKB):
             self.builder.button(text=f'{name} ({reader.reader.rank_name})', callback_data=ReaderCall(purpose_tg_id=telegram.tg_id, news_paper_id=news_paper_id, tg_id=self.tg_id))
         self.builder.adjust(1)
         pages = []
-        if page > 0:
-            page_back = page - 10
-            pages.append(InlineKeyboardButton(
-                text='⏪',
-                callback_data=NewsPaperPageCall(
-                    page=page_back if page_back > 0 else 0,
-                    mode='readers',
-                    news_paper_id=news_paper_id,
-                    tg_id=self.tg_id,
-                ).pack(),
-            ))
-            pages.append(InlineKeyboardButton(
-                text='⬅️',
-                callback_data=NewsPaperPageCall(
-                    page=page - 1,
-                    mode='readers',
-                    news_paper_id=news_paper_id,
-                    tg_id=self.tg_id,
-                ).pack(),
-            ))
-        else:
-            pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
-            pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
-        if page < max_page - 1:
-            pages.append(InlineKeyboardButton(
-                text='➡️',
-                callback_data=NewsPaperPageCall(
-                    page=page + 1,
-                    mode='readers',
-                    news_paper_id=news_paper_id,
-                    tg_id=self.tg_id,
-                ).pack(),
-            ))
-            page_next = page + 10
-            pages.append(InlineKeyboardButton(
-                text='⏩',
-                callback_data=NewsPaperPageCall(
-                    page=page_next if page_next < max_page - 1 else max_page - 1,
-                    mode='readers',
-                    news_paper_id=news_paper_id,
-                    tg_id=self.tg_id,
-                ).pack(),
-            ))
-        else:
-            pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
-            pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
-        self.builder.row(*pages)
+        if max_page > 1:
+            if page > 0:
+                if max_page >= 3:
+                    page_back = page - 10
+                    pages.append(InlineKeyboardButton(
+                        text='⏪',
+                        callback_data=NewsPaperPageCall(
+                            page=page_back if page_back > 0 else 0,
+                            mode='readers',
+                            news_paper_id=news_paper_id,
+                            tg_id=self.tg_id,
+                        ).pack(),
+                    ))
+                pages.append(InlineKeyboardButton(
+                    text='⬅️',
+                    callback_data=NewsPaperPageCall(
+                        page=page - 1,
+                        mode='readers',
+                        news_paper_id=news_paper_id,
+                        tg_id=self.tg_id,
+                    ).pack(),
+                ))
+            else:
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
+                pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
+            if page < max_page - 1:
+                pages.append(InlineKeyboardButton(
+                    text='➡️',
+                    callback_data=NewsPaperPageCall(
+                        page=page + 1,
+                        mode='readers',
+                        news_paper_id=news_paper_id,
+                        tg_id=self.tg_id,
+                    ).pack(),
+                ))
+                if max_page >= 3:
+                    page_next = page + 10
+                    pages.append(InlineKeyboardButton(
+                        text='⏩',
+                        callback_data=NewsPaperPageCall(
+                            page=page_next if page_next < max_page - 1 else max_page - 1,
+                            mode='readers',
+                            news_paper_id=news_paper_id,
+                            tg_id=self.tg_id,
+                        ).pack(),
+                    ))
+            else:
+                pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
+            self.builder.row(*pages)
         self.builder.row(InlineKeyboardButton(
             text='↩️ К газете',
             callback_data=NewsPaperInfoCall(

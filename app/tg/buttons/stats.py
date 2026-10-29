@@ -20,21 +20,26 @@ class StatsIKB(BotIKB):
             self.builder.button(text=path.name, icon_custom_emoji_id=path.custom_emodzi_id, callback_data=BeyonderListPageCall(path_id=path.path_id, page=0, where=StatsBackValues.stats_paths, tg_id=self.tg_id))
         self.builder.adjust(1)
         pages = []
-        if page > 0:
-            page_back = page - 10
-            pages.append(InlineKeyboardButton(text='⏪', callback_data=StatsPageCall(page=page_back if page_back > 0 else 0, value=value, tg_id=self.tg_id).pack()))
-            pages.append(InlineKeyboardButton(text='⬅️', callback_data=StatsPageCall(page=page-1, value=value, tg_id=self.tg_id).pack()))
-        else:
-            pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
-            pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
-        if page < max_page - 1:
-            pages.append(InlineKeyboardButton(text='➡️', callback_data=StatsPageCall(page=page+1, value=value, tg_id=self.tg_id).pack()))
-            page_next = page + 10
-            pages.append(InlineKeyboardButton(text='⏩', callback_data=StatsPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, value=value, tg_id=self.tg_id).pack()))
-        else:
-            pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
-            pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
-        self.builder.row(*pages)
+        if max_page > 1:
+            if page > 0:
+                if max_page >= 3:
+                    page_back = page - 10
+                    pages.append(InlineKeyboardButton(text='⏪', callback_data=StatsPageCall(page=page_back if page_back > 0 else 0, value=value, tg_id=self.tg_id).pack()))
+                pages.append(InlineKeyboardButton(text='⬅️', callback_data=StatsPageCall(page=page-1, value=value, tg_id=self.tg_id).pack()))
+            else:
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(text='⏪', disabled=DisabledButton()))
+                pages.append(InlineKeyboardButton(text='⬅️', disabled=DisabledButton()))
+            if page < max_page - 1:
+                pages.append(InlineKeyboardButton(text='➡️', callback_data=StatsPageCall(page=page+1, value=value, tg_id=self.tg_id).pack()))
+                if max_page >= 3:
+                    page_next = page + 10
+                    pages.append(InlineKeyboardButton(text='⏩', callback_data=StatsPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, value=value, tg_id=self.tg_id).pack()))
+            else:
+                pages.append(InlineKeyboardButton(text='➡️', disabled=DisabledButton()))
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(text='⏩', disabled=DisabledButton()))
+            self.builder.row(*pages)
         self.builder.row(InlineKeyboardButton(text='🔍 Поискать ещё раз', callback_data=StatsPathsCall(tg_id=self.tg_id).pack()))
         if where:
             self.builder.row(InlineKeyboardButton(text='↩️ Назад', callback_data=StatsBackCall(where=where, tg_id=self.tg_id).pack()))

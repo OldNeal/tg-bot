@@ -91,44 +91,49 @@ class MainIKB(BotIKB):
         self.builder.adjust(1)
 
         pages = []
-        if page > 0:
-            page_back = page - 10
-            pages.append(InlineKeyboardButton(
-                text='⏪',
-                callback_data=MainUsersPageCall(page=page_back if page_back > 0 else 0, tg_id=self.tg_id).pack(),
-            ))
-            pages.append(InlineKeyboardButton(
-                text='⬅️',
-                callback_data=MainUsersPageCall(page=page - 1, tg_id=self.tg_id).pack(),
-            ))
-        else:
-            pages.append(InlineKeyboardButton(
-                text='⏪',
-                disabled=DisabledButton(),
-            ))
-            pages.append(InlineKeyboardButton(
-                text='⬅️',
-                disabled=DisabledButton(),
-            ))
-        if page < max_page - 1:
-            pages.append(InlineKeyboardButton(
-                text='➡️',
-                callback_data=MainUsersPageCall(page=page + 1, tg_id=self.tg_id).pack(),
-            ))
-            page_next = page + 10
-            pages.append(InlineKeyboardButton(
-                text='⏩',
-                callback_data=MainUsersPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, tg_id=self.tg_id).pack(),
-            ))
-        else:
-            pages.append(InlineKeyboardButton(
-                text='➡️',
-                disabled=DisabledButton(),
-            ))
-            pages.append(InlineKeyboardButton(
-                text='⏩',
-                disabled=DisabledButton(),
-            ))
+        if max_page > 1:
+            if page > 0:
+                if max_page >= 3:
+                    page_back = page - 10
+                    pages.append(InlineKeyboardButton(
+                        text='⏪',
+                        callback_data=MainUsersPageCall(page=page_back if page_back > 0 else 0, tg_id=self.tg_id).pack(),
+                    ))
+                pages.append(InlineKeyboardButton(
+                    text='⬅️',
+                    callback_data=MainUsersPageCall(page=page - 1, tg_id=self.tg_id).pack(),
+                ))
+            else:
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(
+                        text='⏪',
+                        disabled=DisabledButton(),
+                    ))
+                pages.append(InlineKeyboardButton(
+                    text='⬅️',
+                    disabled=DisabledButton(),
+                ))
+            if page < max_page - 1:
+                pages.append(InlineKeyboardButton(
+                    text='➡️',
+                    callback_data=MainUsersPageCall(page=page + 1, tg_id=self.tg_id).pack(),
+                ))
+                if max_page >= 3:
+                    page_next = page + 10
+                    pages.append(InlineKeyboardButton(
+                        text='⏩',
+                        callback_data=MainUsersPageCall(page=page_next if page_next < max_page - 1 else max_page - 1, tg_id=self.tg_id).pack(),
+                    ))
+            else:
+                pages.append(InlineKeyboardButton(
+                    text='➡️',
+                    disabled=DisabledButton(),
+                ))
+                if max_page >= 3:
+                    pages.append(InlineKeyboardButton(
+                        text='⏩',
+                        disabled=DisabledButton(),
+                    ))
         if pages:
             self.builder.row(*pages)
         self.builder.row(InlineKeyboardButton(

@@ -43,7 +43,7 @@ class Settings:
 
     log_files_path = os.getenv('log_files_path', 'logs/')
 
-    throttling_default_max=int(os.getenv('throttling_default_max', 10))
+    throttling_default_max=int(os.getenv('throttling_default_max', 25))
     throttling_default_per_seconds=int(os.getenv('throttling_default_per_seconds', 60))
     debounce_default_window=int(os.getenv('debounce_default_window', 2))
 
@@ -100,6 +100,7 @@ cmds = {
     'menu':'🧭 Открыть главное меню',
 
     'beyonder':'🧪 Карточка потустороннего',
+    'drink':'🧪 Выпить зелье',
     'upseq':'🔝 Продвинуться',
     'time':'⌛ Узнать дату продвижения',
     'kill':'☠️ Потерять контроль',
