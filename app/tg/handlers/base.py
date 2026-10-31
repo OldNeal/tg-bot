@@ -1,4 +1,4 @@
-from aiogram.types import InputRichMessage, Message, CallbackQuery
+from aiogram.types import InputRichMessage, Message, CallbackQuery, EphemeralMessageParameters
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -56,7 +56,8 @@ async def cmd(message: Message):
     await message.answer_rich(
         InputRichMessage(
             html=TextHTML('Кнопка') + TextKeyboardMarkup([TextKeyboardButton(text='Первая', url=settings.docs_url)]).as_makrup() + TextHTML('Текст после кнопки')
-            )
+            ),
+            ephemeral_message_parameters=EphemeralMessageParameters(receiver_user_id=message.from_user.id)
         )
 
 @base_router.callback_query(CancelCall.filter())     

@@ -132,10 +132,10 @@ class OrganText(BaseText):
 
 
     def uprank(self, rank: int):
-        return '🔼 ' + self.user_name + f' был повышен до {rank} ранга'
+        return '🔼 ' + self.user_mention(self.data.purpose) + f' был повышен до {rank} ранга'
     
     def downrank(self, rank: int):
-        return '🔽 ' + self.user_name + f' был понижен до {rank} ранга'
+        return '🔽 ' + self.user_mention(self.data.purpose) + f' был понижен до {rank} ранга'
 
     @classmethod
     def kick(self, purpose: AnswerMemberInfo):
@@ -143,7 +143,7 @@ class OrganText(BaseText):
 
     @property
     def accert_kick(self):
-        return '🥊 ' + self.user_name + f' был выгнан из организации "{self.organ_name}"'
+        return '🥊 ' + self.user_mention(self.data.purpose) + f' был выгнан из организации "{self.organ_name}"'
 
     @property
     def cancel_kick(self):
@@ -158,7 +158,7 @@ class OrganText(BaseText):
             result = f'получил титул "{new_titul}"'
         elif old_titul:
             result = f'лишился титула "{old_titul}"'
-        return f'🎖️ {self.user_name} {result}'
+        return f'🎖️ {self.user_mention(self.data.purpose)} {result}'
 
     @classmethod
     def give(self, data: AnswerOrganGive):
