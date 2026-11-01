@@ -41,6 +41,12 @@ class AnswerAllPathInfo(pydantic.BaseModel):
     count: int = 0
 
 
+class AnswerAllQuestions(pydantic.BaseModel):
+    questions: list["Question"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
+
+
 class AnswerAllSeqInfo(pydantic.BaseModel):
     seqs: list["AnswerSeqInfo"] | None
     page: typing.Union["Page", None]
@@ -237,6 +243,38 @@ class AnswerPathSearchInfo(pydantic.BaseModel):
     count: int = 0
 
 
+class AnswerQuestion(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    question: "Question"
+
+
+class AnswerQuestionAnswer(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    answer_id: int
+    question: "Question"
+
+
+class AnswerQuestionSearch(pydantic.BaseModel):
+    questions: list["Question"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
+    search_value: str
+
+
+class AnswerQuestionStatistics(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    question_id: int
+    answers: list["QuestionAnswerStatistics"]
+    statistics: "UserQuestionStatistics"
+
+
+class AnswerRandomQuestion(pydantic.BaseModel):
+    question: "Question"
+
+
 class AnswerReaderInfo(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
@@ -311,6 +349,12 @@ class AnswerUserBody(pydantic.BaseModel):
     user_id: int
     name: typing.Optional[str | None] = None
     telegram: typing.Optional[typing.Union["TelegramBody", None]] = None
+
+
+class AnswerUserQuestionStatistics(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    statistics: "UserQuestionStatistics"
 
 
 class AnswerUsersBody(pydantic.BaseModel):
@@ -430,11 +474,45 @@ class QueryOrganSettingDefault(pydantic.BaseModel):
     to_default: "OrganSettingDefault"
 
 
+class QueryQuestionCreate(pydantic.BaseModel):
+    user_id: int
+    is_admin: bool = False
+    request_id: typing.Optional[str | None] = None
+    question: "QuestionCreate"
+
+
 class QueryUserUpdate(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
     request_id: typing.Optional[str | None] = None
     telegram: typing.Optional[typing.Union["TelegramBody", None]] = None
+
+
+class Question(pydantic.BaseModel):
+    body: str
+    description: typing.Optional[str | None] = None
+    question_id: int
+    answers: list["QuestionAnswer"]
+
+
+class QuestionAnswer(pydantic.BaseModel):
+    answer_id: int
+    body: str
+    is_correct: typing.Optional[bool | None] = None
+
+
+class QuestionAnswerStatistics(pydantic.BaseModel):
+    answer_id: int
+    body: str
+    is_correct: typing.Optional[bool | None] = None
+    count: int
+
+
+class QuestionCreate(pydantic.BaseModel):
+    body: str
+    description: typing.Optional[str | None] = None
+    correct_answers: list[str]
+    incorrect_answers: list[str]
 
 
 class ReaderInfo(pydantic.BaseModel):
@@ -483,6 +561,13 @@ class TelegramBody(pydantic.BaseModel):
     tg_id: int
     username: typing.Optional[str | None] = None
     fullname: typing.Optional[str | None] = None
+
+
+class UserQuestionStatistics(pydantic.BaseModel):
+    total: int
+    correct: int
+    incorrect: int
+    accuracy: float
 
 
 class ValidationError(pydantic.BaseModel):

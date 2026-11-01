@@ -19,3 +19,6 @@ class NewsPaperState(StatesGroup):
     search = State()
     settings = State()
     create = State()
+
+class QuestionState(StatesGroup):
+    create = State()

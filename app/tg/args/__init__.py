@@ -3,6 +3,7 @@ from .beyonder import datetime_arg, duration, seq, time_mode, drink_seq, optiona
 from .wiki import ga_name, seq_name, path_name, group_name, is_all, value
 from .organ import organ_id, organ_value, rank, organ_mode, titul, titul_mode, organ_name
 from .newspaper import news_paper_id, optional_news_paper_id, news_paper_mode, news_paper_value, news_paper_name
+from .question import question_mode
 
 class Optionals:
     tg_id = tg_id
@@ -28,6 +29,7 @@ class Optionals:
     optional_news_paper_id = optional_news_paper_id
     news_paper_name = news_paper_name
     news_paper_value = news_paper_value
+    question_mode = question_mode
     user_id = user_id
 
 class Requireds:

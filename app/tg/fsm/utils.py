@@ -90,3 +90,6 @@ class StatsFSM(FSMUtils):
 
 class NewsPaperFSM(FSMUtils):
     prefixs = ['news_paper']
+
+class QuestionFSM(FSMUtils):
+    prefixs = ['question']

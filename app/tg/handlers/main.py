@@ -25,6 +25,7 @@ from app.tg.handlers.wiki import wiki_router
 from app.tg.handlers.organ import organ_router
 from app.tg.handlers.stats import stats_router
 from app.tg.handlers.news_paper import news_paper_router
+from app.tg.handlers.question import question_router
 
 main_router = Router()
 main_router.message.middleware(ServiceMiddleware(MainService))
@@ -35,6 +36,7 @@ main_router.include_routers(
     wiki_router,
     stats_router,
     news_paper_router,
+    question_router,
 )
 
 
