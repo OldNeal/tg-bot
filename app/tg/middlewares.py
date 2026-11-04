@@ -38,10 +38,6 @@ class BotLogCallbackQueryMiddleware(BaseMiddleware):
         data: Dict[str, Any]
     ) -> Any:
         callback = event
-        try:
-            await callback.answer()
-        except TelegramBadRequest:
-            pass
         request_id = uuid.uuid4().hex
         with botlog.logger.contextualize(tg_id=callback.from_user.id, chat_id=callback.message.chat.id, request_id=request_id):
             botlog.callback(callback.data)
