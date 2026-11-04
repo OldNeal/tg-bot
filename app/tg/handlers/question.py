@@ -9,6 +9,7 @@ from app.tg.args import Optionals
 from app.tg.callback.base import MenuCall
 from app.tg.callback.question import (
     QuestionCreateCall,
+    QuestionModerationCall,
     QuestionMenuCall,
     QuestionPageCall,
     QuestionQuizAnswerCall,
@@ -124,6 +125,33 @@ async def create_call(
         await service.review_create()
 
 
+@question_router.callback_query(QuestionModerationCall.filter())
+async def moderation_call(
+    callback: CallbackQuery,
+    callback_data: QuestionModerationCall,
+    service: QuestionService,
+):
+    await service.moderate(
+        callback_data.action,
+        callback_data.field,
+        callback_data.tg_id,
+    )
+
+
 @question_router.message(QuestionState.create, F.text)
 async def create_text(message: Message, service: QuestionService):
-    await service.create_input(message.text)
+    msg0 = await service.fsm.get_message()
+    await service.create_input()
+    await service.bot.delete_message(*msg0)
+
+@question_router.message(QuestionState.moderation_edit, F.text)
+async def moderation_edit_text(message: Message, service: QuestionService):
+    msg0 = await service.fsm.get_message()
+    await service.moderation_edit_input()
+    await service.bot.delete_message(*msg0)
+
+@question_router.message(QuestionState.moderation_reason, F.text)
+async def moderation_reason_text(message: Message, service: QuestionService):
+    msg0 = await service.fsm.get_message()
+    await service.moderation_rejection_reason()
+    await service.bot.delete_message(*msg0)

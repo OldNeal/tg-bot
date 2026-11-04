@@ -8,20 +8,20 @@ class NewsPaperText(BaseText):
             return f'❌ По запросу «{cls.html(value).escape()}» ничего не найдено'
         return (
             f'🔎 По запросу «{cls.html(value).escape()}» найдено газет: {count} '
-            f'[{page + 1}/{max_page} стр.]'
+            f'{cls.page_text(page, max_page)}'
         )
 
     @classmethod
     def my_list(cls, count: int, page: int, max_page: int):
         if count == 0:
             return '❌ Вы не подписаны ни на одну газету'
-        return f'📰 Газеты, на которые вы подписаны: {count} [{page + 1}/{max_page} стр.]'
+        return f'📰 Газеты, на которые вы подписаны: {count} {cls.page_text(page, max_page)}'
 
     @classmethod
     def all(cls, count: int, page: int, max_page: int):
         if count == 0:
             return '❌ Газет нет'
-        return f'📰 Все газеты: {count} [{page + 1}/{max_page} стр.]'
+        return f'📰 Все газеты: {count} {cls.page_text(page, max_page)}'
     
     @classmethod
     def choose_news_paper(cls, action: str, count: int, page: int, max_page: int):
@@ -34,13 +34,13 @@ class NewsPaperText(BaseText):
             'make_editor': 'назначения редактора',
             'fire_editor': 'снятия редактора',
         }
-        return f'📰 Выберите газету для {action_names[action]} [{page + 1}/{max_page} стр.]'
+        return f'📰 Выберите газету для {action_names[action]} {cls.page_text(page, max_page)}'
 
     @classmethod
     def editors(cls, count: int, page: int, max_page: int):
         if count == 0:
             return '❌ Вы не редактор ни одной газеты'
-        return f'✒️ Газеты, где вы редактор: {count} [{page + 1}/{max_page} стр.]'
+        return f'✒️ Газеты, где вы редактор: {count} {cls.page_text(page, max_page)}'
 
     @classmethod
     def readers(
@@ -52,7 +52,7 @@ class NewsPaperText(BaseText):
         if max_page == 0:
             return f'❌ У газеты «{cls.html(news_paper_name).escape()}» нет читателей'
 
-        return f'👥 Читатели газеты «{cls.html(news_paper_name).escape()}» [{page + 1}/{max_page} стр.]'
+        return f'👥 Читатели газеты «{cls.html(news_paper_name).escape()}» {cls.page_text(page, max_page)}'
 
     @classmethod
     def created(cls, news_paper: NewsPaperInfo):

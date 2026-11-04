@@ -478,6 +478,7 @@ class QueryQuestionCreate(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
     request_id: typing.Optional[str | None] = None
+    purpose_user_id: typing.Optional[int | None] = None
     question: "QuestionCreate"
 
 

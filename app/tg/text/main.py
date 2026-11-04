@@ -61,7 +61,7 @@ class MainText(BaseText):
     def users_list(cls, count: int, page: int, max_page: int):
         if not count:
             return '❌ Пользователей нет'
-        return f'👥 Пользователи: {count} [{page + 1}/{max_page} стр.]'
+        return f'👥 Пользователи: {count} {cls.page_text(page, max_page)}'
 
     @classmethod
     def users_search_fields(cls):
@@ -81,7 +81,7 @@ class MainText(BaseText):
     def users_search_results(cls, count: int, page: int, max_page: int):
         if not count:
             return '❌ Пользователи по этому запросу не найдены'
-        return f'🔎 Найдено пользователей: {count} [{page + 1}/{max_page} стр.]'
+        return f'🔎 Найдено пользователей: {count} {cls.page_text(page, max_page)}'
 
     @classmethod
     def user_info(cls, user: AnswerUserBody):

@@ -21,5 +21,11 @@ class QuestionQuizAnswerCall(BaseCall, prefix='question_quiz_answer'):
     answer_id: int
 
 
+class QuestionModerationCall(BaseCall, prefix='question_moderation'):
+    action: str
+    field: str = ''
+    is_check: bool = False
+
+
 class QuestionPageCall(PageCall, prefix='question_page'):
     pass

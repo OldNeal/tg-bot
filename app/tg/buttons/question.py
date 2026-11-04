@@ -1,8 +1,10 @@
 from aiogram.types import InlineKeyboardButton
 
+from config import settings
 from app.tg.buttons.base import BotIKB, MenuCall
 from app.tg.callback.question import (
     QuestionCreateCall,
+    QuestionModerationCall,
     QuestionMenuCall,
     QuestionPageCall,
     QuestionQuizAnswerCall,
@@ -124,6 +126,7 @@ class QuestionIKB(BotIKB):
                     tg_id=self.tg_id,
                 ).pack(),
             ),
+            width=1
         )
         return self.builder.as_markup()
 
@@ -140,8 +143,8 @@ class QuestionIKB(BotIKB):
 
     def create_confirmation(self):
         labels = {
-            'body': '✏️ Изменить вопрос',
-            'description': '✏️ Изменить описание',
+            'body': '❔ Изменить вопрос',
+            'description': '📜 Изменить описание',
             'correct_answers': '✏️ Изменить правильные ответы',
             'incorrect_answers': '✏️ Изменить неправильные ответы',
         }
@@ -165,6 +168,10 @@ class QuestionIKB(BotIKB):
         return self.builder.adjust(1).as_markup()
 
     def create_edit_prompt(self, show_review: bool = False):
+        self.builder.button(
+            text='⚖️ Правила создания',
+            url=settings.docs_url + 'question/base/#rules',
+        )
         if show_review:
             self.builder.button(
                 text='↩️ К проверке',
@@ -174,4 +181,53 @@ class QuestionIKB(BotIKB):
             text='❌ Отменить создание',
             callback_data=QuestionCreateCall(action='cancel', tg_id=self.tg_id),
         )
-        return self.builder.as_markup()
+        return self.builder.adjust(1).as_markup()
+
+    def moderation_request(self, author_tg_id: int):
+        self.builder.button(
+            text='✅ Создать',
+            callback_data=QuestionModerationCall(
+                action='approve',
+                tg_id=author_tg_id,
+            ),
+        )
+        self.builder.button(
+            text='✏️ Изменить',
+            callback_data=QuestionModerationCall(
+                action='edit',
+                tg_id=author_tg_id,
+            ),
+        )
+        self.builder.button(
+            text='❌ Отклонить',
+            callback_data=QuestionModerationCall(
+                action='reject',
+                tg_id=author_tg_id,
+            ),
+        )
+        return self.builder.adjust(1).as_markup()
+
+    def moderation_fields(self, author_tg_id: int):
+        labels = {
+            'body': '❔ Текст вопроса',
+            'description': '📜 Описание',
+            'correct_answers': '✅ Правильные ответы',
+            'incorrect_answers': '❌ Неправильные ответы',
+        }
+        for field, label in labels.items():
+            self.builder.button(
+                text=label,
+                callback_data=QuestionModerationCall(
+                    action='field',
+                    field=field,
+                    tg_id=author_tg_id,
+                ),
+            )
+        self.builder.button(
+            text='↩️ К заявке',
+            callback_data=QuestionModerationCall(
+                action='back',
+                tg_id=author_tg_id,
+            ),
+        )
+        return self.builder.adjust(1).as_markup()

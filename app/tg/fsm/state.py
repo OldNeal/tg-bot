@@ -22,3 +22,5 @@ class NewsPaperState(StatesGroup):
 
 class QuestionState(StatesGroup):
     create = State()
+    moderation_edit = State()
+    moderation_reason = State()

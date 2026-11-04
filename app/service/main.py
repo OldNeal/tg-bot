@@ -5,6 +5,7 @@ from app.exception.args import UserSearchIdError, UserSearchValueError
 from app.service.base import BaseService, AnswerBody
 from app.logic.main import MainLogic
 from app.tg.text.main import MainText
+from app.tg.text.utils import TextHTML
 from app.tg.buttons.main import MainIKB
 from app.tg.fsm.state import MainState
 from app.tg.fsm.utils import MainFSM
@@ -161,7 +162,7 @@ class MainService(BaseService):
         else:
             text = self.text.users_list(count, page, max_page)
         if notice:
-            text = f'{notice}\n\n{text}'
+            text = f'{notice}{TextHTML.separator(n=2)}{text}'
         print(data, len(data.users))
         return await self.answer([
             AnswerBody(

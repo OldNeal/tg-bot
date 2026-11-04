@@ -4,26 +4,8 @@ from app.logic.utils import class_decor
 
 @class_decor
 class QuestionLogic(BaseLogic):
-    async def create(
-        self,
-        body: str,
-        description: str | None,
-        correct_answers: list[str],
-        incorrect_answers: list[str],
-    ):
-        query_body = await self.body
-        data = self.schemas.QueryQuestionCreate.model_validate(
-            query_body.model_dump()
-            | {
-                'question': self.schemas.QuestionCreate(
-                    body=body,
-                    description=description,
-                    correct_answers=correct_answers,
-                    incorrect_answers=incorrect_answers,
-                )
-            }
-        )
-        return await self.client.question_create(data)
+    async def create(self, question):
+        return await self.client.question_create(question)
 
     async def mine(self, page: int = 0):
         return await self.client.question_my(

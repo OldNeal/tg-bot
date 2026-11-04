@@ -40,3 +40,7 @@ class BaseText:
     def json(self, data: dict):
         text = self.html.json_format(data, 4)
         return self.html.anchor('start-json') + text.pre('json').details('JSON', text.count('\n') > 10) + self.html('Вверх').href('#start-json')
+
+    @classmethod
+    def page_text(self, page: int, max_page: int):
+        return f'[{page+1}/{max_page} стр.]' if max_page > 1 else ''

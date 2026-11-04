@@ -16,6 +16,7 @@ async def update_bot_info():
     try:
         bot_info = await bot.get_me()
         settings.info['main'] = bot_info
+        botlog.logger.info('Телеграм доступен')
         return bot_info
     except TelegramBadRequest:
         botlog.logger.critical('Телеграм недоступен')

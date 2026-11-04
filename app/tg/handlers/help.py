@@ -7,6 +7,7 @@ from app.service.help import HelpService
 from app.service.utils import DEFAULT_BOT_ERROR_HANDLER
 from app.tg.args import Optionals
 from app.tg.callback.base import MenuCall
+from app.tg.callback.help import CmdListCall
 from app.tg.middlewares import ServiceMiddleware
 
 help_router = Router()
@@ -17,6 +18,10 @@ help_router.callback_query.middleware(ServiceMiddleware(HelpService))
 @help_router.callback_query(MenuCall.filter(F.where == 'help'))
 async def main_menu_call(callback: CallbackQuery, callback_data: MenuCall, service: HelpService):
     await service.main()
+
+@help_router.callback_query(CmdListCall.filter())
+async def main_menu_call(callback: CallbackQuery, callback_data: CmdListCall, service: HelpService):
+    await service.cmds()
 
 
 @help_router.message(Command('help'))

@@ -20,3 +20,11 @@ class HelpService(BaseService):
                 reply_markup=self.IKB.main(),
             )
         ])
+
+    async def cmds(self):
+        return await self.answer([
+            AnswerBody(
+                text=self.text.cmds(),
+                reply_markup=self.IKB.cmds(),
+            )
+        ])

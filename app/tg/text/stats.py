@@ -18,10 +18,7 @@ class StatsText(BaseText):
     def search(cls, value: str, count: int, page: int, max_page: int):
         if count == 0:
             return f'❌ По запросу «{cls.html(value).escape()}» ничего не найдено'
-        return (
-            f'🔎 По запросу «{cls.html(value).escape()}» найдено путей: {count} '
-            f'[{page + 1}/{max_page} стр.]'
-        )
+        return f'🔎 По запросу «{cls.html(value).escape()}» найдено путей: {count} {cls.page_text(page, max_page)}'
 
     @classmethod
     def enter_search_value(self):

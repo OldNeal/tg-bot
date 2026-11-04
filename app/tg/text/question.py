@@ -5,7 +5,6 @@ from app.api.schemas import (
     UserQuestionStatistics,
 )
 from app.tg.text.base import BaseText
-from app.tg.text.utils import TextHTML
 
 
 class QuestionText(BaseText):
@@ -15,24 +14,26 @@ class QuestionText(BaseText):
 
     @classmethod
     def unknown_subcommand(cls, subcommand: str):
-        return TextHTML('❌ Неизвестная подкоманда: ') + TextHTML(subcommand).escape()
+        return cls.html('❌ Неизвестная подкоманда: ') + cls.html(subcommand).escape()
 
     @classmethod
-    def question(cls, question: Question, page: int | None = None, max_page: int | None = None):
-        text = TextHTML('❔ ') + TextHTML(question.body).escape()
+    def question(cls, question: Question):
+        text = cls.html('❔ ') + cls.html(question.body).escape()
         if question.description:
-            text += '\n\n' + TextHTML(question.description).escape()
-        if page is not None and max_page is not None:
-            text += f'\n\n📄 {page + 1}/{max_page}'
+            text += cls.html.separator(n=2) + '📜 Описание' + cls.html(question.description).escape().blockquote(True)
         return text
 
     @classmethod
     def question_list(cls, count: int, page: int, max_page: int):
-        return TextHTML(f'📝 Ваши вопросы\nВсего: {count} · Страница {page + 1}/{max_page}')
+        return f'📝 Ваши вопросы ({count} шт.) {cls.page_text(page, max_page)}'
 
     @classmethod
-    def created(cls, data: AnswerQuestion):
-        return f'✅ Вопрос создан\n\n{cls.question(data.question)}'
+    def created(cls):
+        return '➕ Вопрос создан'
+
+    @classmethod
+    def sent_to_moderation(cls):
+        return '✅ Заявка отправлена на модерацию. Результат придёт в личный чат с ботом.'
 
     @classmethod
     def empty(cls):
@@ -53,114 +54,139 @@ class QuestionText(BaseText):
         text = prompts[step]
         if current_value:
             if isinstance(current_value, list):
-                current_value = '\n'.join(current_value)
+                current_value = cls.html.separator().join(current_value)
             text = (
-                TextHTML(text)
-                + '\n\nТекущее значение:\n'
-                + TextHTML(str(current_value)).escape().blockquote()
+                cls.html(text)
+                + cls.html.separator(n=2)
+                + 'Текущее значение:'
+                + cls.html.separator()
+                + cls.html(str(current_value)).escape()
             )
-        return TextHTML(text)
-
-    @classmethod
-    def invalid_answers(cls, step: str):
-        if step == 'correct_answers':
-            return TextHTML('❌ Добавьте хотя бы один правильный ответ, каждый с новой строки')
-        return TextHTML('❌ Добавьте хотя бы 3 неправильных ответа, каждый с новой строки')
-
-    @classmethod
-    def invalid_question(cls):
-        return TextHTML('❌ Текст вопроса не может быть пустым')
+        return cls.html(text)
 
     @classmethod
     def statistics(cls, data: AnswerQuestionStatistics, question: Question):
-        lines = [
-            TextHTML('📊 ') + TextHTML(question.body).escape().bold(),
-            TextHTML(f'Всего ответов на вопрос: {data.statistics.total}'),
-        ]
+        lines = []
         for answer in data.answers:
             percent = (
                 answer.count / data.statistics.total * 100
                 if data.statistics.total
                 else 0
             )
-            result = ' ✅' if answer.is_correct else ''
             lines.append(
-                TextHTML(answer.body).escape()
-                + f'{result} — {answer.count} ({percent:.1f}%)'
+                cls.html(answer.body).escape()
+                + f': {answer.count} ({percent:.1f}%)'
             )
-        return TextHTML('\n').join(lines)
+        return cls.html(f'🧮 Всего ответов на вопрос: {data.statistics.total}') + cls.html.separator(n=2) + cls.html('📊 Статистика ответов') + cls.html.separator().join(lines).blockquote()
 
     @classmethod
     def question_card(cls, question: Question, statistics: AnswerQuestionStatistics):
-        return f'{cls.question(question)}\n\n{cls.statistics(statistics, question)}'
+        return f'{cls.question(question)}{cls.html.separator(n=2)}{cls.statistics(statistics, question)}'
 
     @classmethod
     def quiz(cls, question: Question):
-        text = TextHTML('🎲 ') + TextHTML(question.body).escape().bold().blockquote()
-        if question.description:
-            text += '\n\n' + TextHTML(question.description).escape().blockquote()
-        return text + '\n\nВыберите правильный ответ:'
-
-    @classmethod
-    def quiz_unavailable(cls):
-        return TextHTML('❌ Для вопроса нужны минимум 1 правильный и 3 неправильных ответа.')
-
-    @classmethod
-    def quiz_expired(cls):
-        return TextHTML('❌ Этот вопрос уже недоступен. Запросите случайный вопрос заново.')
+        return cls.question(question)
 
     @classmethod
     def quiz_result(
         cls,
-        question: Question,
-        selected_answer: str,
-        correct_answer: str,
         is_correct: bool,
     ):
-        result = TextHTML('✅ Правильно!' if is_correct else '❌ Неправильно')
-        text = (
-            result
-            + '\n\n❔ '
-            + TextHTML(question.body).escape().bold().blockquote()
-            + '\nВаш ответ:\n'
-            + TextHTML(selected_answer).escape().blockquote()
+        return '✅ Правильно' if is_correct else '❌ Неправильно'
+
+    @classmethod
+    def create_confirmation(cls, data: dict):
+        return (
+            cls.html('📝 Проверьте вопрос перед созданием').bold()
+          + cls.html.separator(n=2) + cls.create_text(data) + cls.html.separator()
+          + cls.html('✒️ Вы можете изменить любое поле перед созданием.')
+          )
+
+    @classmethod
+    def create_text(cls, data: dict):
+        description = data.get('description')
+        correct_answers = cls.html.to_list(
+            [str(cls.html(answer).escape()) for answer in data['correct_answers']],
+            type='bullet',
         )
-        if not is_correct:
+        incorrect_answers = cls.html.to_list(
+            [str(cls.html(answer).escape()) for answer in data['incorrect_answers']],
+            type='bullet',
+        )
+        return cls.html.separator().join([
+            cls.html('❔ ') + cls.html(data['body']).escape() + cls.html.separator(),
+            cls.html('📜 Описание:') + (cls.html(description).escape().blockquote() if description else cls.html(' ❌') + cls.html.separator()),
+            cls.html('✅ Правильные варианты:') + correct_answers.blockquote(True),
+            cls.html('❌ Неправильные варианты:') + incorrect_answers.blockquote(True),
+        ])
+
+    @classmethod
+    def moderation_payload(cls, data: dict):
+        request = data['request']['question']
+        text = (
+            cls.html('📝 Вопрос от ')
+            + cls.html(data.get('author_name', 'Пользователь'))
+            .escape()
+            .openmessage(int(data['author_tg_id']))
+            + cls.html.separator(n=2)
+            + cls.create_text(request)
+        )
+        status = data.get('status', 'pending')
+        if status == 'approved':
+            text += cls.html.separator(n=2) + '✅ Вопрос создан'
+        elif status == 'rejected':
             text += (
-                '\nПравильный ответ:\n'
-                + TextHTML(correct_answer).escape().blockquote()
+                cls.html.separator(n=2)
+                + '🗑 Вопрос отклонён. Причина: '
+                + cls.html(data['reason']).escape()
             )
         return text
 
     @classmethod
-    def create_confirmation(cls, data: dict):
-        description = data.get('description')
-        correct_answers = TextHTML.to_list(
-            [str(TextHTML(answer).escape()) for answer in data['correct_answers']],
-            type='bullet',
+    def moderation_edit_prompt(cls, field: str, current_value):
+        labels = {
+            'body': 'текст вопроса',
+            'description': 'описание (или «-», чтобы очистить)',
+            'correct_answers': 'правильные ответы, каждый с новой строки',
+            'incorrect_answers': 'неправильные ответы, каждый с новой строки',
+        }
+        value = (
+            cls.html.separator(n=2)
+            + 'Текущее значение:'
+            + cls.html.separator()
+            + cls.html(str(current_value if current_value is not None else '❌'))
+            .escape()
+            .blockquote()
+            if field in ('body', 'description')
+            else cls.html.separator(n=2)
+            + 'Текущие варианты:'
+            + cls.html.separator()
+            + cls.html('\n').join(current_value or ['❌']).escape().blockquote()
         )
-        incorrect_answers = TextHTML.to_list(
-            [str(TextHTML(answer).escape()) for answer in data['incorrect_answers']],
-            type='bullet',
+        return cls.html(
+            f'✒️ Отправьте новое {labels[field]} отдельным сообщением в группе.'
+        ) + value
+
+    @classmethod
+    def moderation_reason_prompt(cls):
+        return '✒️ Отправьте причину отказа отдельным сообщением в группе.'
+
+    @classmethod
+    def moderation_author_approved(cls):
+        return '✅ Ваш вопрос прошёл модерацию и создан.'
+
+    @classmethod
+    def moderation_author_rejected(cls, reason: str):
+        return (
+            cls.html('❌ Ваш вопрос отклонён. Причина: ')
+            + cls.html(reason).escape()
         )
-        return TextHTML('\n').join([
-            TextHTML('📝 Проверьте вопрос перед созданием').bold(),
-            TextHTML('❔ ') + TextHTML(data['body']).escape().blockquote(),
-            TextHTML('Описание:'),
-            TextHTML(description).escape().blockquote() if description else TextHTML('—'),
-            TextHTML('✅ Правильные варианты:'),
-            correct_answers,
-            TextHTML('❌ Неправильные варианты:'),
-            incorrect_answers,
-            TextHTML('Вы можете изменить любое поле перед созданием.'),
-        ])
 
     @classmethod
     def user_statistics(cls, statistics: UserQuestionStatistics):
-        return TextHTML('\n').join([
-            TextHTML('📊 Статистика ваших ответов').bold(),
-            TextHTML(f'Всего ответов: {statistics.total}'),
-            TextHTML(f'✅ Правильные: {statistics.correct}'),
-            TextHTML(f'❌ Неправильные: {statistics.incorrect}'),
-            TextHTML(f'Точность: {statistics.accuracy:.1f}%'),
-        ])
+        return cls.html('📊 Статистика ваших ответов').bold() + cls.html.separator().join([
+            cls.html(f'🧮 Всего ответов: {statistics.total}'),
+            cls.html(f'✅ Правильные: {statistics.correct}'),
+            cls.html(f'❌ Неправильные: {statistics.incorrect}'),
+            cls.html(f'🎯 Точность: {statistics.accuracy:.1f}%'),
+        ]).blockquote()

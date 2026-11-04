@@ -27,6 +27,8 @@ class Settings:
     admins = [int(x) for x in os.getenv('admins').split(',')]
     owner = int(os.getenv('owner'))
 
+    question_moderation_chat_id = int(os.getenv('question_moderation_chat_id'))
+
     _use_proxy = os.getenv('use_proxy', 'f')
     proxy_url = os.getenv('proxy_url')
 
@@ -40,6 +42,9 @@ class Settings:
     redis_password = os.getenv('redis_password')
 
     docs_url = os.getenv('docs_url')
+    news_url = os.getenv('news_url')
+    terms_url = docs_url + os.getenv('terms_url')
+    privacy_url = docs_url + os.getenv('privacy_url')
 
     log_files_path = os.getenv('log_files_path', 'logs/')
 
@@ -119,7 +124,7 @@ cmds = {
     'path':'📜 Информация о путях',
     'ga':'📜 Информация о ВД',
 
-    'question':'❔ Вопросы: random, mine, create, stats',
+    'question':'❔ Викторина',
     
     'user':'👤 Карточка аккаунта',
     'users':'👥 Список пользователей',

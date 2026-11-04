@@ -16,10 +16,8 @@ class PathText(BaseText):
     def search(cls, max_page: int, page: int, value: str, results: int = 0):
         if results == 0:
             return f'❌ По запросу «{cls.html(value).escape()}» ничего не найдено'
-        return (
-            f'🔎 По запросу «{cls.html(value).escape()}» найдено путей: {results} '
-            f'[{page + 1}/{max_page} стр.]'
-        )
+        return f'🔎 По запросу «{cls.html(value).escape()}» найдено путей: {results} {cls.page_text(page, max_page)}'
+        
 
 class GAText(BaseText):
     def __init__(self, data: AnswerGASearchInfo | AnswerGAFullInfo):
@@ -34,7 +32,7 @@ class GAText(BaseText):
 
     @classmethod
     def search(cls, max_page: int, page: int, value: str, results: int = 0):
-        return f'🔎 По запросу "{value}" найдены Великие Древние ({results} шт.) {f'[{page+1}/{max_page} стр.]' if max_page > 1 else ''}' if results > 0 else '❌ Ничего не найдено'
+        return f'🔎 По запросу "{value}" найдены Великие Древние ({results} шт.) {cls.page_text(page, max_page)}' if results > 0 else '❌ Ничего не найдено'
     
 class WikiText:
     path = PathText

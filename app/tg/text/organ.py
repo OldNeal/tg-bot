@@ -24,7 +24,7 @@ class OrganText(BaseText):
             return f'❌ По запросу «{self.html(value).escape()}» ничего не найдено'
         return (
             f'🔎 По запросу «{self.html(value).escape()}» найдено организаций: {count} '
-            f'[{page + 1}/{max_page} стр.]'
+            f'{self.page_text(page, max_page)}'
         )
 
     @classmethod
@@ -32,11 +32,11 @@ class OrganText(BaseText):
         return '✒️ Введите поисковой запрос'
 
     def members(self, page: int, max_page: int):
-        return f'👥 Все участники [{page + 1}/{max_page} стр.]' if max_page > 0 else '❌ Участников нету'
+        return f'👥 Все участники {self.page_text(page, max_page)}' if max_page > 0 else '❌ Участников нету'
     
     @classmethod
     def list(self, page: int, max_page: int):
-        return f'📜 Все организации [{page + 1}/{max_page} стр.]'
+        return f'📜 Все организации {self.page_text(page, max_page)}'
 
     @property
     def info(self):
