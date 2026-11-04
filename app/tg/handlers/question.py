@@ -1,6 +1,6 @@
 from telegram_click_aio.decorator import command
 from aiogram import F, Router
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandStart
 from aiogram.types import CallbackQuery, Message
 
 from app.service.question import QuestionService
@@ -15,6 +15,7 @@ from app.tg.callback.question import (
     QuestionQuizAnswerCall,
     QuestionSelectCall,
 )
+from app.tg.deep.base import QuestionDeep
 from app.tg.fsm.state import QuestionState
 from app.tg.middlewares import ServiceMiddleware, PrivateChatMiddleware
 
@@ -33,6 +34,11 @@ async def main_menu_call(
 ):
     await service.menu()
 
+@question_router.message(CommandStart(deep_link=True), QuestionDeep.filter())
+async def menu(message: Message, service: QuestionService, message_id: int | None = None, chat_id: int | None = None):
+    await service.menu()
+    if message_id and chat_id:
+        await service.bot.delete_message(chat_id, message_id)
 
 @question_router.message(Command('question'))
 @command(

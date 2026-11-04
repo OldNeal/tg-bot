@@ -2,6 +2,7 @@ from aiogram.types import InlineKeyboardButton
 
 from config import settings
 from app.tg.buttons.base import BotIKB, MenuCall
+from app.tg.deep.base import QuestionDeep
 from app.tg.callback.question import (
     QuestionCreateCall,
     QuestionModerationCall,
@@ -228,3 +229,6 @@ class QuestionIKB(BotIKB):
             ),
         )
         return self.builder.adjust(1).as_markup()
+    
+    def deep_menu(self, message_id: int | None = None, chat_id: int | None = None):
+        return self.builder.button(text='🗨️ Перейти в лс', url=QuestionDeep(message_id=message_id, chat_id=chat_id).url()).as_markup()

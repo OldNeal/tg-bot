@@ -19,18 +19,14 @@ class BaseDeep(CallbackData, prefix='base'):
                 if not message.text or not message.text.startswith("/start"):
                     return False
                 parts = message.text.split(maxsplit=1)
+                payload = decode_payload(parts[1])
                 try:
-                    data = cls.unpack(decode_payload(parts[1]))
+                    data = cls.unpack(payload)
                 except (ValueError, UnicodeDecodeError, IndexError) as e:
-                    try:
-                        data = cls()
-                    except ValidationError as e:
-                        return False
-
+                    return False
                 if rule is not None:
                     if not await self._check_rule(rule, data):
                         return False
-
                 args = {k: v for k, v in data.__dict__.items() if not k.startswith("_")}
                 return args or True
 
@@ -45,3 +41,6 @@ class BaseDeep(CallbackData, prefix='base'):
 class MenuDeep(BaseDeep, prefix='menu'):
     message_id: int | None = None
     chat_id: int | None = None
+
+class QuestionDeep(MenuDeep, prefix='question'):
+    pass

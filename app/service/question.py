@@ -613,3 +613,11 @@ class QuestionService(BaseService):
         await self.fsm.remove_value('create_step')
         await self.fsm.remove_value('create_editing')
         return await self.menu()
+
+    async def go_private_chat(self):
+        return await self.answer([
+            AnswerBody(
+                text=self.text.private_chat_func(),
+                reply_markup=self.IKB.deep_menu(self.message.message_id, self.message.chat.id),
+            )
+        ])
