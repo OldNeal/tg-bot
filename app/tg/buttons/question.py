@@ -98,19 +98,16 @@ class QuestionIKB(BotIKB):
         return self.builder.adjust(1).as_markup()
 
     def quiz(self, question_id: int, answers: list[QuestionAnswer]):
-        for answer in answers:
-            label = answer.body[:60]
-            if len(answer.body) > 60:
-                label += '…'
+        for index, answer in enumerate(answers, start=1):
             self.builder.button(
-                text=label,
+                text=str(index),
                 callback_data=QuestionQuizAnswerCall(
                     question_id=question_id,
                     answer_id=answer.answer_id,
                     tg_id=self.tg_id,
                 ),
             )
-        self.builder.adjust(1)
+        self.builder.adjust(len(answers))
         self.builder.row(
             InlineKeyboardButton(
                 text='🎲 Другой вопрос',

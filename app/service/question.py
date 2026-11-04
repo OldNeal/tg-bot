@@ -156,7 +156,7 @@ class QuestionService(BaseService):
         )
         return await self.answer([
             AnswerBody(
-                text=self.text.quiz(question),
+                text=self.text.quiz(question, answers),
                 data=question,
                 reply_markup=self.IKB.quiz(question.question_id, answers),
             )

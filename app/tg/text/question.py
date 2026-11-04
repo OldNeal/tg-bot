@@ -2,6 +2,7 @@ from app.api.schemas import (
     AnswerQuestion,
     AnswerQuestionStatistics,
     Question,
+    QuestionAnswer,
     UserQuestionStatistics,
 )
 from app.tg.text.base import BaseText
@@ -84,8 +85,18 @@ class QuestionText(BaseText):
         return f'{cls.question(question)}{cls.html.separator(n=2)}{cls.statistics(statistics, question)}'
 
     @classmethod
-    def quiz(cls, question: Question):
-        return cls.question(question)
+    def quiz(cls, question: Question, answers: list[QuestionAnswer]):
+        answer_lines = [
+            cls.html(f'{index}. ').bold() + cls.html(answer.body).escape()
+            for index, answer in enumerate(answers, start=1)
+        ]
+        return (
+            cls.question(question)
+            + cls.html.separator(n=2)
+            + cls.html('Варианты ответа:').bold()
+            + cls.html.separator()
+            + cls.html.separator().join(answer_lines)
+        )
 
     @classmethod
     def quiz_result(
