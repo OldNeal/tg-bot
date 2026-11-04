@@ -44,3 +44,7 @@ class BaseText:
     @classmethod
     def page_text(self, page: int, max_page: int):
         return f'[{page+1}/{max_page} стр.]' if max_page > 1 else ''
+
+    @classmethod
+    def private_chat_func(self):
+        return '❌ Эта функция доступна только в личном чате с ботом'

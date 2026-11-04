@@ -141,3 +141,11 @@ class BaseService:
         for obj in objs:
             if not obj is None:
                 return obj
+
+    async def go_private_chat(self):
+        return await self.answer([
+            AnswerBody(
+                text=self.text.private_chat_func(),
+                reply_markup=self.IKB.deep_menu(self.message.message_id, self.message.chat.id),
+            )
+        ])

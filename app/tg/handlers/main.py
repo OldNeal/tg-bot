@@ -1,7 +1,7 @@
 from telegram_click_aio.decorator import command
 from aiogram.types import Message, CallbackQuery
 from aiogram import Router, F
-from aiogram.filters import Command, CommandObject
+from aiogram.filters import Command, CommandObject, CommandStart
 from aiogram.fsm.context import FSMContext
 
 from app.service.main import MainService
@@ -20,6 +20,7 @@ from app.tg.callback.main import (
     MyStateCall,
 )
 from app.tg.fsm.state import MainState
+from app.tg.deep.base import MenuDeep
 from app.tg.handlers.beyonder import beyonder_router
 from app.tg.handlers.wiki import wiki_router
 from app.tg.handlers.organ import organ_router
@@ -43,6 +44,12 @@ main_router.include_routers(
 @main_router.message(Command('menu'))
 async def menu(message: Message, service: MainService):
     await service.menu()
+
+@main_router.message(CommandStart(deep_link=True), MenuDeep.filter())
+async def menu(message: Message, service: MainService, message_id: int | None = None, chat_id: int | None = None):
+    await service.menu()
+    if message_id and chat_id:
+        await service.bot.delete_message(chat_id, message_id)
 
 @main_router.message(Command('user'))
 @command(

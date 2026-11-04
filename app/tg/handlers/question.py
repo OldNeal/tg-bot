@@ -16,12 +16,14 @@ from app.tg.callback.question import (
     QuestionSelectCall,
 )
 from app.tg.fsm.state import QuestionState
-from app.tg.middlewares import ServiceMiddleware
+from app.tg.middlewares import ServiceMiddleware, PrivateChatMiddleware
 
 question_router = Router()
 question_router.message.middleware(ServiceMiddleware(QuestionService))
 question_router.callback_query.middleware(ServiceMiddleware(QuestionService))
 
+question_router.message.middleware(PrivateChatMiddleware())
+question_router.callback_query.middleware(PrivateChatMiddleware())
 
 @question_router.callback_query(MenuCall.filter(F.where == 'question'))
 async def main_menu_call(

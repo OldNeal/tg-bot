@@ -12,6 +12,7 @@ from app.tg.text.utils import TextHTML
 from app.tg.callback.base import BaseCall
 from app.tg.args import to_json, is_admin, is_reply
 from app.exception.base import BotError, PythonError, ALienCallbackError
+from app.exception.question import QuestionPrivateChatError
 from app.service.base import BaseService
 
 class BotLogMessageMiddleware(BaseMiddleware):
@@ -134,3 +135,16 @@ class ServiceMiddleware(BaseMiddleware):
             **kwargs
             )
         return await handler(event, data)
+
+class PrivateChatMiddleware(BaseMiddleware):
+    async def __call__(
+        self,
+        handler: Callable[[Update, Dict[str, Any]], Awaitable[Any]],
+        event: Update,
+        data: Dict[str, Any]
+    ) -> Any:
+        service: BaseService = data.get('service')
+        try:
+            return await handler(event, data)
+        except QuestionPrivateChatError:
+            await service.go_private_chat()
