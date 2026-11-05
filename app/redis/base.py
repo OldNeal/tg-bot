@@ -11,16 +11,20 @@ redis_client = redis.Redis(
     decode_responses=True
 )
 
-async def redis_ping(logged: bool = False):
-            try:
-                start = datetime.now()
-                response = await redis_client.ping()
-                if response:
-                    end = datetime.now()
-                    result = f'{int((end - start).total_seconds()*1000)}'
-                    if logged:
-                        botlog.logger.info('Redis работает', ping=result)
-                    return result
-                raise RedisError()
-            except Exception as e:
-                raise RedisError(error=str(e))
+async def redis_ping(logged: bool = False, is_raise: bool = False):
+    try:
+        try:
+            start = datetime.now()
+            response = await redis_client.ping()
+            if response:
+                end = datetime.now()
+                result = f'{int((end - start).total_seconds()*1000)}'
+                if logged:
+                    botlog.logger.info('Redis работает', ping=result)
+                return result
+            raise RedisError()
+        except Exception as e:
+            raise RedisError(error=str(e))
+    except:
+        if is_raise:
+            raise

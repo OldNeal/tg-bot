@@ -125,10 +125,10 @@ class QuestionText(BaseText):
             type='bullet',
         )
         return cls.html.separator().join([
-            cls.html('❔ ') + cls.html(data['body']).escape() + cls.html.separator(),
-            cls.html('📜 Описание:') + (cls.html(description).escape().blockquote() if description else cls.html(' ❌') + cls.html.separator()),
-            cls.html('✅ Правильные варианты:') + correct_answers.blockquote(True),
-            cls.html('❌ Неправильные варианты:') + incorrect_answers.blockquote(True),
+            cls.html('❔ ') + cls.html(data['body']).escape().code() + cls.html.separator(),
+            cls.html('📜 Описание:') + (cls.html(description).escape().code().blockquote() if description else cls.html(' ❌') + cls.html.separator()),
+            cls.html('✅ Правильные варианты:') + correct_answers.code().blockquote(True),
+            cls.html('❌ Неправильные варианты:') + incorrect_answers.code().blockquote(True),
         ])
 
     @classmethod

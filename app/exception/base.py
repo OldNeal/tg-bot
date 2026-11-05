@@ -21,7 +21,7 @@ class BotError(Exception):
             getattr(botlog.logger, level)(f"{self.__class__.__name__}, msg: {msg}, kwargs: {self.kwargs}")
 
     def __str__(self):
-        return super().__str__()
+        return self.to_msg
     
     @property
     def to_msg(self):
