@@ -156,6 +156,10 @@ class QuestionIKB(BotIKB):
                 ),
             )
         self.builder.button(
+            text='👻 Создать анонимно',
+            callback_data=QuestionCreateCall(action='submit', tg_id=self.tg_id, is_anonim=True),
+        )
+        self.builder.button(
             text='✅ Создать вопрос',
             callback_data=QuestionCreateCall(action='submit', tg_id=self.tg_id),
         )

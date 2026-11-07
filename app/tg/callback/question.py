@@ -9,6 +9,7 @@ class QuestionMenuCall(BaseCall, prefix='question_menu'):
 class QuestionCreateCall(BaseCall, prefix='question_create'):
     action: str
     field: str = ''
+    is_anonim: bool = False
 
 
 class QuestionSelectCall(BaseCall, prefix='question_select'):

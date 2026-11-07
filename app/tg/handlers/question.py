@@ -126,7 +126,7 @@ async def create_call(
     if callback_data.action == 'edit':
         await service.edit_create_field(callback_data.field)
     elif callback_data.action == 'submit':
-        await service.submit_create()
+        await service.submit_create(callback_data.is_anonim)
     elif callback_data.action == 'cancel':
         await service.cancel_create()
     else:

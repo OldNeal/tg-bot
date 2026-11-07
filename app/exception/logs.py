@@ -1,6 +1,6 @@
-from app.exception.base import BaseException
+from app.exception.base import BotError
 
-class LogsFilesException(BaseException):
+class LogsFilesException(BotError):
     pass
 
 class DontExistCategoryException(LogsFilesException):

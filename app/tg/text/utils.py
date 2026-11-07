@@ -121,8 +121,15 @@ class TextHTMLBase(str):
             - language: Язык программирования"""
         return TextHTML(f'<pre><code class="language-{language}">{self}</code></pre>')
 
-    def openmessage(self, user_id: int) -> "TextHTML":
+    def openmessage(self, user_id: int, username: str | None = None) -> "TextHTML":
         """Ссылку на чат с пользователем
+            - user_id: Telegram ID пользователя"""
+        if username:
+            TextHTML(f'<a href="t.me/{username}">{self}</a>') 
+        return TextHTML(f'<a href="tg://openmessage?user_id={user_id}">{self}</a>')
+
+    def mention(self, user_id: int) -> "TextHTML":
+        """Отметить пользователя
             - user_id: Telegram ID пользователя"""
         return TextHTML(f'<a href="tg://user?id={user_id}">{self}</a>')
     

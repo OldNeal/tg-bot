@@ -134,14 +134,18 @@ class QuestionText(BaseText):
     @classmethod
     def moderation_payload(cls, data: dict):
         request = data['request']['question']
-        text = (
-            cls.html('📝 Вопрос от ')
+        text = ''
+        if not data.get('is_anonim', False):
+            text = (
+            cls.html('📝 Новый вопрос от ')
             + cls.html(data.get('author_name', 'Пользователь'))
             .escape()
-            .openmessage(int(data['author_tg_id']))
-            + cls.html.separator(n=2)
-            + cls.create_text(request)
-        )
+            .openmessage(int(data['author_tg_id'])))
+        else:
+            text = cls.html('📝 Новый вопрос')
+        text += cls.html.separator(n=2)
+        text += cls.create_text(request)
+        
         status = data.get('status', 'pending')
         if status == 'approved':
             text += cls.html.separator(n=2) + '✅ Вопрос создан'
@@ -183,15 +187,12 @@ class QuestionText(BaseText):
         return '✒️ Отправьте причину отказа отдельным сообщением в группе.'
 
     @classmethod
-    def moderation_author_approved(cls):
-        return '✅ Ваш вопрос прошёл модерацию и создан.'
+    def moderation_author_approved(cls, question: str):
+        return f'✅ Ваш вопрос "{cls.html(question).escape()}" прошёл модерацию и создан.'
 
     @classmethod
-    def moderation_author_rejected(cls, reason: str):
-        return (
-            cls.html('❌ Ваш вопрос отклонён. Причина: ')
-            + cls.html(reason).escape()
-        )
+    def moderation_author_rejected(cls, question: str, reason: str):
+        return cls.html(f'❌ Ваш вопрос "{cls.html(question).escape()}" отклонён. Причина: {cls.html(reason).escape()}')
 
     @classmethod
     def user_statistics(cls, statistics: UserQuestionStatistics):

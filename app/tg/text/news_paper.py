@@ -142,7 +142,7 @@ class NewsPaperText(BaseText):
 
     @classmethod
     def notify(self, datas: dict[int, str]):
-        return self.html.joined([self.html(text).openmessage(tg_id) for tg_id, text in datas.items()], ' ')    
+        return self.html.joined([self.html(text).mention(tg_id) for tg_id, text in datas.items()], ' ')    
     
     @classmethod
     def to_notify(self, news_paper_id: int):

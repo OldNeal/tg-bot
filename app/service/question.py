@@ -368,7 +368,7 @@ class QuestionService(BaseService):
             )
         ])
 
-    async def submit_create(self):
+    async def submit_create(self, is_anonim: bool = False):
         await self.require_private_chat()
         question_data = await self.fsm.get_value('create_question', {})
         if not all(
@@ -393,6 +393,7 @@ class QuestionService(BaseService):
             'author_tg_id': self.tg_id,
             'author_name': self.user.full_name,
             'status': 'pending',
+            'is_anonim':is_anonim
         })
         await self.fsm.set_state()
         await self.fsm.remove_value('create_question')
@@ -506,7 +507,7 @@ class QuestionService(BaseService):
             try:
                 await self.bot.send_message(
                     chat_id=author_tg_id,
-                    text=self.text.moderation_author_approved(),
+                    text=self.text.moderation_author_approved(payload['request']['question']['body']),
                 )
             except TelegramForbiddenError:
                 payload['author_notification_delivered'] = False
@@ -594,7 +595,7 @@ class QuestionService(BaseService):
         try:
             await self.bot.send_message(
                 chat_id=int(payload['author_tg_id']),
-                text=self.text.moderation_author_rejected(reason.strip()),
+                text=self.text.moderation_author_rejected(payload['request']['question']['body'], reason.strip()),
             )
         except TelegramForbiddenError:
             payload['author_notification_delivered'] = False
