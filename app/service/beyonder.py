@@ -73,8 +73,10 @@ class BeyonderService(BaseService):
         path_name: str | None = None,
         path_id: int | None = None,
         purpose_tg_id: int | None = None,
-    ):
-        info = await self.logic.time_info(purpose_tg_id=purpose_tg_id, to_raise=True)
+    ):  
+        if self.is_admin:
+            await self.fsm.update_data(is_admin=self.is_admin, seq=seq)
+        info = await self.logic.time_info(purpose_tg_id=purpose_tg_id, to_raise=not self.is_admin)
         if path_id is not None:
             path = await self.logic.path(id=path_id)
         else:
@@ -105,10 +107,11 @@ class BeyonderService(BaseService):
 
     async def confirm_upseq(self, seq: int | None = None, path_id: int | None = None, purpose_tg_id: int | None = None):
         path = await self.logic.path(id=path_id) if path_id is not None else None
+        self.logic.redact_kwargs(is_admin=await self.fsm.pop_value('is_admin', False))
         data = await self.logic.upseq(
             purpose_tg_id=purpose_tg_id,
             path_name=path.name if path else None,
-            seq=seq,
+            seq=await self.fsm.pop_value('seq', seq),
         )
         return await self.answer([
             AnswerBody(
@@ -181,9 +184,9 @@ class BeyonderService(BaseService):
         data = await self.logic.time_info(purpose_tg_id=purpose_tg_id)
         return await self.answer([
             AnswerBody(
-                text=self.text(data).time_info,
+                text=self.text.time_info(data),
                 data=data,
-                reply_markup=self.IKB.back_to_card(purpose_tg_id) if not purpose_tg_id is None else None
+                reply_markup=self.IKB.time_info(purpose_tg_id, data.total_seconds <= 0) if not purpose_tg_id is None else None
             )
         ])
 

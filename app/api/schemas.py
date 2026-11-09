@@ -326,7 +326,7 @@ class AnswerTimeInfo(pydantic.BaseModel):
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
     next_upseq: str | None
     last_upseq: str
-    upseq_days: int | None
+    total_seconds: float | None
 
 
 class AnswerTimeRedact(pydantic.BaseModel):

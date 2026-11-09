@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
+from math import ceil
 
 from app.tg.text.base import Templates, BaseText
 from app.validate.base import BaseValidate
+from app.validate.api import AnswerTimeInfo
 
 class BeyonderText(BaseText):
     drink_template = Templates(templates_file_name='drink.txt')
@@ -38,20 +40,51 @@ class BeyonderText(BaseText):
     def cancel_kill(self):
         return f'{self.user_mention(self.data.purpose)} смог успокоиться и не потерять контроль'
     
-    @property
-    def time_info(self):
-        return self.user_mention(self.data.purpose) + self.html.joined([
-            f'📅 Послед. продвижение: {datetime.fromisoformat(self.data.last_upseq).date()}',
-            f'⚡ След. продвижение: {datetime.fromisoformat(self.data.next_upseq).date()}',
-            f'⏳ Осталось дней: {self.data.upseq_days}',
+    @classmethod
+    def time_info(self, data: AnswerTimeInfo):
+        time = timedelta(seconds=data.total_seconds)
+        total_seconds = max(0, ceil(time.total_seconds()))
+        hours, seconds = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+        if time.total_seconds() > 0:
+            time_text = '⏳ Осталось '
+            if time.days <= 0:
+                if hours > 0:
+                    time_text += f'{hours} ч. '
+                if minutes > 0:
+                    time_text += f'{minutes} мин. '
+                if seconds > 0:
+                    time_text += f'{seconds} сек.'
+            else:
+                time_text += f'дней: {time.days}'
+        else:
+            time_text = '🚀 Вы можете продвинуться'
+        return self.user_mention(data.purpose) + self.html.joined([
+            f'📅 Послед. продвижение: {datetime.fromisoformat(data.last_upseq).date()}',
+            f'⚡ След. продвижение: {datetime.fromisoformat(data.next_upseq).date()}',
+            time_text,
         ]).blockquote()
     
     @property
     def time_redact(self):
+        time = timedelta(seconds=self.data.seconds)
+        total_seconds = max(0, ceil(time.total_seconds()))
+        hours, seconds = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+        if time.days <= 0:
+            time_text = ''
+            if hours > 0:
+                time_text += f'{hours} ч. '
+            if minutes > 0:
+                time_text += f'{minutes} мин. '
+            if seconds > 0:
+                time_text += f'{seconds} сек. '
+        else:
+            time_text = f'{hours} ч. {minutes} мин. {seconds} сек.'
         return self.user_mention(self.data.purpose) + self.html.joined([
             f'📅 Старая дата: {datetime.fromisoformat(self.data.old_time).date()}',
             f'⚡ Новая дата: {datetime.fromisoformat(self.data.new_time).date()}',
-            f'{'➖ Убрано' if self.data.operator == '-' else '➕ Добавлено'} дней: {timedelta(seconds=self.data.seconds).days}',
+            f'{'➖ Убрано' if self.data.operator == '-' else '➕ Добавлено'} {f'дней: {time.days}' if time.days > 0 else time_text}',
         ]).blockquote()
     
     @property

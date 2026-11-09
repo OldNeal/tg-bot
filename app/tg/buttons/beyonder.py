@@ -119,3 +119,10 @@ class BeyonderIKB(BotIKB):
 
     def back_to_card(self, purpose_tg_id: int):
         return self.builder.button(text='↩️ Назад', callback_data=BeyonderInfoCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id)).as_markup()
+
+    def time_info(self, purpose_tg_id: int, is_upseq: bool = False):
+        if is_upseq:
+            self.builder.button(text='🚀 Продвинуться', callback_data=BeyonderUpSeqCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id))
+        self.builder.button(text='↩️ Назад', callback_data=BeyonderInfoCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id))
+        return self.builder.adjust(1).as_markup()
+
