@@ -74,6 +74,16 @@ class BotLog:
             'catch':True,
             'serialize':True
             }, 
+            {
+            "sink":LogPaths.base / PurePath(f'trace.log'),
+            'level':'TRACE', 
+            'rotation':'1 day',
+            'retention':'7 days',
+            'enqueue':True,
+            'format':self.log_format,
+            'catch':True,
+            'serialize':True
+            }, 
         ]
     
     def create_handlers(self):

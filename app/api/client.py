@@ -60,6 +60,46 @@ async def user_delete(result: schemas.AnswerUserBody | schemas.BaseExceptionResp
     return result
 
 
+@client.patch("/activity/messages", response_map={200: schemas.AnswerActivityPoints, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse})
+
+async def activity_points(result: schemas.AnswerActivityPoints | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, message_count: typing.Optional[int] = None) -> schemas.AnswerActivityPoints | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Activity Points
+    """
+    return result
+
+
+@client.patch("/activity/points/add", response_map={200: schemas.AnswerActivityPointsAdd, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse})
+
+async def activity_points_add(result: schemas.AnswerActivityPointsAdd | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int, points: int, reason: typing.Optional[str] = None) -> schemas.AnswerActivityPointsAdd | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Activity Points Add
+    """
+    return result
+
+
+@client.patch("/activity/points/deduct", response_map={200: schemas.AnswerActivityPointsDeduct, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse})
+
+async def activity_points_deduct(result: schemas.AnswerActivityPointsDeduct | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int, points: int, reason: typing.Optional[str] = None) -> schemas.AnswerActivityPointsDeduct | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Activity Points Deduct
+    """
+    return result
+
+
+@client.patch("/activity/points/reset", response_map={200: schemas.AnswerActivityPoints, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse})
+
+async def activity_points_reset(result: schemas.AnswerActivityPoints | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int, reason: typing.Optional[str] = None) -> schemas.AnswerActivityPoints | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Activity Points Reset
+    """
+    return result
+
+
+@client.patch("/activity/limit/reset", response_map={200: schemas.AnswerActivityPointsLimitReset, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse})
+
+async def activity_points_limit_reset(result: schemas.AnswerActivityPointsLimitReset | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int) -> schemas.AnswerActivityPointsLimitReset | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Activity Points Limit Reset
+    """
+    return result
+
+
 
 @client.get("/beyonder/info", response_map={200: schemas.AnswerBeyonderInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse})
 

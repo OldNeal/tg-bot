@@ -3,7 +3,7 @@ import random
 
 from aiogram.enums import ChatMemberStatus, ChatType
 from aiogram.exceptions import TelegramForbiddenError
-from app.redis.base import redis_client
+from pydantic import ValidationError
 from app.service.base import BaseService, AnswerBody
 from app.logic.question import QuestionLogic
 from app.tg.text.question import QuestionText
@@ -16,7 +16,6 @@ from app.exception.question import (
     QuestionAnswersError,
     QuestionBodyError,
     QuestionExpiredError,
-    QuestionModerationPendingError,
     QuestionModerationPermissionError,
     QuestionModerationReasonError,
     QuestionModerationRequestError,
@@ -51,14 +50,26 @@ class QuestionService(BaseService):
         ):
             raise QuestionModerationPermissionError()
 
-    def moderation_storage_key(self, author_tg_id: int):
-        return f'question_moderation:{self.settings.question_moderation_chat_id}:{author_tg_id}'
+    def moderation_storage_key(
+        self,
+        author_tg_id: int,
+        moderation_message_id: int | None = None,
+    ):
+        key = f'question_moderation:{self.settings.question_moderation_chat_id}:{author_tg_id}'
+        if moderation_message_id is not None:
+            key += f':{moderation_message_id}'
+        return key
 
     async def moderation_payload(self, author_tg_id: int):
         try:
-            payload_text = await redis_client.get(
-                self.moderation_storage_key(author_tg_id),
-            )
+            payload_text = await self.store.client.get(self.moderation_storage_key(
+                author_tg_id,
+                self.message.message_id,
+            ))
+            if payload_text is None:
+                payload_text = await self.store.client.get(
+                    self.moderation_storage_key(author_tg_id),
+                )
             if payload_text is None:
                 raise QuestionModerationRequestError()
             payload = json.loads(payload_text)
@@ -77,8 +88,11 @@ class QuestionService(BaseService):
         return payload, request, stored_author_tg_id
 
     async def update_moderation_message(self, payload: dict):
-        await redis_client.set(
-            self.moderation_storage_key(int(payload['author_tg_id'])),
+        await self.store.client.set(
+            self.moderation_storage_key(
+                int(payload['author_tg_id']),
+                int(payload['moderation_message_id']),
+            ),
             json.dumps(payload, ensure_ascii=False),
             ex=self.settings.data_ttl,
         )
@@ -260,6 +274,127 @@ class QuestionService(BaseService):
             )
         ])
 
+    async def start_json_create(self):
+        await self.require_private_chat()
+        await self.clear_quiz()
+        await self.fsm.set_state(QuestionState.json_create)
+        return await self.answer([
+            AnswerBody(
+                text=self.text.json_create_prompt(),
+                reply_markup=self.IKB.back_to_menu(),
+            )
+        ])
+
+    async def create_json_input(self):
+        await self.require_private_chat()
+        try:
+            data = json.loads(self.message.text)
+        except json.JSONDecodeError as error:
+            return await self.answer([
+                AnswerBody(
+                    text=self.text.json_create_error(
+                        f'Некорректный JSON: {error.msg} (позиция {error.pos})',
+                    ),
+                    reply_markup=self.IKB.back_to_menu(),
+                )
+            ])
+
+        if isinstance(data, dict):
+            data = [data]
+        if not isinstance(data, list) or not data:
+            return await self.answer([
+                AnswerBody(
+                    text=self.text.json_create_error(
+                        'Ожидается JSON-объект или непустой массив объектов.',
+                    ),
+                    reply_markup=self.IKB.back_to_menu(),
+                )
+            ])
+
+        questions = []
+        for index, item in enumerate(data, start=1):
+            if not isinstance(item, dict):
+                return await self.answer([
+                    AnswerBody(
+                        text=self.text.json_create_error(
+                            f'Элемент №{index} должен быть JSON-объектом.',
+                        ),
+                        reply_markup=self.IKB.back_to_menu(),
+                    )
+                ])
+            try:
+                question = QuestionCreate.model_validate(item)
+            except ValidationError as error:
+                detail = error.errors(include_url=False)[0]
+                field = '.'.join(str(part) for part in detail['loc'])
+                return await self.answer([
+                    AnswerBody(
+                        text=self.text.json_create_error(
+                            f'Ошибка в вопросе №{index}, поле «{field}»: {detail["msg"]}.',
+                        ),
+                        reply_markup=self.IKB.back_to_menu(),
+                    )
+                ])
+
+            question = question.model_copy(update={
+                'body': question.body.strip(),
+                'description': (
+                    question.description.strip()
+                    if question.description and question.description.strip()
+                    else None
+                ),
+                'correct_answers': [
+                    answer.strip()
+                    for answer in question.correct_answers
+                    if answer.strip()
+                ],
+                'incorrect_answers': [
+                    answer.strip()
+                    for answer in question.incorrect_answers
+                    if answer.strip()
+                ],
+            })
+            if not question.body:
+                error = f'Вопрос №{index}: текст вопроса не может быть пустым.'
+            elif not question.correct_answers:
+                error = f'Вопрос №{index}: добавьте хотя бы один правильный ответ.'
+            elif len(question.incorrect_answers) < 3:
+                error = f'Вопрос №{index}: добавьте хотя бы три неправильных ответа.'
+            else:
+                error = None
+            if error:
+                return await self.answer([
+                    AnswerBody(
+                        text=self.text.json_create_error(error),
+                        reply_markup=self.IKB.back_to_menu(),
+                    )
+                ])
+            questions.append(question)
+
+        author_id = await self.logic.user_id
+        for question in questions:
+            request = QueryQuestionCreate(
+                user_id=author_id,
+                request_id=self.logic.request_id,
+                purpose_user_id=author_id,
+                question=question,
+            )
+            await self.send_to_moderation({
+                'request': request.model_dump(mode='json'),
+                'author_tg_id': self.tg_id,
+                'author_name': self.user.full_name,
+                'status': 'pending',
+                'is_anonim': False,
+            })
+
+        await self.fsm.set_state()
+        return await self.answer([
+            AnswerBody(
+                text=self.text.json_create_result(len(questions)),
+                reply_markup=self.IKB.menu(),
+            )
+        ])
+
     async def create_input(self):
         value = self.message.text
         await self.require_private_chat()
@@ -407,18 +542,6 @@ class QuestionService(BaseService):
         ])
 
     async def send_to_moderation(self, payload: dict):
-        storage_key = self.moderation_storage_key(
-            int(payload['author_tg_id']),
-        )
-        stored_payload = await redis_client.get(storage_key)
-        if stored_payload is not None:
-            try:
-                status = json.loads(stored_payload).get('status')
-            except (TypeError, ValueError, json.JSONDecodeError):
-                raise QuestionModerationRequestError()
-            if status == 'pending':
-                raise QuestionModerationPendingError()
-
         message = await self.bot.send_message(
             chat_id=self.settings.question_moderation_chat_id,
             text=self.text.moderation_payload(payload),
@@ -427,7 +550,11 @@ class QuestionService(BaseService):
             ),
         )
         payload['moderation_message_id'] = message.message_id
-        await redis_client.set(
+        storage_key = self.moderation_storage_key(
+            int(payload['author_tg_id']),
+            message.message_id,
+        )
+        await self.store.client.set(
             storage_key,
             json.dumps(payload, ensure_ascii=False),
             ex=self.settings.data_ttl,
@@ -553,8 +680,11 @@ class QuestionService(BaseService):
         )
         updated_request = request.model_copy(update={'question': updated_question})
         payload['request'] = updated_request.model_dump(mode='json')
-        await redis_client.set(
-            self.moderation_storage_key(int(payload['author_tg_id'])),
+        await self.store.client.set(
+            self.moderation_storage_key(
+                int(payload['author_tg_id']),
+                int(payload['moderation_message_id']),
+            ),
             json.dumps(payload, ensure_ascii=False),
             ex=self.settings.data_ttl,
         )
@@ -587,8 +717,11 @@ class QuestionService(BaseService):
 
         payload['status'] = 'rejected'
         payload['reason'] = reason.strip()
-        await redis_client.set(
-            self.moderation_storage_key(int(payload['author_tg_id'])),
+        await self.store.client.set(
+            self.moderation_storage_key(
+                int(payload['author_tg_id']),
+                int(message_id),
+            ),
             json.dumps(payload, ensure_ascii=False),
             ex=self.settings.data_ttl,
         )

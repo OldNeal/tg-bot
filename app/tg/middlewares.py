@@ -4,7 +4,13 @@ from datetime import datetime
 from aiogram import BaseMiddleware
 from aiogram.types import Message, CallbackQuery, User, Update
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
-from telegram_click_aio.parser import parse_command_args
+from aiogram.dispatcher.flags import get_flag
+from telegram_click_aio.parser import (
+    is_argument_key,
+    parse_command_args,
+    remove_naming_prefix,
+    split_into_tokens,
+)
 
 from config import settings
 from app.logging.base import botlog
@@ -22,10 +28,12 @@ class BotLogMessageMiddleware(BaseMiddleware):
         event: Message,
         data: Dict[str, Any]
     ) -> Any:
+        is_logging = get_flag(data, 'is_logging', default=True)
         msg = event
         request_id = uuid.uuid4().hex
         with botlog.logger.contextualize(tg_id=msg.from_user.id, chat_id=msg.chat.id, request_id=request_id):
-            botlog.message(msg.text)
+            if is_logging:
+                botlog.message(msg.text)
             with botlog.logger.catch(reraise=True):
                 data['request_id'] = request_id
                 result = await handler(event, data)
@@ -38,10 +46,12 @@ class BotLogCallbackQueryMiddleware(BaseMiddleware):
         event: CallbackQuery,
         data: Dict[str, Any]
     ) -> Any:
+        is_logging = get_flag(data, 'is_logging', default=True)
         callback = event
         request_id = uuid.uuid4().hex
-        with botlog.logger.contextualize(tg_id=callback.from_user.id, chat_id=callback.message.chat.id, request_id=request_id):
-            botlog.callback(callback.data)
+        with botlog.logger.contextualize(tg_id=callback.from_user.id, chat_id=callback.message.chat.id, callback_id=event.id, request_id=request_id):
+            if is_logging:
+                botlog.callback(callback.data)
             with botlog.logger.catch(reraise=True):
                 data['request_id'] = request_id
                 result = await handler(event, data)
@@ -56,11 +66,15 @@ class ExceptionMessageMiddleware(BaseMiddleware):
         event: Message,
         data: Dict[str, Any]
     ) -> Any:
-        dowload = await event.answer('⏳')
+        is_send_dowload_sticker = get_flag(data, 'is_send_dowload_sticker', default=True)
+        if is_send_dowload_sticker:
+            dowload = await event.answer('⏳')
+        is_message_delete = get_flag(data, 'is_message_delete', default=True)
         try:
             result = await handler(event, data)
             try:
-                await event.delete()
+                if is_message_delete:
+                    await event.delete()
             except Exception:
                 pass
             return result
@@ -78,7 +92,8 @@ class ExceptionMessageMiddleware(BaseMiddleware):
                 await event.answer(f'{PythonError.msg}')
             raise e
         finally:
-            await dowload.delete()
+            if is_send_dowload_sticker:
+                await dowload.delete()
 
 class ExceptionCallbackQueryMiddleware(BaseMiddleware):
     async def __call__(
@@ -125,7 +140,29 @@ class ServiceMiddleware(BaseMiddleware):
         message: Message | None = data.get('event_update').message
         kwargs = {'request_id':data.get('request_id')}
         if message:
-            kwargs |= parse_command_args(message.text, [to_json, is_admin, is_reply])
+            service_args = [to_json, is_admin, is_reply]
+            service_names = {
+                name
+                for argument in service_args
+                for name in argument.names
+            }
+            short_service_names = {
+                name
+                for argument in service_args
+                for name in argument.names
+                if len(name) == 1
+            }
+            service_tokens = []
+            for token in split_into_tokens(message.text or ''):
+                if not is_argument_key(token):
+                    continue
+                name = remove_naming_prefix(token).split('=', 1)[0]
+                if name in service_names or (
+                    len(name) > 1
+                    and all(char in short_service_names for char in name)
+                ):
+                    service_tokens.append(token)
+            kwargs |= parse_command_args(' '.join(service_tokens), service_args)
         data['service'] = self.service(
             user=data.get('event_from_user'), 
             chat=data.get('event_chat'), 

@@ -10,7 +10,7 @@ from app.tg.middlewares import (BotLogMessageMiddleware,
                                 ExceptionCallbackQueryMiddleware)
 from app.logic.base import BaseLogic as logic
 from app.logging.base import botlog
-from app.redis.base import redis_client, redis_ping
+from app.redis.store import store
 
 async def update_bot_info():
     try:
@@ -29,7 +29,7 @@ async def main():
         botlog.logger.info('Бот запускается')
         bot_info = await update_bot_info()
         await logic.test_api_connect(True)
-        await redis_ping(True)
+        await store.ping()
         if bot_info:
             dp.message.middleware(BotLogMessageMiddleware())
             dp.callback_query.middleware(BotLogCallbackQueryMiddleware())
@@ -49,7 +49,7 @@ async def main():
 @dp.shutdown()
 async def stop(bot):
     await dp.storage.close()
-    await redis_client.aclose()
+    await store.close()
 
 if __name__ == "__main__": 
     try:

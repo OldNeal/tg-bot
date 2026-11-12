@@ -37,8 +37,9 @@ class MainText(BaseText):
         user_id = telegram.tg_id if telegram else user.user_id
         username = telegram.username if telegram else None
         return '🪪 ' + self.user_mention(user) + self.html(self.html.joined([
-            f'🏷 ID: {user_id} ({user.user_id})',
-            f'🔗 Юз: {self.html(username or '❌').escape().openmessage(telegram.tg_id) if telegram else '❌'}'
+                f'🏷 ID: {user_id} ({user.user_id})',
+                f'🔗 Юз: {self.html(username or '❌').escape().openmessage(telegram.tg_id) if telegram else '❌'}',
+                f'🪙 Очков Актив.: {self.data.activity_points}'
             ] + member_text + beyonder_text)).blockquote()
 
     @classmethod
@@ -105,3 +106,7 @@ class MainText(BaseText):
     @classmethod
     def user_delete_confirm(cls, user: AnswerUserBody):
         return f'🗑 {cls.html('Вы').escape().openmessage(user.telegram.tg_id)} хотите удалить свой аккаунт? После удаления все ваши данные удаляются и сбрасывается прогресс. Позже их уже нельзя будет востановить'
+
+    @classmethod
+    def get_activity_points(self, activity_points: int):
+        return f'🪙 Получены очки активнрности: {activity_points}'

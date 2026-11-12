@@ -11,6 +11,7 @@ from app.tg.fsm.state import MainState
 from app.tg.fsm.utils import MainFSM
 from app.validate.api import AnswerUsersBody
 
+
 class MainService(BaseService):
     logic_class: type[MainLogic] = MainLogic
     logic: MainLogic
@@ -215,3 +216,5 @@ class MainService(BaseService):
                 reply_markup=self.IKB.back('main'),
             )
         ])
+    
+            

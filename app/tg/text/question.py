@@ -37,6 +37,31 @@ class QuestionText(BaseText):
         return '✅ Заявка отправлена на модерацию. Результат придёт в личный чат с ботом.'
 
     @classmethod
+    def json_create_prompt(cls):
+        return (
+            '📋 Отправьте JSON-объект или массив объектов с полями '
+            '<code>body</code>, <code>correct_answers</code>, '
+            '<code>incorrect_answers</code> и необязательным '
+            '<code>description</code>. Для каждого вопроса нужен минимум '
+            'один правильный и три неправильных ответа. '
+            'Каждый вопрос будет отправлен модераторам отдельной заявкой.'
+            + cls.html.separator(n=2)
+            + '<code>{"body":"Вопрос?","description":"Описание",'
+            '"correct_answers":["Да"],"incorrect_answers":["Нет","Возможно","Не знаю"]}</code>'
+        )
+
+    @classmethod
+    def json_create_error(cls, message: str):
+        return cls.html('❌ ').bold() + cls.html(message).escape()
+
+    @classmethod
+    def json_create_result(cls, count: int):
+        return (
+            f'✅ Отправлено вопросов на модерацию: {count}. '
+            'Каждый вопрос рассматривается отдельно.'
+        )
+
+    @classmethod
     def empty(cls):
         return '❌ Вопросы не найдены'
 

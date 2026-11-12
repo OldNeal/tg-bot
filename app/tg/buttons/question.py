@@ -33,10 +33,14 @@ class QuestionIKB(BotIKB):
             callback_data=QuestionMenuCall(action='create', tg_id=self.tg_id),
         )
         self.builder.button(
+            text='📋 Создать через JSON / массово',
+            callback_data=QuestionMenuCall(action='json', tg_id=self.tg_id),
+        )
+        self.builder.button(
             text='↩️ В главное меню',
             callback_data=MenuCall(where='main', tg_id=self.tg_id),
         )
-        return self.builder.adjust(1, 1, 2, 1).as_markup()
+        return self.builder.adjust(1).as_markup()
 
     def back_to_menu(self):
         self.builder.button(

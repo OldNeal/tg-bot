@@ -4,6 +4,7 @@ from .wiki import ga_name, seq_name, path_name, group_name, is_all, value
 from .organ import organ_id, organ_value, rank, organ_mode, titul, titul_mode, organ_name
 from .newspaper import news_paper_id, optional_news_paper_id, news_paper_mode, news_paper_value, news_paper_name
 from .question import question_mode
+from .activity import action as activity_action, points as activity_points, reason as activity_reason
 
 class Optionals:
     tg_id = tg_id
@@ -30,6 +31,8 @@ class Optionals:
     news_paper_name = news_paper_name
     news_paper_value = news_paper_value
     question_mode = question_mode
+    activity_points = activity_points
+    activity_reason = activity_reason
     user_id = user_id
 
 class Requireds:
@@ -41,3 +44,4 @@ class Requireds:
     news_paper_mode = news_paper_mode
     news_paper_name = news_paper_name
     news_paper_id = news_paper_id
+    activity_action = activity_action

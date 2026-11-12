@@ -43,7 +43,7 @@ async def menu(message: Message, service: QuestionService, message_id: int | Non
 @question_router.message(Command('question'))
 @command(
     name='question',
-    description='Вопросы: random, mine, create, stats',
+    description='Вопросы: random, mine, create, json, stats',
     arguments=[Optionals.question_mode],
     error_handler=DEFAULT_BOT_ERROR_HANDLER,
 )
@@ -60,6 +60,8 @@ async def question_command(
         await service.questions()
     elif question_mode == 'create':
         await service.start_create()
+    elif question_mode == 'json':
+        await service.start_json_create()
     elif question_mode == 'stats':
         await service.user_statistics()
     else:
@@ -78,6 +80,8 @@ async def menu_action_call(
         await service.random_question()
     elif callback_data.action == 'create':
         await service.start_create()
+    elif callback_data.action == 'json':
+        await service.start_json_create()
     elif callback_data.action == 'userstats':
         await service.user_statistics()
     else:
@@ -151,6 +155,12 @@ async def create_text(message: Message, service: QuestionService):
     msg0 = await service.fsm.get_message()
     await service.create_input()
     await service.bot.delete_message(*msg0)
+
+
+@question_router.message(QuestionState.json_create, F.text)
+async def create_json_text(message: Message, service: QuestionService):
+    await service.create_json_input()
+
 
 @question_router.message(QuestionState.moderation_edit, F.text)
 async def moderation_edit_text(message: Message, service: QuestionService):

@@ -1,16 +1,17 @@
 from datetime import datetime
+from clientele.http.httpx_backend import HttpxHTTPBackend
 
-from app.api import client, schemas
+from app.api import client, schemas, config
 from app.logging.base import botlog
 from app.exception.base import ApiTimeoutError
 from app.logic.utils import class_decor, BaseExceptionResponse
-from app.redis.links import links as redis_links
+from app.redis.store import store
 
 @class_decor
 class BaseLogic:
     client = client
     schemas = schemas
-    links = redis_links
+    store = store
 
     def __init__(self, tg_id: int, username: str | None = None, fullname: str | None = None, purpose_tg_id: int | None = None, **kwargs):
         self.tg_id = tg_id
@@ -18,6 +19,11 @@ class BaseLogic:
         self.fullname = fullname
         self.purpose_tg_id = purpose_tg_id or tg_id
         self.kwargs = kwargs
+        self.client.client.config.headers =  self.client.client.config.headers | {
+            'request_id':self.request_id, 
+            'platform':'telegram'
+            }
+        self.client.client.config.timeout = 10
 
     @property
     async def user_id(self):
@@ -25,10 +31,13 @@ class BaseLogic:
 
     @property
     async def body(self):
-        return self.schemas.QueryBody(user_id=await self.user_id, is_admin=self.is_admin, request_id=self.request_id)
+        return self.schemas.QueryBody(
+            user_id=await self.user_id, 
+            is_admin=self.is_admin
+            )
 
     async def get_user_id(self, tg_id: int):
-        user_id = await self.links.get_user_id(tg_id)
+        user_id = await self.store.user.get_user_id(tg_id)
         if user_id is None:
             user = await self.client.user_telegram(tg_id=tg_id)
             if isinstance(user, BaseExceptionResponse):
@@ -65,6 +74,10 @@ class BaseLogic:
     async def test_api_connect(cls, logged: bool = True, is_raise: bool = False):
         try:
             start = datetime.now()
+            cls.client.client.config.headers = {
+                'platform':'telegram'
+                }
+            cls.client.client.config.timeout = 10
             response = await cls.client.main()
             if response:
                 end = datetime.now()
@@ -72,10 +85,10 @@ class BaseLogic:
                 if logged:
                     botlog.logger.info('API работает', ping=result, url=cls.client.client.config.base_url)
                 return response
-            raise ApiTimeoutError('API не работает', url=cls.client.client.config.base_url)
-        except:
+        except Exception as e:
+            exc = ApiTimeoutError(url=cls.client.client.config.base_url)
             if is_raise:
-                raise
+                raise exc
 
     def redact_kwargs(self, **new_kwargs):
         self.kwargs |= new_kwargs

@@ -12,6 +12,7 @@ from app.tg.text.base import BaseText
 from app.validate.tg import Answer, AnswerBody
 from app.logic.base import BaseLogic
 from app.logging.base import botlog
+from app.redis.store import store
 
 NOT_NEW_STATE = object()
 DATA_PAGE = TypeVar('DATA_PAGE')
@@ -20,6 +21,7 @@ class BaseService:
     asyncio = asyncio
     datetime = datetime
     botlog = botlog
+    store = store
 
     logic_class: type[BaseLogic] = BaseLogic
     logic: BaseLogic
@@ -80,6 +82,10 @@ class BaseService:
             return self.user
 
     @property
+    def purpose_tg_id(self):
+        return self.purpose.id if self.purpose else None
+
+    @property
     def is_admin(self):
         return self.kwargs.get('is_admin', False) and self.tg_id_in_admins
 
@@ -97,17 +103,17 @@ class BaseService:
         for body in answer_body_list:
             k += 1
             if body.is_reply_answer:
-                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, reply_to_message_id=body.message_id, chat_id=body.chat_tg_id, message_thread_id=body.message_thread_id)
+                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, reply_to_message_id=body.message_id, chat_id=body.send_tg_id, message_thread_id=body.message_thread_id, ephemeral_message_parameters=body.ephemeral_message_parameters)
             if body.reply_message_id:
-                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, reply_to_message_id=body.reply_message_id, chat_id=body.chat_tg_id, message_thread_id=body.message_thread_id)
+                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, reply_to_message_id=body.reply_message_id, chat_id=body.send_tg_id, message_thread_id=body.message_thread_id, ephemeral_message_parameters=body.ephemeral_message_parameters)
             elif body.is_rich_text and body.edit_message:
-                msg = await self.bot.edit_message_text(rich_message=InputRichMessage(html=body.text), reply_markup=body.reply_markup, chat_id=body.chat_tg_id, message_id=body.message_id)
+                msg = await self.bot.edit_message_text(rich_message=InputRichMessage(html=body.text), reply_markup=body.reply_markup, chat_id=body.send_tg_id, message_id=body.message_id)
             elif body.is_rich_text:
-                msg = await self.bot.send_rich_message(rich_message=InputRichMessage(html=body.text), reply_markup=body.reply_markup, chat_id=body.chat_tg_id, message_thread_id=body.message_thread_id)
+                msg = await self.bot.send_rich_message(rich_message=InputRichMessage(html=body.text), reply_markup=body.reply_markup, chat_id=body.send_tg_id, message_thread_id=body.message_thread_id, ephemeral_message_parameters=body.ephemeral_message_parameters)
             elif body.edit_message:
-                msg = await self.bot.edit_message_text(text=body.text, reply_markup=body.reply_markup, chat_id=body.chat_tg_id, message_id=body.message_id)
+                msg = await self.bot.edit_message_text(text=body.text, reply_markup=body.reply_markup, chat_id=body.send_tg_id, message_id=body.message_id)
             else:
-                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, chat_id=body.chat_tg_id, message_thread_id=body.message_thread_id)
+                msg = await self.bot.send_message(text=body.text, reply_markup=body.reply_markup, chat_id=body.send_tg_id, message_thread_id=body.message_thread_id, ephemeral_message_parameters=body.ephemeral_message_parameters)
             results.append(msg)
             if k%delay == 0:
                 await asyncio.sleep(2)
@@ -120,16 +126,19 @@ class BaseService:
         return await self.text_boardcast([
             Answer(
                 chat_tg_id=self.chat.id,
-                _user_tg_id=self.tg_id,
+                user_tg_id=self.tg_id,
                 message_id=self.message.message_id,
                 edit_message=self.to_edit_message if body.edit_message is None else None,
                 message_thread_id=self.message.message_thread_id,
+                callback_id=self.callback.id if self.callback else None,
 
                 text=body.text,
                 reply_markup=body.reply_markup,
                 is_rich_text=body.is_rich_text,
                 is_reply_answer=body.is_reply_answer,
-                reply_message_id=body.reply_message_id
+                reply_message_id=body.reply_message_id,
+                is_ephemeral=body.is_ephemeral,
+                is_replace_callback_query_message=body.is_replace_callback_query_message,
                 ) for body in answer_body_list
                 ])
 

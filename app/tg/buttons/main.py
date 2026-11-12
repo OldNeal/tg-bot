@@ -60,7 +60,7 @@ class MainIKB(BotIKB):
             return self.builder.as_markup()
 
         self.builder.button(
-                text='🪪 Карточка участника',
+                text='🪪 Карточка',
                 callback_data=MainInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id),
             )
         if telegram.tg_id == self.tg_id:
