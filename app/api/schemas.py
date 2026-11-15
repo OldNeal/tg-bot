@@ -13,33 +13,13 @@ class AnswerActivityPoints(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     activity_points: int = 0
-    all_activity_points: int = 0
     get_activity_points: int = 0
-
-
-class AnswerActivityPointsAdd(pydantic.BaseModel):
-    user: "AnswerUserBody"
-    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
-    activity_points: int = 0
-    all_activity_points: int = 0
-    old_activity_points: int = 0
-    added_activity_points: int = 0
-
-
-class AnswerActivityPointsDeduct(pydantic.BaseModel):
-    user: "AnswerUserBody"
-    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
-    activity_points: int = 0
-    all_activity_points: int = 0
-    old_activity_points: int = 0
-    deducted_activity_points: int = 0
 
 
 class AnswerActivityPointsLimitReset(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     activity_points: int = 0
-    all_activity_points: int = 0
 
 
 class AnswerAllGAInfo(pydantic.BaseModel):
@@ -100,7 +80,6 @@ class AnswerBaseInfo(pydantic.BaseModel):
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
     member: typing.Optional[typing.Union["MemberInfo", None]] = None
-    activity_points: int = 0
 
 
 class AnswerBeyonderInfo(pydantic.BaseModel):
@@ -150,6 +129,26 @@ class AnswerGASearchInfo(pydantic.BaseModel):
 class AnswerGroupInfo(pydantic.BaseModel):
     group_name: str
     gas: list["AnswerGAInfo"]
+
+
+class AnswerInventory(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    items: list["ItemInfo"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
+
+
+class AnswerItemChange(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    item: "ItemInfo"
+
+
+class AnswerItems(pydantic.BaseModel):
+    items: list["ItemInfo"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
 
 
 class AnswerLogFileNames(pydantic.BaseModel):
@@ -431,6 +430,18 @@ class HTTPValidationError(pydantic.BaseModel):
     detail: list["ValidationError"]
 
 
+class ItemInfo(pydantic.BaseModel):
+    item_id: int
+    name: str
+    tag: str
+    hash: str
+    description: typing.Optional[str | None] = None
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+    data: dict[str, typing.Any]
+    quantity: typing.Optional[int | None] = None
+
+
 class MemberInfo(pydantic.BaseModel):
     titul: str | None
     organ_name: str | None
@@ -477,6 +488,14 @@ class Page(pydantic.BaseModel):
 class QueryBody(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
+
+
+class QueryItemChange(pydantic.BaseModel):
+    user_id: int
+    is_admin: bool = False
+    purpose_user_id: int
+    item_id: int
+    quantity: int = 1
 
 
 class QueryNewsPaperSetting(pydantic.BaseModel):

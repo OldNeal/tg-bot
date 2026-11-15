@@ -1,4 +1,3 @@
-from app.exception.activity import ActivityUnknownActionError, ActivityEnterPointsError
 from app.exception.base import PermissionError
 from app.logic.activity import ActivityLogic
 from app.logic.tracker import tracker
@@ -34,51 +33,9 @@ class ActivityService(BaseService):
             self.botlog.logger.trace(e)
             return
 
-    async def ap(
-        self,
-        action: str,
-        purpose_tg_id: int | None = None,
-        points: int | None = None,
-        reason: str | None = None
-    ):
+    async def activity_reset(self, purpose_tg_id: int | None = None):
         if not self.is_admin:
             raise PermissionError()
         target_tg_id = purpose_tg_id or self.purpose_tg_id or self.tg_id
-        if action in ('add', 'deduct') and points is None:
-            raise ActivityEnterPointsError()
-        if action == 'add':
-            return await self.add_points(target_tg_id, points, reason)
-        elif action == 'deduct':
-            return await self.deduct_points(target_tg_id, points, reason)
-        elif action == 'reset':
-            return await self.reset_points(target_tg_id, reason)
-        elif action == 'limit_reset':
-            return await self.reset_limit(target_tg_id)
-        else:
-            raise ActivityUnknownActionError()
-
-    async def add_points(
-        self,
-        purpose_tg_id: int,
-        points: int,
-        reason: str | None = None,
-    ):
-        data = await self.logic.add_points(purpose_tg_id, points, reason)
-        return await self.answer([AnswerBody(text=self.text.added(data))])
-
-    async def deduct_points(
-        self,
-        purpose_tg_id: int,
-        points: int,
-        reason: str | None = None,
-    ):
-        data = await self.logic.deduct_points(purpose_tg_id, points, reason)
-        return await self.answer([AnswerBody(text=self.text.deducted(data))])
-
-    async def reset_points(self, purpose_tg_id: int, reason: str | None = None):
-        data = await self.logic.reset_points(purpose_tg_id, reason)
-        return await self.answer([AnswerBody(text=self.text.reset(data))])
-
-    async def reset_limit(self, purpose_tg_id: int):
-        data = await self.logic.reset_limit(purpose_tg_id)
+        data = await self.logic.activity_reset(target_tg_id)
         return await self.answer([AnswerBody(text=self.text.limit_reset(data))])

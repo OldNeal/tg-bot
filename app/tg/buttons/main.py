@@ -14,6 +14,7 @@ from app.tg.callback.main import (
     MyStateCall,
 )
 from app.tg.callback.organ import OrganMemberCall
+from app.tg.callback.items import ItemInventoryCall
 from app.tg.text.base import BaseText
 from app.validate.api import AnswerBaseInfo, AnswerUserBody
 
@@ -31,26 +32,32 @@ class MainIKB(BotIKB):
         self.builder.button(text='📰 Газеты', callback_data=MenuCall(where='newspaper', tg_id=self.tg_id))
         self.builder.button(text='📚 Вики', callback_data=MenuCall(where='wiki', tg_id=self.tg_id))
         self.builder.button(text='📯 Викторина', callback_data=MenuCall(where='question', tg_id=self.tg_id))
-        self.builder.button(text='📊 Статистика', callback_data=MenuCall(where='stats', tg_id=self.tg_id))
+        self.builder.button(text='📦 Предметы', callback_data=MenuCall(where='items', tg_id=self.tg_id))
         self.builder.button(text='👥 Пользователи', callback_data=MenuCall(where='users', tg_id=self.tg_id))
+        self.builder.button(text='📊 Статистика', callback_data=MenuCall(where='stats', tg_id=self.tg_id))
         self.builder.button(text='❔ Справка', callback_data=MenuCall(where='help', tg_id=self.tg_id))
-        return self.builder.adjust(1, 2, 2, 2, 1).as_markup()
+        return self.builder.adjust(1, 2, 2, 2, 2).as_markup()
 
     def info(self, data: AnswerBaseInfo):
         purpose = data.purpose
         telegram = purpose.telegram if purpose else None
-        if telegram is None:
-            return self.builder.as_markup()
-
-        if data.member:
+        info_user = purpose or data.user
+        info_telegram = info_user.telegram if info_user else None
+        if telegram:
+            if data.member:
+                self.builder.button(
+                    text='🏛 Карточка участника',
+                    callback_data=OrganMemberCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id),
+                )
             self.builder.button(
-                text='🏛 Карточка участника',
-                callback_data=OrganMemberCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id),
+                text='🔮 Карточка потустороннего',
+                callback_data=BeyonderInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id),
             )
-        self.builder.button(
-            text='🔮 Карточка потустороннего',
-            callback_data=BeyonderInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id),
-        )
+        if info_telegram and info_telegram.tg_id == self.tg_id:
+            self.builder.button(
+                text='🎒 Инвентарь',
+                callback_data=ItemInventoryCall(tg_id=self.tg_id),
+            )
         return self.builder.adjust(1).as_markup()
 
     def user_info(self, data: AnswerBaseInfo):

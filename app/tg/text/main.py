@@ -39,7 +39,6 @@ class MainText(BaseText):
         return '🪪 ' + self.user_mention(user) + self.html(self.html.joined([
                 f'🏷 ID: {user_id} ({user.user_id})',
                 f'🔗 Юз: {self.html(username or '❌').escape().openmessage(telegram.tg_id) if telegram else '❌'}',
-                f'🪙 Очков Актив.: {self.data.activity_points}'
             ] + member_text + beyonder_text)).blockquote()
 
     @classmethod

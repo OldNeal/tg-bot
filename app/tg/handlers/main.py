@@ -28,6 +28,7 @@ from app.tg.handlers.stats import stats_router
 from app.tg.handlers.news_paper import news_paper_router
 from app.tg.handlers.question import question_router
 from app.tg.handlers.activity import activity_router
+from app.tg.handlers.items import items_router
 
 main_router = Router()
 main_router.message.middleware(ServiceMiddleware(MainService))
@@ -40,6 +41,7 @@ main_router.include_routers(
     news_paper_router,
     question_router,
     activity_router,
+    items_router,
 )
 
 

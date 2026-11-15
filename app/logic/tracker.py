@@ -1,4 +1,5 @@
 import hashlib, json, unicodedata
+from typing import Literal
 
 from app.exception.activity import (
     ActivityCooldownError,
@@ -18,7 +19,7 @@ HISTORY_SIZE = 10
 MIN_TEXT_LEN = 3
 NGRAM_N = 3               # длина n-граммы
 ACTIVITY_MESSAGES_PER_REQUEST = 10
-EXCEPTION_LEVEL = 'trace'
+EXCEPTION_LEVEL: Literal['trace', 'debug', 'info', 'success', 'warning', 'error', 'critical'] = 'trace'
 
 class ActivityTracker:
     store = redis_store
@@ -74,6 +75,7 @@ class ActivityTracker:
         raw = await self.store.activity.get_lrange_history(tg_id, HISTORY_SIZE)
         for item in raw:
             prev = set(json.loads(item))
+            print(self.jaccard(units, prev))
             if self.jaccard(units, prev) >= DEDUP_JACCARD:
                 raise ActivityDuplicateError(level=EXCEPTION_LEVEL)
         await self.store.activity.update(tg_id, COOLDOWN_SEC, list(units), HISTORY_SIZE, DEDUP_TTL_SEC)

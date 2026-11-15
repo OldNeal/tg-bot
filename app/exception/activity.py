@@ -15,9 +15,3 @@ class ActivityDuplicateError(BotError):
 
 class ActivityMessagePerRequestError(BotError):
     msg = 'Сообщения отправляются вместе'
-
-class ActivityUnknownActionError(BotError):
-    msg = 'Неизвестная подкоманда, существующие подкоманды: points, add, deduct, reset, limit_reset'
-
-class ActivityEnterPointsError(BotError):
-    msg = 'Укажите --points для подкоманды'
