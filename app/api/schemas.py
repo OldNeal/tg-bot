@@ -86,6 +86,7 @@ class AnswerBeyonderInfo(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
+    points: typing.Optional[typing.Union["Points", None]] = None
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
 
 
@@ -352,10 +353,20 @@ class AnswerSeqSearchInfo(pydantic.BaseModel):
     count: int = 0
 
 
+class AnswerStudyMethodAction(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
+    points: typing.Optional[typing.Union["Points", None]] = None
+    for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
+    time: "TimeRedact"
+
+
 class AnswerTimeInfo(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
+    points: typing.Optional[typing.Union["Points", None]] = None
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
     next_upseq: str | None
     last_upseq: str
@@ -363,19 +374,19 @@ class AnswerTimeInfo(pydantic.BaseModel):
 
 
 class AnswerTimeRedact(pydantic.BaseModel):
-    user: "AnswerUserBody"
-    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     old_time: str
     new_time: str
     seconds: int
     operator: str
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
 
 
 class AnswerTimeReplace(pydantic.BaseModel):
-    user: "AnswerUserBody"
-    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     old_time: str
     new_time: str
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
 
 
 class AnswerUserBody(pydantic.BaseModel):
@@ -483,6 +494,18 @@ class OrganSettingValidate(pydantic.BaseModel):
 class Page(pydantic.BaseModel):
     number: int
     max: int
+
+
+class Point(pydantic.BaseModel):
+    old: typing.Optional[int | None] = None
+    new: int
+
+
+class Points(pydantic.BaseModel):
+    study_points: "Point"
+    activity_points: "Point"
+    rsp: int
+    study_method_action: float
 
 
 class QueryBody(pydantic.BaseModel):
@@ -608,6 +631,13 @@ class TelegramBody(pydantic.BaseModel):
     tg_id: int
     username: typing.Optional[str | None] = None
     fullname: typing.Optional[str | None] = None
+
+
+class TimeRedact(pydantic.BaseModel):
+    old_time: str
+    new_time: str
+    seconds: int
+    operator: str
 
 
 class UserQuestionStatistics(pydantic.BaseModel):

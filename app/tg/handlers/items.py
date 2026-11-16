@@ -65,6 +65,9 @@ async def change_item_command(
     item_id: int,
     quantity: int | None = None,
     purpose_tg_id: int | None = None,
+    to_json: bool = False,
+    is_reply: bool = False,
+    is_admin: bool = False
 ):
     await service.change_item(
         action=action,

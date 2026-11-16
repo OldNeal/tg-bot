@@ -13,12 +13,15 @@ from app.tg.callback.beyonder import (
     BeyonderInfoCall,
     BeyonderListCall,
     BeyonderListPageCall,
+    BeyonderMethodActionBackCall,
+    BeyonderStudyMethodActionCall,
     BeyonderTimeInfoCall,
     BeyonderUpSeqCall,
     DrinkCall,
     KillCall,
 )
 from app.tg.callback.back_values import BeyonderBackValues
+from app.tg.fsm.state import BeyonderState
 from app.tg.middlewares import ServiceMiddleware
 
 beyonder_router = Router()
@@ -56,6 +59,30 @@ async def call(
     service: BeyonderService
 ):
     await service.info(callback_data.purpose_tg_id)
+
+@beyonder_router.callback_query(BeyonderStudyMethodActionCall.filter())
+async def study_method_action_call(
+    callback: CallbackQuery,
+    callback_data: BeyonderStudyMethodActionCall,
+    service: BeyonderService,
+):
+    await service.start_method_action_study()
+
+@beyonder_router.callback_query(BeyonderMethodActionBackCall.filter())
+async def method_action_back_call(
+    callback: CallbackQuery,
+    callback_data: BeyonderMethodActionBackCall,
+    service: BeyonderService,
+):
+    await service.cancel_method_action_study(callback_data.purpose_tg_id)
+
+@beyonder_router.message(BeyonderState.method_action_study, F.text)
+async def study_method_action_input(message: Message, service: BeyonderService):
+    prompt_message = await service.fsm.get_message()
+    await service.study_method_action_input()
+    await service.fsm.set_state()
+    await service.bot.delete_message(*prompt_message)
+    await service.fsm.remove_message()
 
 
 @beyonder_router.message(Command('drink'))

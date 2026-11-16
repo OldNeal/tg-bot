@@ -51,10 +51,8 @@ async def stop(bot):
     await dp.storage.close()
     await store.close()
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     try:
         asyncio.run(main())
     except RuntimeError as e:
         botlog.stop()
-    
-

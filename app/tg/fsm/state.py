@@ -28,3 +28,6 @@ class QuestionState(StatesGroup):
 
 class ItemState(StatesGroup):
     quantity = State()
+
+class BeyonderState(StatesGroup):
+    method_action_study = State()

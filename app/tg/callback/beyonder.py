@@ -22,6 +22,12 @@ class DrinkCall(BeyonderCall, prefix='drink'):
 class BeyonderTimeInfoCall(BaseCall, prefix='beyonder_time_info'):
     purpose_tg_id: int
 
+class BeyonderStudyMethodActionCall(BaseCall, prefix='beyonder_study_method_action'):
+    pass
+
+class BeyonderMethodActionBackCall(BaseCall, prefix='beyonder_method_action_back'):
+    purpose_tg_id: int
+
 class BeyonderUpSeqCall(BaseCall, prefix='beyonder_upseq'):
     purpose_tg_id: int | None = None
     path_name: str | None = None

@@ -104,7 +104,7 @@ class OrganIKB(BotIKB):
                 self.builder.button(text='🚪 Выгнать', callback_data=OrganKickCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         if telegram:
             self.builder.button(
-                text='💳 Главная карточка',
+                text='🪪 Главная карточка',
                 callback_data=MainInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id),
             )
             row.append(1)

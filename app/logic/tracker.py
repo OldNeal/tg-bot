@@ -26,23 +26,33 @@ class ActivityTracker:
     _cache: dict[str, set[str]] = {}
     
     def char_ngrams(self, text: str, n: int = NGRAM_N) -> set[str]:
-        """Языко-независимые символьные n-граммы.
-    
-        - NFKC-нормализация (композиция диакритики)
-        - lower() (регистр)
-        - оставляем буквы/цифры/пробелы, пунктуацию и эмодзи выкидываем
-        - схлопываем пробелы в один
-        - режем на n-граммы
+        """Нормализует текст и строит символьные n-граммы для сравнения.
+
+        Комбинируемые знаки сохраняются, а для письменностей без пробелов
+        используются более короткие n-граммы.
         """
         if not text:
             return set()
     
-        t = unicodedata.normalize("NFKC", text).lower()
-        t = "".join(ch if ch.isalnum() or ch.isspace() else " " for ch in t)
+        t = unicodedata.normalize("NFKC", text).casefold()
+        t = "".join(
+            ch
+            if ch.isalnum() or unicodedata.category(ch).startswith("M") or ch.isspace()
+            else " "
+            for ch in t
+        )
         t = " ".join(t.split())  # схлопнуть пробелы, обрезать края
     
         if not t:
             return set()
+        if n == NGRAM_N and any(
+            unicodedata.name(ch, "").startswith(
+                ("CJK UNIFIED IDEOGRAPH", "CJK COMPATIBILITY IDEOGRAPH",
+                 "HIRAGANA", "KATAKANA", "HANGUL", "THAI", "LAO", "KHMER")
+            )
+            for ch in t
+        ):
+            n = 2
         if len(t) < n:
             return {t}
     
@@ -58,11 +68,6 @@ class ActivityTracker:
             self._cache.clear()
         return grams
     
-    def jaccard(self, a: set[str], b: set[str]) -> float:
-        if not a or not b:
-            return 0.0
-        return len(a & b) / len(a | b)
-
     async def check(self, tg_id: int, text: str):
         text = (text or "").strip()
         if len(text) < MIN_TEXT_LEN:
@@ -70,22 +75,29 @@ class ActivityTracker:
         units = self._cached_ngrams(text)
         if len(units) < MIN_UNIQUE_UNITS:
             raise ActivityLowDiversityError(level=EXCEPTION_LEVEL)
-        if await self.store.activity.exist_cooldown(tg_id):
+        result = await self.store.activity.check_and_update(
+            tg_id,
+            json.dumps(sorted(units), ensure_ascii=False),
+            COOLDOWN_SEC,
+            HISTORY_SIZE,
+            DEDUP_TTL_SEC,
+            DEDUP_JACCARD,
+        )
+        if result == 1:
             raise ActivityCooldownError(level=EXCEPTION_LEVEL)
-        raw = await self.store.activity.get_lrange_history(tg_id, HISTORY_SIZE)
-        for item in raw:
-            prev = set(json.loads(item))
-            print(self.jaccard(units, prev))
-            if self.jaccard(units, prev) >= DEDUP_JACCARD:
-                raise ActivityDuplicateError(level=EXCEPTION_LEVEL)
-        await self.store.activity.update(tg_id, COOLDOWN_SEC, list(units), HISTORY_SIZE, DEDUP_TTL_SEC)
+        if result == 2:
+            raise ActivityDuplicateError(level=EXCEPTION_LEVEL)
+        if result != 0:
+            raise RuntimeError(f"Unexpected activity check result: {result}")
         return units
 
     async def message_per_request(self, tg_id: int):
-        activity_count = await self.store.activity.message_incr(tg_id)
-        if activity_count < ACTIVITY_MESSAGES_PER_REQUEST:
+        activity_count, limit_reached = await self.store.activity.message_incr_until(
+            tg_id,
+            ACTIVITY_MESSAGES_PER_REQUEST,
+        )
+        if not limit_reached:
             raise ActivityMessagePerRequestError(level=EXCEPTION_LEVEL, activity_count=activity_count)
-        await self.store.activity.message_incr(tg_id, -activity_count)
         return activity_count
 
 tracker = ActivityTracker()
