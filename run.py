@@ -7,7 +7,8 @@ from app.tg.handlers.base import base_router
 from app.tg.middlewares import (BotLogMessageMiddleware,
                                 BotLogCallbackQueryMiddleware,
                                 ExceptionMessageMiddleware,
-                                ExceptionCallbackQueryMiddleware)
+                                ExceptionCallbackQueryMiddleware,
+                                UserUpdateMiddleware)
 from app.logic.base import BaseLogic as logic
 from app.logging.base import botlog
 from app.redis.base import redis_client, redis_ping
@@ -33,6 +34,8 @@ async def main():
         if bot_info:
             dp.message.middleware(BotLogMessageMiddleware())
             dp.callback_query.middleware(BotLogCallbackQueryMiddleware())
+            dp.message.middleware(UserUpdateMiddleware())
+            dp.callback_query.middleware(UserUpdateMiddleware())
             dp.message.middleware(ExceptionMessageMiddleware())
             dp.callback_query.middleware(ExceptionCallbackQueryMiddleware())
             await Sentinel().setup(dp, sentinel_config, base_router)

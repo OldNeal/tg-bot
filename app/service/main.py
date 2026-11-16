@@ -10,6 +10,8 @@ from app.tg.buttons.main import MainIKB
 from app.tg.fsm.state import MainState
 from app.tg.fsm.utils import MainFSM
 from app.validate.api import AnswerUsersBody
+from app.redis.base import redis_client
+from app.redis.links import USER_UPDATE_TTL, user_update_key
 
 class MainService(BaseService):
     logic_class: type[MainLogic] = MainLogic
@@ -190,6 +192,17 @@ class MainService(BaseService):
                 data=data,
                 reply_markup=self.IKB.user_info(data)
             )
+        ])
+
+    async def update_user(self):
+        await self.logic.update_user()
+        await redis_client.set(
+            user_update_key(self.tg_id),
+            '1',
+            ex=USER_UPDATE_TTL,
+        )
+        return await self.answer([
+            AnswerBody(text=self.text.user_updated())
         ])
 
     async def delete_user(self, user_id: int | None = None, confirmed: bool = False):

@@ -44,6 +44,19 @@ class BaseLogic:
             return user.user_id
         return user_id
 
+    async def update_user(self):
+        return await self.client.user_new(
+            self.schemas.QueryUserUpdate(
+                user_id=await self.user_id,
+                request_id=self.request_id,
+                telegram=self.schemas.TelegramBody(
+                    tg_id=self.tg_id,
+                    username=self.username,
+                    fullname=self.fullname,
+                ),
+            )
+        )
+
 
     @property
     def is_admin(self):

@@ -95,6 +95,10 @@ class MainText(BaseText):
         return '👤 Аккаунт' + cls.html(cls.html.joined(details)).blockquote()
 
     @classmethod
+    def user_updated(cls):
+        return '✅ Информация о пользователе обновлена'
+
+    @classmethod
     def user_deleted(cls, user: AnswerUserBody):
         return f'✅ {cls.html('Ваш').escape().openmessage(user.telegram.tg_id)} аккаунт удалён. Если вы продолжите использовать бота, то он создаст вам новый аккаунт.'
 

@@ -11,9 +11,80 @@ from app.logging.base import botlog
 from app.tg.text.utils import TextHTML
 from app.tg.callback.base import BaseCall
 from app.tg.args import to_json, is_admin, is_reply
-from app.exception.base import BotError, PythonError, ALienCallbackError
+from app.exception.base import (
+    ApiError,
+    ApiTimeoutError,
+    BotError,
+    PythonError,
+    ALienCallbackError,
+)
 from app.exception.question import QuestionPrivateChatError
+from app.logic.base import BaseLogic
+from app.redis.base import redis_client
+from app.redis.links import USER_UPDATE_TTL, user_update_key
 from app.service.base import BaseService
+
+USER_UPDATE_LOCK_TTL = 60
+RELEASE_USER_UPDATE_LOCK = """
+if redis.call('get', KEYS[1]) == ARGV[1] then
+    return redis.call('del', KEYS[1])
+end
+return 0
+"""
+
+
+class UserUpdateMiddleware(BaseMiddleware):
+    async def __call__(
+        self,
+        handler: Callable[[Message | CallbackQuery, Dict[str, Any]], Awaitable[Any]],
+        event: Message | CallbackQuery,
+        data: Dict[str, Any],
+    ) -> Any:
+        user: User | None = data.get('event_from_user')
+        is_manual_update = (
+            isinstance(event, Message)
+            and bool(event.text)
+            and event.text.split(maxsplit=1)[0].split('@', 1)[0] == '/update'
+        )
+        if user is not None and not user.is_bot and not is_manual_update:
+            update_key = user_update_key(user.id)
+            lock_key = f'{update_key}:lock'
+            lock_token = uuid.uuid4().hex
+
+            if not await redis_client.get(update_key):
+                locked = await redis_client.set(
+                    lock_key,
+                    lock_token,
+                    nx=True,
+                    ex=USER_UPDATE_LOCK_TTL,
+                )
+                if locked:
+                    try:
+                        if not await redis_client.get(update_key):
+                            logic = BaseLogic(
+                                tg_id=user.id,
+                                username=user.username,
+                                fullname=user.full_name,
+                                request_id=data.get('request_id'),
+                            )
+                            await logic.update_user()
+                            await redis_client.set(update_key, '1', ex=USER_UPDATE_TTL)
+                    except (ApiError, ApiTimeoutError) as error:
+                        botlog.logger.warning(
+                            'Не удалось обновить профиль пользователя',
+                            tg_id=user.id,
+                            error=str(error),
+                        )
+                    finally:
+                        await redis_client.eval(
+                            RELEASE_USER_UPDATE_LOCK,
+                            1,
+                            lock_key,
+                            lock_token,
+                        )
+
+        return await handler(event, data)
+
 
 class BotLogMessageMiddleware(BaseMiddleware):
     async def __call__(

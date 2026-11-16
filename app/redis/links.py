@@ -1,5 +1,12 @@
 from app.redis.base import redis_client
 
+USER_UPDATE_TTL = 60 * 60 * 24
+
+
+def user_update_key(tg_id: int) -> str:
+    return f'telegram:user:update:{tg_id}'
+
+
 class LinkHashs:
     TG_HASH = "telegram_id"
     GENERAL_HASH = "general_id"

@@ -74,6 +74,17 @@ async def users_command(
     await service.user_info(user_id)
 
 
+@main_router.message(Command('update'))
+@command(
+    name='update',
+    description='Обновить информацию о пользователе',
+    arguments=[],
+    error_handler=DEFAULT_BOT_ERROR_HANDLER
+)
+async def update_user_command(message: Message, service: MainService):
+    await service.update_user()
+
+
 @main_router.message(Command('users'))
 @command(
     name='users',
