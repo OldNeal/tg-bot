@@ -14,6 +14,14 @@ class QuestionText(BaseText):
         return '❔ Меню вопросов'
 
     @classmethod
+    def leave_quiz(cls):
+        return '❌ Вы не отвкетили на вопрос'
+    
+    @classmethod
+    def quiz_timeout(cls):
+        return '❌ Время закончилось'
+    
+    @classmethod
     def unknown_subcommand(cls, subcommand: str):
         return cls.html('❌ Неизвестная подкоманда: ') + cls.html(subcommand).escape()
 
@@ -110,7 +118,7 @@ class QuestionText(BaseText):
         return f'{cls.question(question)}{cls.html.separator(n=2)}{cls.statistics(statistics, question)}'
 
     @classmethod
-    def quiz(cls, question: Question, answers: list[QuestionAnswer]):
+    def quiz(cls, question: Question, answers: list[QuestionAnswer], limit_min: int = 1):
         answer_lines = [
             cls.html(f'{index}. ').bold() + cls.html(answer.body).escape()
             for index, answer in enumerate(answers, start=1)
@@ -118,17 +126,20 @@ class QuestionText(BaseText):
         return (
             cls.question(question)
             + cls.html.separator(n=2)
-            + cls.html('Варианты ответа:').bold()
+            + cls.html('🎯 Варианты ответа:').bold()
             + cls.html.separator()
             + cls.html.separator().join(answer_lines)
+            + cls.html.separator(n=2)
+            + cls.html(f'⌛ Для ответа на вопрос осталось {limit_min} мин.').bold()
         )
 
     @classmethod
     def quiz_result(
         cls,
         is_correct: bool,
+        activity_points: int = 0
     ):
-        return '✅ Правильно' if is_correct else '❌ Неправильно'
+        return f'✅ Правильно, вы получили {activity_points} 💮' if is_correct else '❌ Неправильно'
 
     @classmethod
     def create_confirmation(cls, data: dict):

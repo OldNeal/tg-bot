@@ -14,6 +14,7 @@ from aiogram.types import (BotCommand,
                            BotCommandScopeAllChatAdministrators,
                            User)
 from aiogram_sentinel import SentinelConfig
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 load_dotenv(Path(__file__).parent / '.env')
 
@@ -75,6 +76,8 @@ class Settings:
         return self.info.get('main')
 
 settings = Settings()
+
+scheduler = AsyncIOScheduler()
 
 if settings.use_proxy:
     bot_session = AiohttpSession(proxy=settings.proxy_url)

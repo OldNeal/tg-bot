@@ -21,6 +21,9 @@ class QuestionPrivateChatError(BotError):
 class QuestionModerationPermissionError(BotError):
     msg = 'Модерировать заявки могут только администраторы группы модерации'
 
+class QuestionAnotherModerationError(BotError):
+    msg = 'Создать вопрос может модератор, не создававший его'
+
 class QuestionModerationRequestError(BotError):
     msg = 'Заявка на модерацию недействительна или уже обработана'
 

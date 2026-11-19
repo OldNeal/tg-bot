@@ -287,7 +287,9 @@ class AnswerQuestionAnswer(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     answer_id: int
+    is_correct: bool
     question: "Question"
+    activity_points: int = 0
 
 
 class AnswerQuestionSearch(pydantic.BaseModel):

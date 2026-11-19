@@ -32,3 +32,9 @@ class QuestionLogic(BaseLogic):
             question_id,
             answer_id,
         )
+
+    async def answer_incorrect(self, question_id: int):
+        return await self.client.question_answer_incorrect(
+            await self.body,
+            question_id,
+        )

@@ -142,6 +142,9 @@ class BaseService:
                 ) for body in answer_body_list
                 ])
 
+    async def delete_callback_message(self):
+        return await self.callback.message.delete()
+ 
     def redact_kwargs(self, **new_kwargs):
         self.kwargs |= new_kwargs
         return self
