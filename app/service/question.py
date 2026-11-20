@@ -301,6 +301,17 @@ class QuestionService(BaseService):
             )
         ])
 
+    async def limits(self):
+        await self.require_private_chat()
+        await self.clear_quiz()
+        data = await self.logic.limits()
+        return await self.answer([
+            AnswerBody(
+                text=self.text.limits(data),
+                reply_markup=self.IKB.back_to_menu(),
+            )
+        ])
+
     async def start_create(self):
         await self.require_private_chat()
         await self.clear_quiz()

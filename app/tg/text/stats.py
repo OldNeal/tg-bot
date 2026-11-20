@@ -1,5 +1,6 @@
 from app.tg.text.base import Templates, BaseText
 from app.validate.api import AnswerAllStats
+from app.tg.text.emodzi import Emodzi
 
 class StatsText(BaseText):
 
@@ -7,11 +8,15 @@ class StatsText(BaseText):
     def all(self, data: AnswerAllStats):
         return '📊 Общая статистика' + self.html.joined([
             f'👥 Всего пользователей: {data.users}',
+            f'{Emodzi.telegram_icon()} Телеграм-пользователей: {data.tg_users}',
             f'🧪 Всего потусторонних: {data.beyonders}',
             f'🎗️ Всего путей: {data.paths}',
             f'🏵 Всего ВД: {data.gas}',
             f'🎎 Всего участников: {data.members}',
             f'🏛️ Всего организаций: {data.organs}',
+            f'❔ Всего вопросов: {data.questions}',
+            f'📰 Всего газет: {data.news_papers}',
+            f'{Emodzi.activity_point_emodzi()} Заработано за все время: {data.activity_points_all_time}',
         ]).blockquote()
     
     @classmethod

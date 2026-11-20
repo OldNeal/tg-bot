@@ -1,17 +1,30 @@
 from app.api.schemas import (
     AnswerQuestion,
+    AnswerQuestionLimit,
     AnswerQuestionStatistics,
     Question,
     QuestionAnswer,
     UserQuestionStatistics,
 )
 from app.tg.text.base import BaseText
+from app.tg.text.emodzi import Emodzi
 
 
 class QuestionText(BaseText):
     @classmethod
     def menu(cls):
         return '❔ Меню вопросов'
+
+    @classmethod
+    def limits(cls, data: AnswerQuestionLimit):
+        return '❔ Лимиты ответов на вопросы' + cls.html.separator().join([
+            (
+                f'➕ Использовано ответов: {data.used} / {data.limit}'
+                if data.remaining > 0
+                else '😢 Вы исчерпали лимит ответов на вопросы'
+            ),
+            '⛅ Лимиты сбрасываются каждый день',
+        ]).blockquote()
 
     @classmethod
     def leave_quiz(cls):
@@ -130,7 +143,7 @@ class QuestionText(BaseText):
             + cls.html.separator()
             + cls.html.separator().join(answer_lines)
             + cls.html.separator(n=2)
-            + cls.html(f'⌛ Для ответа на вопрос осталось {limit_min} мин.').bold()
+            + cls.html(f'⌛ У вас есть {limit_min} мин., чтобы ответить на вопрос.').bold()
         )
 
     @classmethod
@@ -139,7 +152,7 @@ class QuestionText(BaseText):
         is_correct: bool,
         activity_points: int = 0
     ):
-        return f'✅ Правильно, вы получили {activity_points} 💮' if is_correct else '❌ Неправильно'
+        return f'✅ Правильно, вы получили {activity_points} {Emodzi.activity_point_emodzi()}' if is_correct else '❌ Неправильно'
 
     @classmethod
     def create_confirmation(cls, data: dict):

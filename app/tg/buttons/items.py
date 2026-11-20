@@ -7,9 +7,11 @@ from app.tg.callback.items import (
     ItemInventoryPageCall,
     ItemQuantityCall,
     ItemsPageCall,
+    ItemActionCall
 )
 from app.validate.api import AnswerInventory, AnswerItems, ItemInfo, Page
 
+ACTIVITY_POINTS_TAG = 'activity_point'
 
 class ItemIKB(BotIKB):
     def _item(self, item: ItemInfo, source: str, page: int):
@@ -103,8 +105,21 @@ class ItemIKB(BotIKB):
                     tg_id=self.tg_id,
                 ),
             )
-            self.builder.adjust(2)
-
+        if item.tag == ACTIVITY_POINTS_TAG:
+            
+            self.builder.button(
+                text='⚡ Лимиты активности',
+                callback_data=ItemActionCall(
+                    item_id=item.item_id,
+                    source=source,
+                    page=page,
+                    owned_quantity=owned_quantity,
+                    action='activity_limits',
+                    tg_id=self.tg_id,
+                ),
+            )
+        
+        self.builder.adjust(2, 1)
         if source == 'inventory':
             back_call = ItemInventoryPageCall(page=page, tg_id=self.tg_id).pack()
             back_text = '↩️ В инвентарь'

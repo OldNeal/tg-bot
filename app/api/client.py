@@ -77,6 +77,15 @@ async def activity_points_count(result: schemas.AnswerActivityPoints | schemas.B
     return result
 
 
+
+@client.get("/activity/limit", response_map={200: schemas.AnswerActivityPointsLimit, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+
+async def activity_points_limit(result: schemas.AnswerActivityPointsLimit | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int) -> schemas.AnswerActivityPointsLimit | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Activity Points Limit
+    """
+    return result
+
+
 @client.patch("/activity/limit/reset", response_map={200: schemas.AnswerActivityPointsLimitReset, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
 
 async def activity_points_limit_reset(result: schemas.AnswerActivityPointsLimitReset | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int) -> schemas.AnswerActivityPointsLimitReset | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
@@ -416,6 +425,15 @@ async def question_statistics(result: schemas.AnswerQuestionStatistics | schemas
 
 async def question_user_statistics(result: schemas.AnswerUserQuestionStatistics | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody) -> schemas.AnswerUserQuestionStatistics | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question User Statistics
+    """
+    return result
+
+
+
+@client.get("/player/question/limit", response_map={200: schemas.AnswerQuestionLimit, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+
+async def question_limit(result: schemas.AnswerQuestionLimit | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int) -> schemas.AnswerQuestionLimit | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Question Limit
     """
     return result
 

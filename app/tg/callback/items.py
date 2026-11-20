@@ -15,6 +15,10 @@ class ItemInfoCall(BaseCall, prefix='item_info'):
 class ItemQuantityCall(ItemInfoCall, prefix='item_quantity'):
     action: str
 
+class ItemActionCall(ItemInfoCall, prefix='item_action'):
+    action: str
+
+
 
 class ItemInventoryPageCall(PageCall, prefix='item_inventory_page'):
     pass

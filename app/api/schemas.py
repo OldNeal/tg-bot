@@ -16,6 +16,16 @@ class AnswerActivityPoints(pydantic.BaseModel):
     get_activity_points: int = 0
 
 
+class AnswerActivityPointsLimit(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    used: int = 0
+    limit: int = 0
+    remaining: int = 0
+    ttl: int = 0
+    points_per_message: int = 0
+
+
 class AnswerActivityPointsLimitReset(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
@@ -68,11 +78,15 @@ class AnswerAllSeqInfo(pydantic.BaseModel):
 
 class AnswerAllStats(pydantic.BaseModel):
     users: int
+    tg_users: int
     beyonders: int
     members: int
     organs: int
     paths: int
     gas: int
+    news_papers: int
+    questions: int
+    activity_points_all_time: int
 
 
 class AnswerBaseInfo(pydantic.BaseModel):
@@ -290,6 +304,13 @@ class AnswerQuestionAnswer(pydantic.BaseModel):
     is_correct: bool
     question: "Question"
     activity_points: int = 0
+
+
+class AnswerQuestionLimit(pydantic.BaseModel):
+    used: int = 0
+    limit: int = 0
+    remaining: int = 0
+    ttl: int = 0
 
 
 class AnswerQuestionSearch(pydantic.BaseModel):

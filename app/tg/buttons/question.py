@@ -21,26 +21,30 @@ class QuestionIKB(BotIKB):
             callback_data=QuestionMenuCall(action='random', tg_id=self.tg_id),
         )
         self.builder.button(
-            text='📝 Мои вопросы',
-            callback_data=QuestionMenuCall(action='mine', tg_id=self.tg_id),
-        )
-        self.builder.button(
             text='📊 Моя статистика',
             callback_data=QuestionMenuCall(action='userstats', tg_id=self.tg_id),
+        )
+        self.builder.button(
+            text='⚡ Лимиты ответов',
+            callback_data=QuestionMenuCall(action='limits', tg_id=self.tg_id),
+        )
+        self.builder.button(
+            text='📝 Мои вопросы',
+            callback_data=QuestionMenuCall(action='mine', tg_id=self.tg_id),
         )
         self.builder.button(
             text='➕ Создать вопрос',
             callback_data=QuestionMenuCall(action='create', tg_id=self.tg_id),
         )
         self.builder.button(
-            text='📋 Создать через JSON / массово',
+            text='📋 Создать через JSON',
             callback_data=QuestionMenuCall(action='json', tg_id=self.tg_id),
         )
         self.builder.button(
             text='↩️ В главное меню',
             callback_data=MenuCall(where='main', tg_id=self.tg_id),
         )
-        return self.builder.adjust(1).as_markup()
+        return self.builder.adjust(1, 2, 1, 2, 1).as_markup()
 
     def back_to_menu(self):
         self.builder.button(

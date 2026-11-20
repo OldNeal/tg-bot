@@ -84,6 +84,8 @@ async def menu_action_call(
         await service.start_json_create()
     elif callback_data.action == 'userstats':
         await service.user_statistics()
+    elif callback_data.action == 'limits':
+        await service.limits()
     elif callback_data.action == 'leave_quiz':
         await service.leave_quiz()
     else:

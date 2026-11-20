@@ -91,16 +91,16 @@ class OrganIKB(BotIKB):
     def member(self, data: AnswerMemberInfo):
         row = []
         telegram = data.purpose.telegram
-        if telegram and data.member.organ_id == data.for_buttons.organ_id and telegram.tg_id != self.tg_id:
-            if data.for_buttons.is_redact_rank:
+        if telegram and data.member.organ_id == data.for_buttons.organ_id:
+            if data.for_buttons.is_redact_rank and telegram.tg_id != self.tg_id:
                 self.builder.button(text='➕ Повысить', callback_data=OrganRankRedactCall(operation='up', purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
                 self.builder.button(text='➖ Понизить', callback_data=OrganRankRedactCall(operation='down', purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
                 row.append(2)
             if data.for_buttons.is_redact_titul:
                 self.builder.button(text='🎖️ Поменять титул', callback_data=OrganTitulRedactCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
-            if data.for_buttons.is_give:
+            if data.for_buttons.is_give and telegram.tg_id != self.tg_id:
                 self.builder.button(text='👑 Передать организацию', callback_data=OrganGiveCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
-            if data.for_buttons.is_kick:
+            if data.for_buttons.is_kick and telegram.tg_id != self.tg_id:
                 self.builder.button(text='🚪 Выгнать', callback_data=OrganKickCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         if telegram:
             self.builder.button(

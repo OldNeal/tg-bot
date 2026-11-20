@@ -23,6 +23,9 @@ class QuestionLogic(BaseLogic):
     async def user_statistics(self):
         return await self.client.question_user_statistics(await self.body)
 
+    async def limits(self):
+        return await self.client.question_limit(await self.user_id)
+
     async def random_question(self):
         return await self.client.question_random(await self.body)
 

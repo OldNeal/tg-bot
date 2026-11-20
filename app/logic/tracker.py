@@ -10,7 +10,6 @@ from app.exception.activity import (
 )
 from app.redis.store import store as redis_store
 
-# --- настройки ---
 COOLDOWN_SEC = 60
 MIN_UNIQUE_UNITS = 3      # минимум уникальных n-грамм в сообщении
 DEDUP_TTL_SEC = 90
