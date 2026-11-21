@@ -1,10 +1,13 @@
 import json
 import random
+from datetime import datetime, timedelta, timezone
+from apscheduler.jobstores.base import JobLookupError
 
+from config import scheduler
 from aiogram.enums import ChatMemberStatus, ChatType
 from aiogram.exceptions import TelegramForbiddenError
-from app.redis.base import redis_client
-from app.service.base import BaseService, AnswerBody
+from pydantic import ValidationError
+from app.service.base import BaseService, AnswerBody, Answer
 from app.logic.question import QuestionLogic
 from app.tg.text.question import QuestionText
 from app.tg.buttons.question import QuestionIKB
@@ -13,16 +16,16 @@ from app.tg.fsm.utils import QuestionFSM
 from app.exception.question import (
     AnswerCorrectError,
     AnswerInCorrectError,
-    QuestionAnswersError,
     QuestionBodyError,
-    QuestionExpiredError,
-    QuestionModerationPendingError,
     QuestionModerationPermissionError,
     QuestionModerationReasonError,
     QuestionModerationRequestError,
     QuestionPrivateChatError,
+    QuestionAnotherModerationError
 )
 from app.validate.api import QueryQuestionCreate, QuestionCreate
+
+ANSWER_QUESTION_TIME_LIMIT_MIN = 1
 
 class QuestionService(BaseService):
     logic_class: type[QuestionLogic] = QuestionLogic
@@ -51,14 +54,26 @@ class QuestionService(BaseService):
         ):
             raise QuestionModerationPermissionError()
 
-    def moderation_storage_key(self, author_tg_id: int):
-        return f'question_moderation:{self.settings.question_moderation_chat_id}:{author_tg_id}'
+    def moderation_storage_key(
+        self,
+        author_tg_id: int,
+        moderation_message_id: int | None = None,
+    ):
+        key = f'question_moderation:{self.settings.question_moderation_chat_id}:{author_tg_id}'
+        if moderation_message_id is not None:
+            key += f':{moderation_message_id}'
+        return key
 
     async def moderation_payload(self, author_tg_id: int):
         try:
-            payload_text = await redis_client.get(
-                self.moderation_storage_key(author_tg_id),
-            )
+            payload_text = await self.store.client.get(self.moderation_storage_key(
+                author_tg_id,
+                self.message.message_id,
+            ))
+            if payload_text is None:
+                payload_text = await self.store.client.get(
+                    self.moderation_storage_key(author_tg_id),
+                )
             if payload_text is None:
                 raise QuestionModerationRequestError()
             payload = json.loads(payload_text)
@@ -77,8 +92,11 @@ class QuestionService(BaseService):
         return payload, request, stored_author_tg_id
 
     async def update_moderation_message(self, payload: dict):
-        await redis_client.set(
-            self.moderation_storage_key(int(payload['author_tg_id'])),
+        await self.store.client.set(
+            self.moderation_storage_key(
+                int(payload['author_tg_id']),
+                int(payload['moderation_message_id']),
+            ),
             json.dumps(payload, ensure_ascii=False),
             ex=self.settings.data_ttl,
         )
@@ -87,7 +105,10 @@ class QuestionService(BaseService):
             chat_id=self.chat.id,
             message_id=self.message.message_id,
             reply_markup=(
-                self.IKB.moderation_request(int(payload['author_tg_id']))
+                self.IKB.moderation_request(
+                    int(payload['author_tg_id']),
+                    self.tg_id,
+                )
                 if payload.get('status', 'pending') == 'pending'
                 else None
             ),
@@ -105,14 +126,61 @@ class QuestionService(BaseService):
         await self.fsm.set_state()
 
     async def clear_quiz(self):
+        job_id = await self.fsm.get_value('quiz_job_id')
+        question_id = await self.fsm.get_value('quiz_question_id')
+        if job_id:
+            try:
+                scheduler.remove_job(job_id)
+            except JobLookupError:
+                pass
+        if question_id:
+            await self.store.client.delete(f'quiz_active:{self.tg_id}:{question_id}')
         for key in (
             'quiz_question_id',
             'quiz_correct_answer_id',
             'quiz_correct_answer_body',
             'quiz_answer_ids',
             'quiz_answers',
+            'quiz_job_id',
+            'quiz_message_id',
         ):
             await self.fsm.remove_value(key)
+
+    async def quiz_timeout(
+        self,
+        tg_id: int,
+        chat_id: int,
+        question_id: int,
+        message_id: int,
+    ):
+        await self.logic.answer_incorrect(question_id)
+        try:
+            return await self.text_boardcast([
+                Answer(
+                    text=self.text.quiz_timeout(),
+                    reply_markup=self.IKB.new.quiz_result(),
+                    edit_message=True,
+                    chat_tg_id=chat_id,
+                    message_id=message_id,
+                    user_tg_id=tg_id,
+                )
+            ])
+        except Exception as e:
+            self.botlog.logger.warning(e)
+        finally:
+            await self.clear_quiz()
+
+    async def leave_quiz(self):
+        question_id = await self.fsm.get_value('quiz_question_id')
+        if question_id:
+            await self.logic.answer_incorrect(question_id)
+        await self.clear_quiz()
+        return await self.answer([
+            AnswerBody(
+                text=self.text.leave_quiz(),
+                reply_markup=self.IKB.quiz_result(),
+            )
+        ])
 
     async def menu(self):
         await self.clear_quiz()
@@ -130,51 +198,41 @@ class QuestionService(BaseService):
         await self.fsm.set_state()
         data = await self.logic.random_question()
         question = data.question
-        correct_answers = [
-            answer for answer in question.answers
-            if answer.is_correct is True
-        ]
-        incorrect_answers = [
-            answer for answer in question.answers
-            if answer.is_correct is False
-        ]
-        if not correct_answers or len(incorrect_answers) < 3:
-            raise QuestionAnswersError()
-
-        correct_answer = random.choice(correct_answers)
-        answers = [correct_answer, *random.sample(incorrect_answers, 3)]
+        answers = list(question.answers)
         random.shuffle(answers)
-        await self.fsm.update_data(
-            quiz_question_id=question.question_id,
-            quiz_correct_answer_id=correct_answer.answer_id,
-            quiz_correct_answer_body=correct_answer.body,
-            quiz_answer_ids=[answer.answer_id for answer in answers],
-            quiz_answers=[
-                {'answer_id': answer.answer_id, 'body': answer.body}
-                for answer in answers
-            ],
-        )
-        return await self.answer([
+        result = await self.answer([
             AnswerBody(
-                text=self.text.quiz(question, answers),
-                data=question,
+                text=self.text.quiz(question, answers, ANSWER_QUESTION_TIME_LIMIT_MIN),
+                data=data,
                 reply_markup=self.IKB.quiz(question.question_id, answers),
+                edit_message=False
             )
         ])
+        message_id = result[0].message_id if result else self.message.message_id
+        await self.fsm.update_data(
+            quiz_question_id=question.question_id,
+            quiz_message_id=message_id,
+        )
+        job_id = f'quiz:{self.tg_id}:{question.question_id}:{message_id}'
+        await self.fsm.update_data(quiz_job_id=job_id)
+        scheduler.add_job(
+            self.quiz_timeout,
+            trigger='date',
+            run_date=datetime.now(timezone.utc) + timedelta(minutes=ANSWER_QUESTION_TIME_LIMIT_MIN),
+            args=[self.tg_id, self.chat.id, question.question_id, message_id],
+            id=job_id,
+            replace_existing=True,
+        )
+        await self.delete_callback_message()
+        return result
 
     async def submit_quiz_answer(self, question_id: int, answer_id: int):
         await self.require_private_chat()
-        active_question_id = await self.fsm.get_value('quiz_question_id')
-        answer_ids = await self.fsm.get_value('quiz_answer_ids', [])
-        if active_question_id != question_id or answer_id not in answer_ids:
-            raise QuestionExpiredError()
-        correct_answer_id = await self.fsm.get_value('quiz_correct_answer_id')
         await self.clear_quiz()
-        await self.logic.answer(question_id, answer_id)
-        is_correct = answer_id == correct_answer_id
+        answer = await self.logic.answer(question_id, answer_id)
         return await self.answer([
             AnswerBody(
-                text=self.text.quiz_result(is_correct),
+                text=self.text.quiz_result(answer.is_correct, answer.activity_points),
                 reply_markup=self.IKB.quiz_result(),
             )
         ])
@@ -243,6 +301,17 @@ class QuestionService(BaseService):
             )
         ])
 
+    async def limits(self):
+        await self.require_private_chat()
+        await self.clear_quiz()
+        data = await self.logic.limits()
+        return await self.answer([
+            AnswerBody(
+                text=self.text.limits(data),
+                reply_markup=self.IKB.back_to_menu(),
+            )
+        ])
+
     async def start_create(self):
         await self.require_private_chat()
         await self.clear_quiz()
@@ -257,6 +326,127 @@ class QuestionService(BaseService):
             AnswerBody(
                 text=self.text.create_prompt('body'),
                 reply_markup=self.IKB.create_edit_prompt(),
+            )
+        ])
+
+    async def start_json_create(self):
+        await self.require_private_chat()
+        await self.clear_quiz()
+        await self.fsm.set_state(QuestionState.json_create)
+        return await self.answer([
+            AnswerBody(
+                text=self.text.json_create_prompt(),
+                reply_markup=self.IKB.back_to_menu(),
+            )
+        ])
+
+    async def create_json_input(self):
+        await self.require_private_chat()
+        try:
+            data = json.loads(self.message.text)
+        except json.JSONDecodeError as error:
+            return await self.answer([
+                AnswerBody(
+                    text=self.text.json_create_error(
+                        f'Некорректный JSON: {error.msg} (позиция {error.pos})',
+                    ),
+                    reply_markup=self.IKB.back_to_menu(),
+                )
+            ])
+
+        if isinstance(data, dict):
+            data = [data]
+        if not isinstance(data, list) or not data:
+            return await self.answer([
+                AnswerBody(
+                    text=self.text.json_create_error(
+                        'Ожидается JSON-объект или непустой массив объектов.',
+                    ),
+                    reply_markup=self.IKB.back_to_menu(),
+                )
+            ])
+
+        questions = []
+        for index, item in enumerate(data, start=1):
+            if not isinstance(item, dict):
+                return await self.answer([
+                    AnswerBody(
+                        text=self.text.json_create_error(
+                            f'Элемент №{index} должен быть JSON-объектом.',
+                        ),
+                        reply_markup=self.IKB.back_to_menu(),
+                    )
+                ])
+            try:
+                question = QuestionCreate.model_validate(item)
+            except ValidationError as error:
+                detail = error.errors(include_url=False)[0]
+                field = '.'.join(str(part) for part in detail['loc'])
+                return await self.answer([
+                    AnswerBody(
+                        text=self.text.json_create_error(
+                            f'Ошибка в вопросе №{index}, поле «{field}»: {detail["msg"]}.',
+                        ),
+                        reply_markup=self.IKB.back_to_menu(),
+                    )
+                ])
+
+            question = question.model_copy(update={
+                'body': question.body.strip(),
+                'description': (
+                    question.description.strip()
+                    if question.description and question.description.strip()
+                    else None
+                ),
+                'correct_answers': [
+                    answer.strip()
+                    for answer in question.correct_answers
+                    if answer.strip()
+                ],
+                'incorrect_answers': [
+                    answer.strip()
+                    for answer in question.incorrect_answers
+                    if answer.strip()
+                ],
+            })
+            if not question.body:
+                error = f'Вопрос №{index}: текст вопроса не может быть пустым.'
+            elif not question.correct_answers:
+                error = f'Вопрос №{index}: добавьте хотя бы один правильный ответ.'
+            elif len(question.incorrect_answers) < 3:
+                error = f'Вопрос №{index}: добавьте хотя бы три неправильных ответа.'
+            else:
+                error = None
+            if error:
+                return await self.answer([
+                    AnswerBody(
+                        text=self.text.json_create_error(error),
+                        reply_markup=self.IKB.back_to_menu(),
+                    )
+                ])
+            questions.append(question)
+
+        author_id = await self.logic.user_id
+        for question in questions:
+            request = QueryQuestionCreate(
+                user_id=author_id,
+                request_id=self.logic.request_id,
+                purpose_user_id=author_id,
+                question=question,
+            )
+            await self.send_to_moderation({
+                'request': request.model_dump(mode='json'),
+                'author_tg_id': self.tg_id,
+                'author_name': self.user.full_name,
+                'status': 'pending',
+                'is_anonim': False,
+            })
+
+        await self.fsm.set_state()
+        return await self.answer([
+            AnswerBody(
+                text=self.text.json_create_result(len(questions)),
+                reply_markup=self.IKB.menu(),
             )
         ])
 
@@ -407,27 +597,20 @@ class QuestionService(BaseService):
         ])
 
     async def send_to_moderation(self, payload: dict):
-        storage_key = self.moderation_storage_key(
-            int(payload['author_tg_id']),
-        )
-        stored_payload = await redis_client.get(storage_key)
-        if stored_payload is not None:
-            try:
-                status = json.loads(stored_payload).get('status')
-            except (TypeError, ValueError, json.JSONDecodeError):
-                raise QuestionModerationRequestError()
-            if status == 'pending':
-                raise QuestionModerationPendingError()
-
         message = await self.bot.send_message(
             chat_id=self.settings.question_moderation_chat_id,
             text=self.text.moderation_payload(payload),
             reply_markup=self.ikb_class(self.tg_id).moderation_request(
                 int(payload['author_tg_id']),
+                self.tg_id,
             ),
         )
         payload['moderation_message_id'] = message.message_id
-        await redis_client.set(
+        storage_key = self.moderation_storage_key(
+            int(payload['author_tg_id']),
+            message.message_id,
+        )
+        await self.store.client.set(
             storage_key,
             json.dumps(payload, ensure_ascii=False),
             ex=self.settings.data_ttl,
@@ -444,6 +627,8 @@ class QuestionService(BaseService):
         if author_tg_id is None:
             raise QuestionModerationRequestError()
         payload, request, author_tg_id = await self.moderation_payload(author_tg_id)
+        if action == 'approve' and self.tg_id == author_tg_id:
+            raise QuestionAnotherModerationError()
         await self.clear_moderation_state()
         if action == 'edit':
             return await self.bot.edit_message_reply_markup(
@@ -455,7 +640,10 @@ class QuestionService(BaseService):
             return await self.bot.edit_message_reply_markup(
                 chat_id=self.chat.id,
                 message_id=self.message.message_id,
-                reply_markup=self.IKB.moderation_request(author_tg_id),
+                reply_markup=self.IKB.moderation_request(
+                    author_tg_id,
+                    self.tg_id,
+                ),
             )
         if action == 'field':
             if field not in (
@@ -553,8 +741,11 @@ class QuestionService(BaseService):
         )
         updated_request = request.model_copy(update={'question': updated_question})
         payload['request'] = updated_request.model_dump(mode='json')
-        await redis_client.set(
-            self.moderation_storage_key(int(payload['author_tg_id'])),
+        await self.store.client.set(
+            self.moderation_storage_key(
+                int(payload['author_tg_id']),
+                int(payload['moderation_message_id']),
+            ),
             json.dumps(payload, ensure_ascii=False),
             ex=self.settings.data_ttl,
         )
@@ -564,6 +755,7 @@ class QuestionService(BaseService):
             message_id=message_id,
             reply_markup=self.IKB.moderation_request(
                 int(payload['author_tg_id']),
+                self.tg_id,
             ),
         )
         await self.clear_moderation_state()
@@ -587,8 +779,11 @@ class QuestionService(BaseService):
 
         payload['status'] = 'rejected'
         payload['reason'] = reason.strip()
-        await redis_client.set(
-            self.moderation_storage_key(int(payload['author_tg_id'])),
+        await self.store.client.set(
+            self.moderation_storage_key(
+                int(payload['author_tg_id']),
+                int(message_id),
+            ),
             json.dumps(payload, ensure_ascii=False),
             ex=self.settings.data_ttl,
         )

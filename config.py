@@ -14,6 +14,7 @@ from aiogram.types import (BotCommand,
                            BotCommandScopeAllChatAdministrators,
                            User)
 from aiogram_sentinel import SentinelConfig
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 load_dotenv(Path(__file__).parent / '.env')
 
@@ -76,6 +77,8 @@ class Settings:
 
 settings = Settings()
 
+scheduler = AsyncIOScheduler()
+
 if settings.use_proxy:
     bot_session = AiohttpSession(proxy=settings.proxy_url)
 else:
@@ -104,41 +107,25 @@ cmds = {
     'info':'💳 Получить свою карточку',
     'menu':'🧭 Открыть главное меню',
 
-    'beyonder':'🧪 Карточка потустороннего',
-    'drink':'🧪 Выпить зелье',
     'upseq':'🔝 Продвинуться',
     'time':'⌛ Узнать дату продвижения',
     'kill':'☠️ Потерять контроль',
 
     'organ':'🏛️ Меню организаций',
-    'member':'🎎 Карточка участника',
-    'titul':'🎖️ Изменить титул участника',
-    'exit':'🚪 Покинуть организацию',
     
     'newspaper':'📰 Меню газет',
-    'sub':'🔔 Подписаться на газету',
-    'unsub':'🔕 Отписаться от газеты',
     'notify':'📣 Уведомить читателей газеты',
 
-    'wiki':'📚 Меню вики',
     'path':'📜 Информация о путях',
     'ga':'📜 Информация о ВД',
 
-    'question':'❔ Викторина',
-    
-    'user':'👤 Карточка аккаунта',
-    'users':'👥 Список пользователей',
-    'update':'🔄 Обновить информацию о пользователе',
-    
-    'stats':'📊 Получить статистику',
     'help':'📚 Получить справку',
 }
 
 admin_cmds = cmds | {
-    'ping':'⌛ Проверить задержку API',
-    'downseq':'⬇️ Понизить последовательность',
     'mystate':'🗂️ Ваши куки',
-    'mystateclear':'🗑️ Очистить куки'
+    'mystateclear':'🗑️ Очистить куки',
+    'activity_reset':'⛓️‍💥 Сброс лимита очков активности',
 }
 
 async def to_menu_cmds():

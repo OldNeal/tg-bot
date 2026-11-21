@@ -22,5 +22,12 @@ class NewsPaperState(StatesGroup):
 
 class QuestionState(StatesGroup):
     create = State()
+    json_create = State()
     moderation_edit = State()
     moderation_reason = State()
+
+class ItemState(StatesGroup):
+    quantity = State()
+
+class BeyonderState(StatesGroup):
+    method_action_study = State()

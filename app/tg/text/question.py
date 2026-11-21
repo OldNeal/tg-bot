@@ -1,11 +1,13 @@
 from app.api.schemas import (
     AnswerQuestion,
+    AnswerQuestionLimit,
     AnswerQuestionStatistics,
     Question,
     QuestionAnswer,
     UserQuestionStatistics,
 )
 from app.tg.text.base import BaseText
+from app.tg.text.emodzi import Emodzi
 
 
 class QuestionText(BaseText):
@@ -13,6 +15,25 @@ class QuestionText(BaseText):
     def menu(cls):
         return '❔ Меню вопросов'
 
+    @classmethod
+    def limits(cls, data: AnswerQuestionLimit):
+        return '❔ Лимиты ответов на вопросы' + cls.html.separator().join([
+            (
+                f'➕ Использовано ответов: {data.used} / {data.limit}'
+                if data.remaining > 0
+                else '😢 Вы исчерпали лимит ответов на вопросы'
+            ),
+            '⛅ Лимиты сбрасываются каждый день',
+        ]).blockquote()
+
+    @classmethod
+    def leave_quiz(cls):
+        return '❌ Вы не отвкетили на вопрос'
+    
+    @classmethod
+    def quiz_timeout(cls):
+        return '❌ Время закончилось'
+    
     @classmethod
     def unknown_subcommand(cls, subcommand: str):
         return cls.html('❌ Неизвестная подкоманда: ') + cls.html(subcommand).escape()
@@ -35,6 +56,31 @@ class QuestionText(BaseText):
     @classmethod
     def sent_to_moderation(cls):
         return '✅ Заявка отправлена на модерацию. Результат придёт в личный чат с ботом.'
+
+    @classmethod
+    def json_create_prompt(cls):
+        return (
+            '📋 Отправьте JSON-объект или массив объектов с полями '
+            '<code>body</code>, <code>correct_answers</code>, '
+            '<code>incorrect_answers</code> и необязательным '
+            '<code>description</code>. Для каждого вопроса нужен минимум '
+            'один правильный и три неправильных ответа. '
+            'Каждый вопрос будет отправлен модераторам отдельной заявкой.'
+            + cls.html.separator(n=2)
+            + '<code>{"body":"Вопрос?","description":"Описание",'
+            '"correct_answers":["Да"],"incorrect_answers":["Нет","Возможно","Не знаю"]}</code>'
+        )
+
+    @classmethod
+    def json_create_error(cls, message: str):
+        return cls.html('❌ ').bold() + cls.html(message).escape()
+
+    @classmethod
+    def json_create_result(cls, count: int):
+        return (
+            f'✅ Отправлено вопросов на модерацию: {count}. '
+            'Каждый вопрос рассматривается отдельно.'
+        )
 
     @classmethod
     def empty(cls):
@@ -85,7 +131,7 @@ class QuestionText(BaseText):
         return f'{cls.question(question)}{cls.html.separator(n=2)}{cls.statistics(statistics, question)}'
 
     @classmethod
-    def quiz(cls, question: Question, answers: list[QuestionAnswer]):
+    def quiz(cls, question: Question, answers: list[QuestionAnswer], limit_min: int = 1):
         answer_lines = [
             cls.html(f'{index}. ').bold() + cls.html(answer.body).escape()
             for index, answer in enumerate(answers, start=1)
@@ -93,17 +139,20 @@ class QuestionText(BaseText):
         return (
             cls.question(question)
             + cls.html.separator(n=2)
-            + cls.html('Варианты ответа:').bold()
+            + cls.html('🎯 Варианты ответа:').bold()
             + cls.html.separator()
             + cls.html.separator().join(answer_lines)
+            + cls.html.separator(n=2)
+            + cls.html(f'⌛ У вас есть {limit_min} мин., чтобы ответить на вопрос.').bold()
         )
 
     @classmethod
     def quiz_result(
         cls,
         is_correct: bool,
+        activity_points: int = 0
     ):
-        return '✅ Правильно' if is_correct else '❌ Неправильно'
+        return f'✅ Правильно, вы получили {activity_points} {Emodzi.activity_point_emodzi()}' if is_correct else '❌ Неправильно'
 
     @classmethod
     def create_confirmation(cls, data: dict):

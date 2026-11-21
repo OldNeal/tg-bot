@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
+from math import ceil
 
 from app.tg.text.base import Templates, BaseText
-from app.validate.base import BaseValidate
+from app.validate.api import AnswerTimeInfo, AnswerBeyonderInfo, AnswerStudyMethodAction, Points
 
 class BeyonderText(BaseText):
     drink_template = Templates(templates_file_name='drink.txt')
@@ -9,7 +10,7 @@ class BeyonderText(BaseText):
     downseq_template = Templates(templates_file_name='downseq.txt')
     kill_template = Templates(templates_file_name='kill.txt')
 
-    def __init__(self, data: BaseValidate):
+    def __init__(self, data: AnswerBeyonderInfo | AnswerStudyMethodAction):
         self.data = data
   
     @property
@@ -38,20 +39,51 @@ class BeyonderText(BaseText):
     def cancel_kill(self):
         return f'{self.user_mention(self.data.purpose)} смог успокоиться и не потерять контроль'
     
-    @property
-    def time_info(self):
-        return self.user_mention(self.data.purpose) + self.html.joined([
-            f'📅 Послед. продвижение: {datetime.fromisoformat(self.data.last_upseq).date()}',
-            f'⚡ След. продвижение: {datetime.fromisoformat(self.data.next_upseq).date()}',
-            f'⏳ Осталось дней: {self.data.upseq_days}',
+    @classmethod
+    def time_info(self, data: AnswerTimeInfo):
+        time = timedelta(seconds=data.total_seconds)
+        total_seconds = max(0, ceil(time.total_seconds()))
+        hours, seconds = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+        if time.total_seconds() > 0:
+            time_text = '⏳ Осталось '
+            if time.days <= 0:
+                if hours > 0:
+                    time_text += f'{hours} ч. '
+                if minutes > 0:
+                    time_text += f'{minutes} мин. '
+                if seconds > 0:
+                    time_text += f'{seconds} сек.'
+            else:
+                time_text += f'дней: {time.days}'
+        else:
+            time_text = '🚀 Вы можете продвинуться'
+        return self.user_mention(data.purpose) + self.html.joined([
+            f'📅 Послед. продвижение: {datetime.fromisoformat(data.last_upseq).date()}',
+            f'⚡ След. продвижение: {datetime.fromisoformat(data.next_upseq).date()}',
+            time_text,
         ]).blockquote()
     
     @property
     def time_redact(self):
+        time = timedelta(seconds=self.data.seconds)
+        total_seconds = max(0, ceil(time.total_seconds()))
+        hours, seconds = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+        if time.days <= 0:
+            time_text = ''
+            if hours > 0:
+                time_text += f'{hours} ч. '
+            if minutes > 0:
+                time_text += f'{minutes} мин. '
+            if seconds > 0:
+                time_text += f'{seconds} сек. '
+        else:
+            time_text = f'{time.days} дн.'
         return self.user_mention(self.data.purpose) + self.html.joined([
             f'📅 Старая дата: {datetime.fromisoformat(self.data.old_time).date()}',
             f'⚡ Новая дата: {datetime.fromisoformat(self.data.new_time).date()}',
-            f'{'➖ Убрано' if self.data.operator == '-' else '➕ Добавлено'} дней: {timedelta(seconds=self.data.seconds).days}',
+            f'{'➖ Убрано' if self.data.operator == '-' else '➕ Добавлено'} {f'дней: {time.days}' if time.days > 0 else time_text}',
         ]).blockquote()
     
     @property
@@ -60,6 +92,33 @@ class BeyonderText(BaseText):
             f'📅 Старая дата: {datetime.fromisoformat(self.data.old_time).date()}',
             f'⚡ Новая дата: {datetime.fromisoformat(self.data.new_time).date()}'
         ]).blockquote()
+
+    @classmethod
+    def method_action_studied(self, data: AnswerStudyMethodAction):
+        time = timedelta(seconds=data.time.seconds)
+        total_seconds = max(0, ceil(time.total_seconds()))
+        hours, seconds = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+        if time.days <= 0:
+            time_text = ''
+            if hours > 0:
+                time_text += f'{hours} ч. '
+            if minutes > 0:
+                time_text += f'{minutes} мин. '
+            if seconds > 0:
+                time_text += f'{seconds} сек. '
+        else:
+            time_text = f'{time.days} дн.'
+        text = f'📖 {self.user_mention(data.purpose)} '
+        if 0 < data.points.study_method_action < 1:
+            text += f'изучил метод действия на {data.points.study_method_action*100:.2f}% '
+        elif data.points.study_method_action == 0:
+            text += 'не изучил метод действия'
+        else:
+            text += f'полностью изучил метод действия '
+        if len(time_text) > 0:
+            text += f'и сократил время продвижения на {time_text}'
+        return text
     
     @property
     def info(self):
@@ -74,6 +133,14 @@ class BeyonderText(BaseText):
                 beyonder = [f'🎗 {self.data.beyonder.seq_name}']
             elif self.data.beyonder.seq < 0:
                 beyonder = [f'🏵 {self.data.beyonder.seq_name}']
+            if self.data.beyonder.seq >= 0:
+                if 0 < self.data.points.study_method_action < 1:
+                    beyonder.append(f'📚 Очков изучения: {self.data.points.study_points.new}')
+                    beyonder.append(f'📖 Метод действия изучен на {self.data.points.study_method_action*100:.2f}%')
+                elif self.data.points.study_method_action == 0:
+                    beyonder.append(f'📖 Метод действия не изучен')
+                else:
+                    beyonder.append('📖 Метод действия изучен полностью')
 
         return self.user_mention(self.data.purpose) + self.html(self.html.joined([
             f'🏷 ID: {user.tg_id} ({self.data.purpose.user_id})',

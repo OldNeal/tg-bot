@@ -13,6 +13,7 @@ from app.validate.api import AnswerUsersBody
 from app.redis.base import redis_client
 from app.redis.links import USER_UPDATE_TTL, user_update_key
 
+
 class MainService(BaseService):
     logic_class: type[MainLogic] = MainLogic
     logic: MainLogic
@@ -228,3 +229,5 @@ class MainService(BaseService):
                 reply_markup=self.IKB.back('main'),
             )
         ])
+    
+            

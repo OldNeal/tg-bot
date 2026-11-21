@@ -10,6 +10,8 @@ from app.tg.callback.beyonder import (
     BeyonderListPageCall,
     BeyonderTimeInfoCall,
     BeyonderUpSeqCall,
+    BeyonderStudyMethodActionCall,
+    BeyonderMethodActionBackCall,
     DrinkCall,
     KillCall,
 )
@@ -34,11 +36,13 @@ class BeyonderIKB(BotIKB):
                 if data.beyonder.seq >= 0:
                     self.builder.button(text='🚀 Продвинуться', callback_data=BeyonderUpSeqCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
                 self.builder.button(text='⏱ Дата продвижения', callback_data=BeyonderTimeInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
+                if data.points and data.points.study_method_action < 1:
+                    self.builder.button(text='📖 Изучить метод действия', callback_data=BeyonderStudyMethodActionCall(tg_id=self.tg_id))
                 self.builder.button(text='☠️ Потерять контроль', callback_data=KillCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         if where:
             self.builder.button(text='↩️ Назад', callback_data=BeyonderBackCall(where=where, tg_id=self.tg_id))
         self.builder.button(
-            text='💳 Главная карточка',
+            text='🪪 Главная карточка',
             callback_data=MainInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id),
         )
         return self.builder.adjust(1).as_markup()
@@ -119,3 +123,15 @@ class BeyonderIKB(BotIKB):
 
     def back_to_card(self, purpose_tg_id: int):
         return self.builder.button(text='↩️ Назад', callback_data=BeyonderInfoCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id)).as_markup()
+
+    def method_action_study_back(self, purpose_tg_id: int):
+        return self.builder.button(
+            text='↩️ К карточке потустороннего',
+            callback_data=BeyonderMethodActionBackCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id),
+        ).as_markup()
+
+    def time_info(self, purpose_tg_id: int, is_upseq: bool = False):
+        if is_upseq:
+            self.builder.button(text='🚀 Продвинуться', callback_data=BeyonderUpSeqCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id))
+        self.builder.button(text='↩️ Назад', callback_data=BeyonderInfoCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id))
+        return self.builder.adjust(1).as_markup()

@@ -40,8 +40,10 @@ class FSMUtils:
     
     async def clear_this_state(self):
         data = await self._state.get_data()
-        new_data = {k:v for k, v in data.items() if k not in data.get(self.prefix + 'state_keys', [])}
-        return await self._state.set_data(new_data)
+        for key in data.get(self.prefix + 'state_keys', []):
+            data.pop(key, None)
+        data.pop(self.prefix + 'state_keys', None)
+        return await self._state.set_data(data)
 
     async def set_data(self, data: dict):
         return await self._state.set_data({self.prefix + k: v for k, v in data.items() if not v is None})
@@ -64,7 +66,7 @@ class FSMUtils:
 
     async def pop_value(self, key: str, default = None):
         data = await self._state.get_data()
-        if self.prefix + key:
+        if self.prefix + key in data:
             value = data.pop(self.prefix + key, default)
             state_keys = data.get('state_keys', [])
             data['state_keys'] = [k for k in state_keys if key not in k]
@@ -93,3 +95,6 @@ class NewsPaperFSM(FSMUtils):
 
 class QuestionFSM(FSMUtils):
     prefixs = ['question']
+
+class ItemFSM(FSMUtils):
+    prefixs = ['item']

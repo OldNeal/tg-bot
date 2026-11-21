@@ -21,22 +21,30 @@ class QuestionIKB(BotIKB):
             callback_data=QuestionMenuCall(action='random', tg_id=self.tg_id),
         )
         self.builder.button(
-            text='📝 Мои вопросы',
-            callback_data=QuestionMenuCall(action='mine', tg_id=self.tg_id),
-        )
-        self.builder.button(
             text='📊 Моя статистика',
             callback_data=QuestionMenuCall(action='userstats', tg_id=self.tg_id),
+        )
+        self.builder.button(
+            text='⚡ Лимиты ответов',
+            callback_data=QuestionMenuCall(action='limits', tg_id=self.tg_id),
+        )
+        self.builder.button(
+            text='📝 Мои вопросы',
+            callback_data=QuestionMenuCall(action='mine', tg_id=self.tg_id),
         )
         self.builder.button(
             text='➕ Создать вопрос',
             callback_data=QuestionMenuCall(action='create', tg_id=self.tg_id),
         )
         self.builder.button(
+            text='📋 Создать через JSON',
+            callback_data=QuestionMenuCall(action='json', tg_id=self.tg_id),
+        )
+        self.builder.button(
             text='↩️ В главное меню',
             callback_data=MenuCall(where='main', tg_id=self.tg_id),
         )
-        return self.builder.adjust(1, 1, 2, 1).as_markup()
+        return self.builder.adjust(1, 2, 1, 2, 1).as_markup()
 
     def back_to_menu(self):
         self.builder.button(
@@ -111,20 +119,12 @@ class QuestionIKB(BotIKB):
         self.builder.adjust(len(answers))
         self.builder.row(
             InlineKeyboardButton(
-                text='🎲 Другой вопрос',
+                text='↩️ Отказаться отвечать',
                 callback_data=QuestionMenuCall(
-                    action='random',
+                    action='leave_quiz',
                     tg_id=self.tg_id,
                 ).pack(),
             ),
-            InlineKeyboardButton(
-                text='↩️ К меню',
-                callback_data=QuestionMenuCall(
-                    action='menu',
-                    tg_id=self.tg_id,
-                ).pack(),
-            ),
-            width=1
         )
         return self.builder.as_markup()
 
@@ -185,14 +185,14 @@ class QuestionIKB(BotIKB):
         )
         return self.builder.adjust(1).as_markup()
 
-    def moderation_request(self, author_tg_id: int):
+    def moderation_request(self, author_tg_id: int, moderator_tg_id: int | None = None):
         self.builder.button(
-            text='✅ Создать',
-            callback_data=QuestionModerationCall(
-                action='approve',
-                tg_id=author_tg_id,
-            ),
-        )
+                text='✅ Создать',
+                callback_data=QuestionModerationCall(
+                    action='approve',
+                    tg_id=author_tg_id,
+                ),
+            )
         self.builder.button(
             text='✏️ Изменить',
             callback_data=QuestionModerationCall(

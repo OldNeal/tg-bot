@@ -9,6 +9,29 @@ import pydantic
 
 from clientele.schemas import ListResponse  # noqa
 
+class AnswerActivityPoints(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    activity_points: int = 0
+    get_activity_points: int = 0
+
+
+class AnswerActivityPointsLimit(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    used: int = 0
+    limit: int = 0
+    remaining: int = 0
+    ttl: int = 0
+    points_per_message: int = 0
+
+
+class AnswerActivityPointsLimitReset(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    activity_points: int = 0
+
+
 class AnswerAllGAInfo(pydantic.BaseModel):
     gas: list["AnswerGAInfo"] | None
     page: typing.Union["Page", None]
@@ -55,11 +78,15 @@ class AnswerAllSeqInfo(pydantic.BaseModel):
 
 class AnswerAllStats(pydantic.BaseModel):
     users: int
+    tg_users: int
     beyonders: int
     members: int
     organs: int
     paths: int
     gas: int
+    news_papers: int
+    questions: int
+    activity_points_all_time: int
 
 
 class AnswerBaseInfo(pydantic.BaseModel):
@@ -73,6 +100,7 @@ class AnswerBeyonderInfo(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
+    points: typing.Optional[typing.Union["Points", None]] = None
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
 
 
@@ -116,6 +144,26 @@ class AnswerGASearchInfo(pydantic.BaseModel):
 class AnswerGroupInfo(pydantic.BaseModel):
     group_name: str
     gas: list["AnswerGAInfo"]
+
+
+class AnswerInventory(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    items: list["ItemInfo"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
+
+
+class AnswerItemChange(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    item: "ItemInfo"
+
+
+class AnswerItems(pydantic.BaseModel):
+    items: list["ItemInfo"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
 
 
 class AnswerLogFileNames(pydantic.BaseModel):
@@ -253,7 +301,16 @@ class AnswerQuestionAnswer(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     answer_id: int
+    is_correct: bool
     question: "Question"
+    activity_points: int = 0
+
+
+class AnswerQuestionLimit(pydantic.BaseModel):
+    used: int = 0
+    limit: int = 0
+    remaining: int = 0
+    ttl: int = 0
 
 
 class AnswerQuestionSearch(pydantic.BaseModel):
@@ -319,30 +376,40 @@ class AnswerSeqSearchInfo(pydantic.BaseModel):
     count: int = 0
 
 
+class AnswerStudyMethodAction(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
+    points: typing.Optional[typing.Union["Points", None]] = None
+    for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
+    time: "TimeRedact"
+
+
 class AnswerTimeInfo(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     beyonder: typing.Optional[typing.Union["BeyonderInfo", None]] = None
+    points: typing.Optional[typing.Union["Points", None]] = None
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
     next_upseq: str | None
     last_upseq: str
-    upseq_days: int | None
+    total_seconds: float | None
 
 
 class AnswerTimeRedact(pydantic.BaseModel):
-    user: "AnswerUserBody"
-    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     old_time: str
     new_time: str
     seconds: int
     operator: str
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
 
 
 class AnswerTimeReplace(pydantic.BaseModel):
-    user: "AnswerUserBody"
-    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     old_time: str
     new_time: str
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
 
 
 class AnswerUserBody(pydantic.BaseModel):
@@ -397,6 +464,18 @@ class HTTPValidationError(pydantic.BaseModel):
     detail: list["ValidationError"]
 
 
+class ItemInfo(pydantic.BaseModel):
+    item_id: int
+    name: str
+    tag: str
+    hash: str
+    description: typing.Optional[str | None] = None
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+    data: dict[str, typing.Any]
+    quantity: typing.Optional[int | None] = None
+
+
 class MemberInfo(pydantic.BaseModel):
     titul: str | None
     organ_name: str | None
@@ -440,44 +519,58 @@ class Page(pydantic.BaseModel):
     max: int
 
 
+class Point(pydantic.BaseModel):
+    old: typing.Optional[int | None] = None
+    new: int
+
+
+class Points(pydantic.BaseModel):
+    study_points: "Point"
+    activity_points: "Point"
+    rsp: int
+    study_method_action: float
+
+
 class QueryBody(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
-    request_id: typing.Optional[str | None] = None
+
+
+class QueryItemChange(pydantic.BaseModel):
+    user_id: int
+    is_admin: bool = False
+    purpose_user_id: int
+    item_id: int
+    quantity: int = 1
 
 
 class QueryNewsPaperSetting(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
-    request_id: typing.Optional[str | None] = None
     parametrs: dict[str, typing.Any]
 
 
 class QueryNewsPaperSettingDefault(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
-    request_id: typing.Optional[str | None] = None
     to_default: "OrganSettingDefault"
 
 
 class QueryOrganSetting(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
-    request_id: typing.Optional[str | None] = None
     parametrs: dict[str, typing.Any]
 
 
 class QueryOrganSettingDefault(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
-    request_id: typing.Optional[str | None] = None
     to_default: "OrganSettingDefault"
 
 
 class QueryQuestionCreate(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
-    request_id: typing.Optional[str | None] = None
     purpose_user_id: typing.Optional[int | None] = None
     question: "QuestionCreate"
 
@@ -485,7 +578,6 @@ class QueryQuestionCreate(pydantic.BaseModel):
 class QueryUserUpdate(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
-    request_id: typing.Optional[str | None] = None
     telegram: typing.Optional[typing.Union["TelegramBody", None]] = None
 
 
@@ -562,6 +654,13 @@ class TelegramBody(pydantic.BaseModel):
     tg_id: int
     username: typing.Optional[str | None] = None
     fullname: typing.Optional[str | None] = None
+
+
+class TimeRedact(pydantic.BaseModel):
+    old_time: str
+    new_time: str
+    seconds: int
+    operator: str
 
 
 class UserQuestionStatistics(pydantic.BaseModel):

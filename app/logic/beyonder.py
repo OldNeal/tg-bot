@@ -9,6 +9,9 @@ class BeyonderLogic(BaseLogic):
         user_id = await self.get_user_id(purpose_tg_id if purpose_tg_id is not None else self.purpose_tg_id)
         return await self.client.beyonder_info(user_id)
 
+    async def study_method_action(self, points: int):
+        return await self.client.beyonder_study_method_action(await self.body, points)
+
     async def path(self, name: str | None = None, id: int | None = None):
         return await self.client.get_path(name=name, id=id)
 

@@ -7,7 +7,9 @@ from app.tg.text.beyonder import BeyonderText
 from app.tg.buttons.beyonder import BeyonderIKB
 from app.tg.callback.back_values import BeyonderBackValues
 from app.tg.callback.wiki import WikiSearchCall
+from app.tg.fsm.state import BeyonderState
 from app.tg.fsm.utils import BeyonderFSM
+from app.exception.beyonder import BeyonderMethodActionPointsError, BeyonderMethodActionStateError
 
 class BeyonderService(BaseService):
     logic_class: type[BeyonderLogic] = BeyonderLogic
@@ -20,8 +22,8 @@ class BeyonderService(BaseService):
     fsm: BeyonderFSM
 
     async def info(self, purpose_tg_id: int | None = None):
-        back_where = await self.fsm.get_value('back_where')
         data = await self.logic.info(purpose_tg_id=purpose_tg_id)
+        back_where = await self.fsm.get_value('back_where')
         reply_markup = self.IKB.info_card(data, where=back_where) if data.purpose and data.purpose.telegram else None
         if back_where and reply_markup is None:
             reply_markup = self.IKB.back(back_where)
@@ -32,6 +34,44 @@ class BeyonderService(BaseService):
                 reply_markup=reply_markup
             )
         ])
+
+    async def start_method_action_study(self):
+        await self.fsm.set_state(BeyonderState.method_action_study)
+        await self.fsm.save_message(self.chat.id, self.message.message_id)
+        return await self.answer([
+            AnswerBody(
+                text='✒️ Сколько очков активности потратить на изучение метода действия? Введите положительное целое число.',
+                reply_markup=self.IKB.method_action_study_back(self.tg_id),
+            )
+        ])
+
+    async def study_method_action_input(self):
+        try:
+            points = int((self.message.text or '').strip())
+        except ValueError:
+            raise BeyonderMethodActionPointsError() from None
+        if points <= 0:
+            raise BeyonderMethodActionPointsError()
+
+        prompt_message = await self.fsm.get_message()
+        if not prompt_message[0] or not prompt_message[1]:
+            await self.fsm.set_state()
+            await self.fsm.remove_message()
+            raise BeyonderMethodActionStateError()
+
+        data = await self.logic.study_method_action(points)
+        return await self.answer([
+            AnswerBody(
+                text=self.text.method_action_studied(data),
+                data=data,
+                reply_markup=self.IKB.method_action_study_back(self.tg_id),
+            )
+        ])
+
+    async def cancel_method_action_study(self, purpose_tg_id: int):
+        await self.fsm.set_state()
+        await self.fsm.remove_message()
+        return await self.info(purpose_tg_id)
 
     async def drink(
         self,
@@ -73,8 +113,10 @@ class BeyonderService(BaseService):
         path_name: str | None = None,
         path_id: int | None = None,
         purpose_tg_id: int | None = None,
-    ):
-        info = await self.logic.time_info(purpose_tg_id=purpose_tg_id, to_raise=True)
+    ):  
+        if self.is_admin:
+            await self.fsm.update_data(is_admin=self.is_admin, seq=seq)
+        info = await self.logic.time_info(purpose_tg_id=purpose_tg_id, to_raise=not self.is_admin)
         if path_id is not None:
             path = await self.logic.path(id=path_id)
         else:
@@ -105,10 +147,11 @@ class BeyonderService(BaseService):
 
     async def confirm_upseq(self, seq: int | None = None, path_id: int | None = None, purpose_tg_id: int | None = None):
         path = await self.logic.path(id=path_id) if path_id is not None else None
+        self.logic.redact_kwargs(is_admin=await self.fsm.pop_value('is_admin', False))
         data = await self.logic.upseq(
             purpose_tg_id=purpose_tg_id,
             path_name=path.name if path else None,
-            seq=seq,
+            seq=await self.fsm.pop_value('seq', seq),
         )
         return await self.answer([
             AnswerBody(
@@ -181,9 +224,9 @@ class BeyonderService(BaseService):
         data = await self.logic.time_info(purpose_tg_id=purpose_tg_id)
         return await self.answer([
             AnswerBody(
-                text=self.text(data).time_info,
+                text=self.text.time_info(data),
                 data=data,
-                reply_markup=self.IKB.back_to_card(purpose_tg_id) if not purpose_tg_id is None else None
+                reply_markup=self.IKB.time_info(purpose_tg_id, data.total_seconds <= 0) if not purpose_tg_id is None else None
             )
         ])
 

@@ -18,3 +18,8 @@ class BotIKB:
 
     def deep_menu(self, message_id: int | None = None, chat_id: int | None = None):
         return self.builder.button(text='🗨️ Перейти в лс', url=MenuDeep(message_id=message_id, chat_id=chat_id).url()).as_markup()
+
+    @property
+    def new(self):
+        self.builder = InlineKeyboardBuilder()
+        return self
