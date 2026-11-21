@@ -20,8 +20,7 @@ from app.exception.question import (
     QuestionModerationPermissionError,
     QuestionModerationReasonError,
     QuestionModerationRequestError,
-    QuestionPrivateChatError,
-    QuestionAnotherModerationError
+    QuestionPrivateChatError
 )
 from app.validate.api import QueryQuestionCreate, QuestionCreate
 
@@ -627,8 +626,6 @@ class QuestionService(BaseService):
         if author_tg_id is None:
             raise QuestionModerationRequestError()
         payload, request, author_tg_id = await self.moderation_payload(author_tg_id)
-        if action == 'approve' and self.tg_id == author_tg_id:
-            raise QuestionAnotherModerationError()
         await self.clear_moderation_state()
         if action == 'edit':
             return await self.bot.edit_message_reply_markup(

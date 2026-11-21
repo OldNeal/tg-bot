@@ -25,7 +25,7 @@ class ItemLogic(BaseLogic):
         quantity: int,
         purpose_tg_id: int | None = None,
     ):
-        purpose_user_id = await self.get_user_id(purpose_tg_id or self.tg_id)
+        purpose_user_id = await self.get_user_id(purpose_tg_id or self.purpose_tg_id)
         data = self.schemas.QueryItemChange(
             user_id=await self.user_id,
             is_admin=self.is_admin,
