@@ -26,8 +26,8 @@ from app.exception.base import (
 )
 from app.exception.question import QuestionPrivateChatError
 from app.logic.base import BaseLogic
-from app.redis.base import redis_client
-from app.redis.links import USER_UPDATE_TTL, user_update_key
+from app.redis.store import store, redis_client
+from app.redis.user import USER_UPDATE_TTL
 from app.service.base import BaseService
 
 USER_UPDATE_LOCK_TTL = 60
@@ -53,7 +53,7 @@ class UserUpdateMiddleware(BaseMiddleware):
             and event.text.split(maxsplit=1)[0].split('@', 1)[0] == '/update'
         )
         if user is not None and not user.is_bot and not is_manual_update:
-            update_key = user_update_key(user.id)
+            update_key = store.user.hashs.user_update_hash(user.id)
             lock_key = f'{update_key}:lock'
             lock_token = uuid.uuid4().hex
 
