@@ -36,6 +36,8 @@ class BeyonderService(BaseService):
         ])
 
     async def start_method_action_study(self):
+        await self.callback.answer('⛓️‍💥 Кнопка пока что недоступна')
+        return
         await self.logic.study_method_action(0)
         await self.fsm.set_state(BeyonderState.method_action_study)
         await self.fsm.save_message(self.chat.id, self.message.message_id)
