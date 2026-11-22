@@ -211,29 +211,32 @@ class ServiceMiddleware(BaseMiddleware):
         message: Message | None = data.get('event_update').message
         kwargs = {'request_id':data.get('request_id')}
         if message:
-            service_args = [to_json, is_admin, is_reply]
-            service_names = {
-                name
-                for argument in service_args
-                for name in argument.names
-            }
-            short_service_names = {
-                name
-                for argument in service_args
-                for name in argument.names
-                if len(name) == 1
-            }
-            service_tokens = []
-            for token in split_into_tokens(message.text or ''):
-                if not is_argument_key(token):
-                    continue
-                name = remove_naming_prefix(token).split('=', 1)[0]
-                if name in service_names or (
-                    len(name) > 1
-                    and all(char in short_service_names for char in name)
-                ):
-                    service_tokens.append(token)
-            kwargs |= parse_command_args(' '.join(service_tokens), service_args)
+            try:
+                service_args = [to_json, is_admin, is_reply]
+                service_names = {
+                    name
+                    for argument in service_args
+                    for name in argument.names
+                }
+                short_service_names = {
+                    name
+                    for argument in service_args
+                    for name in argument.names
+                    if len(name) == 1
+                }
+                service_tokens = []
+                for token in split_into_tokens(message.text or ''):
+                    if not is_argument_key(token):
+                        continue
+                    name = remove_naming_prefix(token).split('=', 1)[0]
+                    if name in service_names or (
+                        len(name) > 1
+                        and all(char in short_service_names for char in name)
+                    ):
+                        service_tokens.append(token)
+                kwargs |= parse_command_args(' '.join(service_tokens), service_args)
+            except Exception as e:
+                botlog.logger.trace(e)
         data['service'] = self.service(
             user=data.get('event_from_user'), 
             chat=data.get('event_chat'), 

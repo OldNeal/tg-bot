@@ -22,57 +22,84 @@ class ActivityStore(BaseStore):
     hashs: type[ActivityHashs]
 
     _CHECK_AND_UPDATE_SCRIPT = """
-local cooldown = redis.call('EXISTS', KEYS[1])
-if cooldown == 1 then
+-- _CHECK_AND_UPDATE_SCRIPT
+local cooldown_sec  = tonumber(ARGV[2])
+local history_size  = tonumber(ARGV[3])
+local dedup_ttl_sec = tonumber(ARGV[4])
+local jaccard       = tonumber(ARGV[5])
+
+if redis.call('EXISTS', KEYS[1]) == 1 then
     return 1
 end
 
-local candidate = cjson.decode(ARGV[1])
-local candidate_set = {}
+local ok, candidate = pcall(cjson.decode, ARGV[1])
+if not ok or type(candidate) ~= 'table' or #candidate == 0 then
+    return redis.error_reply('ARGV[1] must be a non-empty JSON array')
+end
+
+local candidate_set, candidate_len = {}, 0
 for _, gram in ipairs(candidate) do
-    candidate_set[gram] = true
-end
-
-local history = redis.call('LRANGE', KEYS[2], 0, tonumber(ARGV[3]) - 1)
-for _, encoded in ipairs(history) do
-    local previous = cjson.decode(encoded)
-    local previous_set = {}
-    for _, gram in ipairs(previous) do
-        previous_set[gram] = true
-    end
-
-    local intersection = 0
-    local union = 0
-    for gram, _ in pairs(candidate_set) do
-        union = union + 1
-        if previous_set[gram] then
-            intersection = intersection + 1
-        end
-    end
-    for gram, _ in pairs(previous_set) do
-        if not candidate_set[gram] then
-            union = union + 1
-        end
-    end
-
-    if union > 0 and intersection / union >= tonumber(ARGV[5]) then
-        return 2
+    if not candidate_set[gram] then
+        candidate_set[gram] = true
+        candidate_len = candidate_len + 1
     end
 end
 
-redis.call('SET', KEYS[1], '1', 'EX', tonumber(ARGV[2]))
+if jaccard and jaccard > 0 and history_size and history_size > 0 then
+    local history = redis.call('LRANGE', KEYS[2], 0, history_size - 1)
+    for _, encoded in ipairs(history) do
+        local decoded, previous = pcall(cjson.decode, encoded)
+        if decoded and type(previous) == 'table' then
+            local previous_set, previous_len = {}, 0
+            for _, gram in ipairs(previous) do
+                if not previous_set[gram] then
+                    previous_set[gram] = true
+                    previous_len = previous_len + 1
+                end
+            end
+
+            local intersection = 0
+            for gram in pairs(candidate_set) do
+                if previous_set[gram] then
+                    intersection = intersection + 1
+                end
+            end
+
+            local union = candidate_len + previous_len - intersection
+            if union > 0 and intersection / union >= jaccard then
+                return 2
+            end
+        end
+    end
+end
+
 redis.call('LPUSH', KEYS[2], ARGV[1])
-redis.call('LTRIM', KEYS[2], 0, tonumber(ARGV[3]) - 1)
-redis.call('EXPIRE', KEYS[2], tonumber(ARGV[4]))
+if history_size and history_size > 0 then
+    redis.call('LTRIM', KEYS[2], 0, history_size - 1)
+end
+if dedup_ttl_sec and dedup_ttl_sec > 0 then
+    redis.call('EXPIRE', KEYS[2], dedup_ttl_sec)
+end
+if cooldown_sec and cooldown_sec > 0 then
+    redis.call('SET', KEYS[1], '1', 'EX', cooldown_sec)
+end
 return 0
 """
 
     _MESSAGE_INCR_UNTIL_SCRIPT = """
+local limit = tonumber(ARGV[1])
+local ttl   = tonumber(ARGV[2])
+
 local count = redis.call('INCR', KEYS[1])
-if count < tonumber(ARGV[1]) then
+if count == 1 and ttl > 0 then
+    redis.call('EXPIRE', KEYS[1], ttl)
+end
+
+if count < limit then
     return {count, 0}
 end
-redis.call('SET', KEYS[1], 0)
+
+redis.call('SET', KEYS[1], 0, 'KEEPTTL')  -- сброс без потери TTL
 return {count, 1}
 """
 
