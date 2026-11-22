@@ -9,12 +9,14 @@ class BotError(Exception):
     msg = 'Базовый класс ошибки'
     faq = ''
     emodzi = '❌'
+    is_delete_user_message_default = False
 
-    def __init__(self, *args, level: Literal['trace', 'debug', 'info', 'success', 'warning', 'error', 'critical'] = 'warning', is_error: bool = True, **kwargs):
+    def __init__(self, *args, level: Literal['trace', 'debug', 'info', 'success', 'warning', 'error', 'critical'] = 'warning', is_error: bool = True, is_delete_user_message: bool | None = None, **kwargs):
         self.level = level
         self.args = args
         self.kwargs = kwargs
         self.is_error = is_error
+        self.is_delete_user_message = self.is_delete_user_message_default if is_delete_user_message is None else is_delete_user_message
         if is_error:
             super().__init__(*args)
             msg = ' '.join(self.args) if len(self.args) > 0 else self.msg
@@ -38,6 +40,18 @@ class PermissionError(BotError):
 class ALienCallbackError(BotError):
     msg = 'Это не ваша кнопка'
     emodzi = '❌'
+
+class ButtonUnavailableError(BotError):
+    msg = 'Кнопка временно недоступна'
+    emodzi = '⛓️‍💥'
+    is_delete_user_message_default = True
+
+    @property
+    def to_msg(self):
+        return f'{self.emodzi} {self.msg.format_map(self.kwargs)}'
+    
+class CommandUnavailableError(ButtonUnavailableError):
+    msg = 'Команда временно недоступна'
 
 class RedisError(BotError):
     msg = 'Redis не работает'

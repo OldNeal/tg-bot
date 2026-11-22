@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from telegram_click_aio.decorator import command
 from aiogram.types import Message, CallbackQuery
-from aiogram import Router, F
+from aiogram import Router, F, flags
 from aiogram.filters import Command
 
 from app.service.beyonder import BeyonderService

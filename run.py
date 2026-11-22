@@ -8,7 +8,9 @@ from app.tg.middlewares import (BotLogMessageMiddleware,
                                 BotLogCallbackQueryMiddleware,
                                 ExceptionMessageMiddleware,
                                 ExceptionCallbackQueryMiddleware,
-                                UserUpdateMiddleware)
+                                UserUpdateMiddleware,
+                                ButtonUnavailableMiddleware,
+                                CommandUnavailableMiddleware)
 from app.logic.base import BaseLogic as logic
 from app.logging.base import botlog
 from app.redis.store import store
@@ -38,6 +40,8 @@ async def main():
             dp.callback_query.middleware(UserUpdateMiddleware())
             dp.message.middleware(ExceptionMessageMiddleware())
             dp.callback_query.middleware(ExceptionCallbackQueryMiddleware())
+            dp.message.middleware(ButtonUnavailableMiddleware())
+            dp.callback_query.middleware(CommandUnavailableMiddleware())
             await Sentinel().setup(dp, sentinel_config, base_router)
             botlog.start()
             if not scheduler.running:
@@ -45,8 +49,8 @@ async def main():
             await bot.delete_webhook(drop_pending_updates=True)
             await to_menu_cmds()
             await dp.start_polling(bot)
-    except:
-        pass
+    except Exception as e:
+        botlog.logger.critical(e)
     finally:
         botlog.stop()
 

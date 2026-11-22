@@ -46,5 +46,6 @@ async def call(
 @flags.is_message_delete(False)
 @flags.is_send_dowload_sticker(False)
 @flags.is_logging(False)
+@flags.is_user_update(False)
 async def msg(message: Message, service: ActivityService):
     await service.activity()

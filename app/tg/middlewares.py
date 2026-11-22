@@ -23,6 +23,8 @@ from app.exception.base import (
     BotError,
     PythonError,
     ALienCallbackError,
+    ButtonUnavailableError,
+    CommandUnavailableError
 )
 from app.exception.question import QuestionPrivateChatError
 from app.logic.base import BaseLogic
@@ -46,49 +48,50 @@ class UserUpdateMiddleware(BaseMiddleware):
         event: Message | CallbackQuery,
         data: Dict[str, Any],
     ) -> Any:
-        user: User | None = data.get('event_from_user')
-        is_manual_update = (
-            isinstance(event, Message)
-            and bool(event.text)
-            and event.text.split(maxsplit=1)[0].split('@', 1)[0] == '/update'
-        )
-        if user is not None and not user.is_bot and not is_manual_update:
-            update_key = store.user.hashs.user_update_hash(user.id)
-            lock_key = f'{update_key}:lock'
-            lock_token = uuid.uuid4().hex
+        is_user_update = get_flag(data, 'is_user_update', default=True)
+        if is_user_update:
+            user: User | None = data.get('event_from_user')
+            is_manual_update = (
+                isinstance(event, Message)
+                and bool(event.text)
+                and event.text.split(maxsplit=1)[0].split('@', 1)[0] == '/update'
+            )
+            if user is not None and not user.is_bot and not is_manual_update:
+                update_key = store.user.hashs.user_update_hash(user.id)
+                lock_key = f'{update_key}:lock'
+                lock_token = uuid.uuid4().hex
 
-            if not await redis_client.get(update_key):
-                locked = await redis_client.set(
-                    lock_key,
-                    lock_token,
-                    nx=True,
-                    ex=USER_UPDATE_LOCK_TTL,
-                )
-                if locked:
-                    try:
-                        if not await redis_client.get(update_key):
-                            logic = BaseLogic(
+                if not await redis_client.get(update_key):
+                    locked = await redis_client.set(
+                        lock_key,
+                        lock_token,
+                        nx=True,
+                        ex=USER_UPDATE_LOCK_TTL,
+                    )
+                    if locked:
+                        try:
+                            if not await redis_client.get(update_key):
+                                logic = BaseLogic(
+                                    tg_id=user.id,
+                                    username=user.username,
+                                    fullname=user.full_name,
+                                    request_id=data.get('request_id'),
+                                )
+                                await logic.update_user()
+                                await redis_client.set(update_key, '1', ex=USER_UPDATE_TTL)
+                        except (ApiError, ApiTimeoutError) as error:
+                            botlog.logger.warning(
+                                'Не удалось обновить профиль пользователя',
                                 tg_id=user.id,
-                                username=user.username,
-                                fullname=user.full_name,
-                                request_id=data.get('request_id'),
+                                error=str(error),
                             )
-                            await logic.update_user()
-                            await redis_client.set(update_key, '1', ex=USER_UPDATE_TTL)
-                    except (ApiError, ApiTimeoutError) as error:
-                        botlog.logger.warning(
-                            'Не удалось обновить профиль пользователя',
-                            tg_id=user.id,
-                            error=str(error),
-                        )
-                    finally:
-                        await redis_client.eval(
-                            RELEASE_USER_UPDATE_LOCK,
-                            1,
-                            lock_key,
-                            lock_token,
-                        )
-
+                        finally:
+                            await redis_client.eval(
+                                RELEASE_USER_UPDATE_LOCK,
+                                1,
+                                lock_key,
+                                lock_token,
+                            )
         return await handler(event, data)
 
 
@@ -138,33 +141,38 @@ class ExceptionMessageMiddleware(BaseMiddleware):
         data: Dict[str, Any]
     ) -> Any:
         is_send_dowload_sticker = get_flag(data, 'is_send_dowload_sticker', default=True)
+        is_send_exception = get_flag(data, 'is_send_exception', default=True)
+        is_message_delete = True
         if is_send_dowload_sticker:
             dowload = await event.answer('⏳')
-        is_message_delete = get_flag(data, 'is_message_delete', default=True)
         try:
             result = await handler(event, data)
-            try:
-                if is_message_delete:
-                    await event.delete()
-            except Exception:
-                pass
             return result
         except BotError as bote:
+            is_message_delete = bote.is_delete_user_message
             botlog.logger.trace(f'AioPartPath: {bote}', tg_id=event.from_user.id, chat_id=event.chat.id)
-            await event.answer((TextHTML(bote.to_msg).escape())[:4000])
+            if is_send_exception:
+                await event.answer((TextHTML(bote.to_msg).escape())[:4000])
         except (TelegramBadRequest, TelegramForbiddenError) as e:
             botlog.logger.warning(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.chat.id)
         except Exception as e:
             str_e = str(e)
             botlog.logger.error(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.chat.id)
-            if event.from_user.id == settings.owner:
-                await event.answer(f'{PythonError.msg}: {(TextHTML(str_e).escape())[:4000]}')
-            else:
-                await event.answer(f'{PythonError.msg}')
+            if is_send_exception:
+                if event.from_user.id == settings.owner:
+                    await event.answer(f'{PythonError.msg}: {(TextHTML(str_e).escape())[:4000]}')
+                else:
+                    await event.answer(f'{PythonError.msg}')
             raise e
         finally:
             if is_send_dowload_sticker:
                 await dowload.delete()
+            try:
+                is_message_delete = get_flag(data, 'is_message_delete', default=is_message_delete)
+                if is_message_delete:
+                    await event.delete()
+            except Exception:
+                pass
 
 class ExceptionCallbackQueryMiddleware(BaseMiddleware):
     async def __call__(
@@ -173,6 +181,7 @@ class ExceptionCallbackQueryMiddleware(BaseMiddleware):
         event: CallbackQuery,
         data: Dict[str, Any]
     ) -> Any:
+        is_send_exception = get_flag(data, 'is_send_exception', default=True)
         callback_data: BaseCall = data.get('callback_data')
         check_is_user = True            
         answer_text = ''
@@ -184,17 +193,19 @@ class ExceptionCallbackQueryMiddleware(BaseMiddleware):
             return result, event
         except BotError as bote:
             botlog.logger.trace(f'AioPartPath: {bote}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
-            await event.answer(f'{TextHTML(bote.to_msg).escape()[:4000]}', show_alert=True)
+            if is_send_exception:
+                await event.answer(f'{TextHTML(bote.to_msg).escape()[:4000]}', show_alert=True)
         except (TelegramBadRequest, TelegramForbiddenError) as e:
             botlog.logger.warning(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
         except Exception as e:
             str_e = str(e)
             botlog.logger.error(f'AioPartPath: {e}', tg_id=event.from_user.id, chat_id=event.message.chat.id)
-            if event.from_user.id == settings.owner:
-                answer_text = f'{PythonError.msg}: {str_e[:4000]}'
-            else:
-                answer_text = f'{PythonError.msg}'
-            await event.answer(f'⚠️ {(TextHTML(e).escape())[:4000]} \n \n {answer_text}', show_alert=True)
+            if is_send_exception:
+                if event.from_user.id == settings.owner:
+                    answer_text = f'{PythonError.msg}: {str_e[:4000]}'
+                else:
+                    answer_text = f'{PythonError.msg}'
+                await event.answer(answer_text, show_alert=True)
             raise e
 
 class ServiceMiddleware(BaseMiddleware):
@@ -259,3 +270,24 @@ class PrivateChatMiddleware(BaseMiddleware):
             return await handler(event, data)
         except QuestionPrivateChatError:
             await service.go_private_chat()
+
+class ButtonUnavailableMiddleware(BaseMiddleware):
+    exception = ButtonUnavailableError
+
+    def __init__(self, *, is_unavailable: bool = False):
+        super().__init__()
+        self.is_unavailable = is_unavailable
+
+    async def __call__(
+        self,
+        handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
+        event: Update,
+        data: Dict[str, Any]
+    ) -> Any:
+        is_unavailable = get_flag(data, 'is_unavailable', default=self.is_unavailable)
+        if is_unavailable:
+            raise self.exception()
+        return await handler(event, data)
+
+class CommandUnavailableMiddleware(ButtonUnavailableMiddleware):
+    exception = CommandUnavailableError
