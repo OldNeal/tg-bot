@@ -118,8 +118,8 @@ class BeyonderService(BaseService):
         info = await self.logic.time_info(purpose_tg_id=purpose_tg_id, to_raise=not self.is_admin)
         if self.is_admin:
             await self.fsm.update_data(is_admin=self.is_admin, seq=seq)
-        else:
-            if purpose_tg_id != self.tg_id:
+        elif info.total_seconds() == 0:
+            if (purpose_tg_id or self.purpose_tg_id) != self.tg_id:
                 raise BeyonderUpseqError()
         if path_id is not None:
             path = await self.logic.path(id=path_id)
