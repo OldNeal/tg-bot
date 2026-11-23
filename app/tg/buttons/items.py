@@ -9,7 +9,7 @@ from app.tg.callback.items import (
     ItemsPageCall,
     ItemActionCall
 )
-from app.validate.api import AnswerInventory, AnswerItems, ItemInfo, Page
+from app.validate.core import AnswerInventory, AnswerItems, ItemInfo, Page
 
 ACTIVITY_POINTS_TAG = 'activity_point'
 

@@ -1,6 +1,6 @@
 import random
 
-from app.api.schemas import AnswerUserBody
+from app.validate.core import AnswerUserBody
 from app.tg.text.utils import TextHTML
 
 class Templates:

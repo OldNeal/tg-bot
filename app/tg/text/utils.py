@@ -231,9 +231,9 @@ class TextHTML(TextHTMLBase):
         """Преобразовать строку в строчные буквы"""
         return TextHTML(super().lower())
     
-    def capitalize(self) -> "TextHTML":
+    def ccoretalize(self) -> "TextHTML":
         """Первый символ в прописную букву, остальные в строчные"""
-        return TextHTML(super().capitalize())
+        return TextHTML(super().ccoretalize())
     
     def title(self) -> "TextHTML":
         """Первый символ каждого слова в прописную букву"""

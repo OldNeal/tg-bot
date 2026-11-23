@@ -9,7 +9,7 @@ from app.tg.text.utils import TextHTML
 from app.tg.buttons.main import MainIKB
 from app.tg.fsm.state import MainState
 from app.tg.fsm.utils import MainFSM
-from app.validate.api import AnswerUsersBody
+from app.validate.core import AnswerUsersBody
 
 class MainService(BaseService):
     logic_class: type[MainLogic] = MainLogic
@@ -40,9 +40,9 @@ class MainService(BaseService):
         ])
 
     async def ping(self):
-        api_ping = await self.logic.test_api_connect()
+        core_ping = await self.logic.test_core_connect()
         return await self.answer([
-            AnswerBody(text=self.text.check_ping(api_ping), is_rich_text=True)
+            AnswerBody(text=self.text.check_ping(core_ping), is_rich_text=True)
         ])
 
     async def my_state(self):

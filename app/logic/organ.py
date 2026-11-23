@@ -1,6 +1,6 @@
 from app.logic.base import BaseLogic
 from app.logic.utils import class_decor
-from app.validate.api import QueryOrganSetting, QueryOrganSettingDefault, OrganSettingDefault
+from app.validate.core import QueryOrganSetting, QueryOrganSettingDefault, OrganSettingDefault
 
 @class_decor
 class OrganLogic(BaseLogic):

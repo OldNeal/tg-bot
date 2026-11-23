@@ -1,5 +1,5 @@
 from app.tg.text.base import Templates, BaseText
-from app.validate.api import AnswerBaseInfo, AnswerUserBody
+from app.validate.core import AnswerBaseInfo, AnswerUserBody
 
 class MainText(BaseText):
     def __init__(self, data: AnswerBaseInfo):
@@ -42,8 +42,8 @@ class MainText(BaseText):
             ] + member_text + beyonder_text)).blockquote()
 
     @classmethod
-    def check_ping(self, api_ping: str | None = None):
-        return f'⌛ Задержка API - {api_ping} мс.'
+    def check_ping(self, core_ping: str | None = None):
+        return f'⌛ Задержка CORE - {core_ping} мс.'
 
     @classmethod
     def state_clear(self):

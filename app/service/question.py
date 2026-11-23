@@ -22,7 +22,7 @@ from app.exception.question import (
     QuestionModerationRequestError,
     QuestionPrivateChatError
 )
-from app.validate.api import QueryQuestionCreate, QuestionCreate
+from app.validate.core import QueryQuestionCreate, QuestionCreate
 
 ANSWER_QUESTION_TIME_LIMIT_MIN = 1
 

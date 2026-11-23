@@ -1,5 +1,5 @@
 from app.tg.text.base import BaseText
-from app.api.schemas import AnswerNewsPaperGive, AnswerNewsPaperInfoDescription, AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsPaperInfo
+from app.validate.core import AnswerNewsPaperGive, AnswerNewsPaperInfoDescription, AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsPaperInfo
 
 class NewsPaperText(BaseText):
     @classmethod
@@ -137,7 +137,7 @@ class NewsPaperText(BaseText):
     @classmethod
     def give(cls, data: AnswerNewsPaperGive):
         if data.purpose is None:
-            raise ValueError('API response is missing the recipient')
+            raise ValueError('CORE response is missing the recipient')
         return f'👑 Газета передана пользователю {cls.user_mention(data.purpose)}'
 
     @classmethod

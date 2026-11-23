@@ -31,7 +31,7 @@ async def main():
     try:
         botlog.logger.info('Бот запускается')
         bot_info = await update_bot_info()
-        await logic.test_api_connect(True)
+        await logic.test_core_connect(True)
         await store.ping()
         if bot_info:
             dp.message.middleware(BotLogMessageMiddleware())

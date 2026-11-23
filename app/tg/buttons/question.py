@@ -11,7 +11,7 @@ from app.tg.callback.question import (
     QuestionQuizAnswerCall,
     QuestionSelectCall,
 )
-from app.api.schemas import Question, QuestionAnswer
+from app.validate.core import Question, QuestionAnswer
 
 
 class QuestionIKB(BotIKB):

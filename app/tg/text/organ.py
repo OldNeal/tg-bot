@@ -1,5 +1,5 @@
 from app.tg.text.base import Templates, BaseText
-from app.validate.api import AnswerOrganInfo, AnswerMemberInfo, AnswerOrganInfoDescription, SettingGroupValidate, AnswerOrganInfoMembers, AnswerOrganGive
+from app.validate.core import AnswerOrganInfo, AnswerMemberInfo, AnswerOrganInfoDescription, SettingGroupValidate, AnswerOrganInfoMembers, AnswerOrganGive
 
 class OrganText(BaseText):
     def __init__(self, data: AnswerOrganInfo | AnswerOrganInfoDescription | AnswerOrganInfoMembers):
@@ -163,7 +163,7 @@ class OrganText(BaseText):
     @classmethod
     def give(self, data: AnswerOrganGive):
         if data.purpose is None:
-            raise ValueError('API response is missing the recipient')
+            raise ValueError('CORE response is missing the recipient')
         return f'👑 {self.user_mention(data.user)} передал организацию пользователю {self.user_mention(data.purpose)}'
 
     @classmethod

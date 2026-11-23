@@ -4,7 +4,7 @@ from app.tg.buttons.base import BotIKB, MenuCall, CancelCall
 from app.tg.callback.stats import StatsBackCall, StatsPageCall, StatsPathsCall
 from app.tg.callback.beyonder import BeyonderListPageCall
 from app.tg.callback.back_values import StatsBackValues
-from app.validate.api import AnswerPathInfo
+from app.validate.core import AnswerPathInfo
 
 class StatsIKB(BotIKB):    
     def back(self, where: str):

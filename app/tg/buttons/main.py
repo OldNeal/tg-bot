@@ -16,7 +16,7 @@ from app.tg.callback.main import (
 from app.tg.callback.organ import OrganMemberCall
 from app.tg.callback.items import ItemInventoryCall
 from app.tg.text.base import BaseText
-from app.validate.api import AnswerBaseInfo, AnswerUserBody
+from app.validate.core import AnswerBaseInfo, AnswerUserBody
 
 class MainIKB(BotIKB):    
     search_fields = {

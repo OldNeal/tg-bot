@@ -2,16 +2,16 @@ import inspect
 from functools import wraps
 from httpx2 import ConnectError
 
-from app.exception.base import ApiError, ApiTimeoutError
-from app.validate.api import BaseExceptionResponse
+from app.exception.base import CoreError, CoreTimeoutError
+from app.validate.core import BaseExceptionResponse
 
 def class_decor(cls):
     for name, method in cls.__dict__.items():
         if callable(method):
-            setattr(cls, name, api_error_decor(method))
+            setattr(cls, name, core_error_decor(method))
     return cls
 
-def api_error_decor(func):
+def core_error_decor(func):
     is_async = inspect.iscoroutinefunction(func)
     if is_async:
         @wraps(func)
@@ -19,10 +19,10 @@ def api_error_decor(func):
             try:
                 result = await func(*args, **kwargs)
                 if type(result) == BaseExceptionResponse:
-                    raise ApiError(result.message, status_code=result.status_code)
+                    raise CoreError(result.message, status_code=result.status_code)
                 return result
             except ConnectError:
-                raise ApiTimeoutError('API не работает')
+                raise CoreTimeoutError('CORE не работает')
         return async_wrapped
     else:
         @wraps(func)
@@ -30,10 +30,10 @@ def api_error_decor(func):
             try:
                 result = func(*args, **kwargs)
                 if type(result) == BaseExceptionResponse:
-                    raise ApiError(result.message, status_code=result.status_code)
+                    raise CoreError(result.message, status_code=result.status_code)
                 return result
             except ConnectError:
-                raise ApiTimeoutError('API не работает')
+                raise CoreTimeoutError('CORE не работает')
         return sync_wrapped
 
 

@@ -1,9 +1,9 @@
 from datetime import datetime
 from clientele.http.httpx_backend import HttpxHTTPBackend
 
-from app.api import client, schemas, config
+from app.core import client, schemas, config
 from app.logging.base import botlog
-from app.exception.base import ApiTimeoutError
+from app.exception.base import CoreTimeoutError
 from app.logic.utils import class_decor, BaseExceptionResponse
 from app.redis.store import store
 
@@ -84,7 +84,7 @@ class BaseLogic:
         return await self.client.get_info(user_id)
         
     @classmethod
-    async def test_api_connect(cls, logged: bool = True, is_raise: bool = False):
+    async def test_core_connect(cls, logged: bool = True, is_raise: bool = False):
         try:
             start = datetime.now()
             cls.client.client.config.headers = {
@@ -96,10 +96,10 @@ class BaseLogic:
                 end = datetime.now()
                 result = f'{int((end - start).total_seconds()*1000)}'
                 if logged:
-                    botlog.logger.info('API работает', ping=result, url=cls.client.client.config.base_url)
+                    botlog.logger.info('Core работает', ping=result, url=cls.client.client.config.base_url)
                 return response
         except Exception as e:
-            exc = ApiTimeoutError(url=cls.client.client.config.base_url)
+            exc = CoreTimeoutError(url=cls.client.client.config.base_url)
             if is_raise:
                 raise exc
 

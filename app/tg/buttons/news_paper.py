@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardButton, DisabledButton
 
-from app.validate.api import AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsPaperInfo, ForButtons
+from app.validate.core import AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsPaperInfo, ForButtons
 from app.tg.buttons.base import BotIKB, MenuCall
 from app.tg.callback.news_paper import (
     NewsPaperInfoCall,

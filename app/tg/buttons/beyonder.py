@@ -16,7 +16,7 @@ from app.tg.callback.beyonder import (
     KillCall,
 )
 from app.tg.callback.wiki import PathCall
-from app.validate.api import AnswerBeyonderInfo, AnswerPathInfo
+from app.validate.core import AnswerBeyonderInfo, AnswerPathInfo
 
 
 class BeyonderIKB(BotIKB):

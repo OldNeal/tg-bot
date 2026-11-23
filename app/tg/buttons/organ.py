@@ -28,7 +28,7 @@ from app.tg.callback.organ import (OrganBackCall,
                                         OrganMyCall)
 from app.tg.callback.back_values import OrganBackValues
 from app.tg.callback.main import MainInfoCall
-from app.validate.api import OrganSettingValidate, AnswerMemberInfo, OrganInfo, AnswerOrganInfo
+from app.validate.core import OrganSettingValidate, AnswerMemberInfo, OrganInfo, AnswerOrganInfo
 
 
 class OrganIKB(BotIKB):    

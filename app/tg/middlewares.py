@@ -18,8 +18,8 @@ from app.tg.text.utils import TextHTML
 from app.tg.callback.base import BaseCall
 from app.tg.args import to_json, is_admin, is_reply
 from app.exception.base import (
-    ApiError,
-    ApiTimeoutError,
+    CoreError,
+    CoreTimeoutError,
     BotError,
     PythonError,
     ALienCallbackError,
@@ -79,7 +79,7 @@ class UserUpdateMiddleware(BaseMiddleware):
                                 )
                                 await logic.update_user()
                                 await redis_client.set(update_key, '1', ex=USER_UPDATE_TTL)
-                        except (ApiError, ApiTimeoutError) as error:
+                        except (CoreError, CoreTimeoutError) as error:
                             botlog.logger.warning(
                                 'Не удалось обновить профиль пользователя',
                                 tg_id=user.id,

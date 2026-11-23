@@ -1,6 +1,6 @@
 from app.tg.text.base import BaseText
 from app.tg.text.emodzi import Emodzi
-from app.validate.api import  (
+from app.validate.core import  (
     AnswerActivityPointsLimitReset,
     AnswerActivityPoints,
     AnswerActivityPointsLimit

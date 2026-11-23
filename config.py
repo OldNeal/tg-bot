@@ -19,7 +19,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 load_dotenv(Path(__file__).parent / '.env')
 
 class Settings:
-    api_url = os.getenv('api_url')
+    core_url = os.getenv('core_url')
 
     bot_token = os.getenv('bot_token')
     dev_bot_token = os.getenv('dev_bot_token', bot_token)
@@ -138,7 +138,7 @@ cmds = {
 }
 
 admin_cmds = cmds | {
-    'ping':'⌛ Проверить задержку API',
+    'ping':'⌛ Проверить задержку Core',
     'downseq':'⬇️ Понизить последовательность',
     'mystate':'🗂️ Ваши куки',
     'mystateclear':'🗑️ Очистить куки',

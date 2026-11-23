@@ -4,7 +4,7 @@ from typing import Literal
 
 from app.logic.news_paper import NewsPaperLogic
 from app.exception.base import JSONEnterError
-from app.api.schemas import AnswerAllNewsPaperInfo, AnswerNewsPaperInfoReaders
+from app.validate.core import AnswerAllNewsPaperInfo, AnswerNewsPaperInfoReaders
 from app.service.base import AnswerBody, BaseService
 from app.tg.buttons.news_paper import NewsPaperIKB
 from app.tg.fsm.state import NewsPaperState

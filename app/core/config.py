@@ -28,7 +28,7 @@ class Config(clientele_api.BaseConfig):
         )
     """
 
-    base_url: str = settings.api_url
+    base_url: str = settings.core_url
     headers: dict[str, str] = Field(default_factory=dict)
     timeout: float | None = 5.0
     follow_redirects: bool = False

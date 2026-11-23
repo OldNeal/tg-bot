@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from math import ceil
 
 from app.tg.text.base import Templates, BaseText
-from app.validate.api import AnswerTimeInfo, AnswerBeyonderInfo, AnswerStudyMethodAction, Points
+from app.validate.core import AnswerTimeInfo, AnswerBeyonderInfo, AnswerStudyMethodAction, Points
 
 class BeyonderText(BaseText):
     drink_template = Templates(templates_file_name='drink.txt')

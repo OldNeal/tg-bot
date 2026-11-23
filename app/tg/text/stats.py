@@ -1,5 +1,5 @@
 from app.tg.text.base import Templates, BaseText
-from app.validate.api import AnswerAllStats
+from app.validate.core import AnswerAllStats
 from app.tg.text.emodzi import Emodzi
 
 class StatsText(BaseText):

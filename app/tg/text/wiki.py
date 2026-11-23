@@ -1,5 +1,5 @@
 from app.tg.text.base import Templates, BaseText
-from app.validate.api import AnswerAllPathInfo, AnswerPathFullInfo, AnswerGAFullInfo, AnswerGASearchInfo
+from app.validate.core import AnswerAllPathInfo, AnswerPathFullInfo, AnswerGAFullInfo, AnswerGASearchInfo
 
 class PathText(BaseText):
     def __init__(self, data: AnswerAllPathInfo | AnswerPathFullInfo):

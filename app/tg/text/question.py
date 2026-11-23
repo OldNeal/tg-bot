@@ -1,4 +1,4 @@
-from app.api.schemas import (
+from app.validate.core import (
     AnswerQuestion,
     AnswerQuestionLimit,
     AnswerQuestionStatistics,

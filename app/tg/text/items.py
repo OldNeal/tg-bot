@@ -1,6 +1,6 @@
 from app.tg.text.base import BaseText
 from app.tg.text.utils import TextHTML
-from app.validate.api import AnswerInventory, AnswerItemChange, AnswerItems, ItemInfo
+from app.validate.core import AnswerInventory, AnswerItemChange, AnswerItems, ItemInfo
 
 
 class ItemText(BaseText):

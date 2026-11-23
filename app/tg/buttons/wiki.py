@@ -4,7 +4,7 @@ from app.tg.buttons.base import BotIKB, MenuCall, CancelCall
 from app.tg.callback.wiki import WikiBackCall, PathCall, GroupCall, GACall, WikiSearchCall, WikiMenuCall, PathsPageCall, GasPageCall
 from app.tg.callback.beyonder import DrinkCall, BeyonderListCall
 from app.tg.callback.back_values import WikiBackValues
-from app.validate.api import AnswerAllPathInfo, AnswerPathInfo, AnswerGAInfo
+from app.validate.core import AnswerAllPathInfo, AnswerPathInfo, AnswerGAInfo
 
 class WikiIKB(BotIKB):    
     def back(self, where: str):
