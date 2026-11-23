@@ -35,16 +35,17 @@ class BeyonderIKB(BotIKB):
             if data.beyonder:
                 if data.beyonder.seq >= 0:
                     self.builder.button(text='🚀 Продвинуться', callback_data=BeyonderUpSeqCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
-                self.builder.button(text='⏱ Дата продвижения', callback_data=BeyonderTimeInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
-                if data.points and data.points.study_method_action < 1:
-                    self.builder.button(text='📖 Изучить метод действия', callback_data=BeyonderStudyMethodActionCall(tg_id=self.tg_id))
-                self.builder.button(text='☠️ Потерять контроль', callback_data=KillCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
-        if where:
-            self.builder.button(text='↩️ Назад', callback_data=BeyonderBackCall(where=where, tg_id=self.tg_id))
+        self.builder.button(text='⏱ Дата продвижения', callback_data=BeyonderTimeInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
+        if telegram.tg_id == self.tg_id:
+            if data.points and data.points.study_method_action < 1:
+                self.builder.button(text='📖 Изучить метод действия', callback_data=BeyonderStudyMethodActionCall(tg_id=self.tg_id))
+            self.builder.button(text='☠️ Потерять контроль', callback_data=KillCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         self.builder.button(
             text='🪪 Главная карточка',
             callback_data=MainInfoCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id),
         )
+        if where:
+            self.builder.button(text='↩️ Назад', callback_data=BeyonderBackCall(where=where, tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()
 
     def accert_kill(self, purpose_tg_id: int):
@@ -131,7 +132,7 @@ class BeyonderIKB(BotIKB):
         ).as_markup()
 
     def time_info(self, purpose_tg_id: int, is_upseq: bool = False):
-        if is_upseq:
+        if is_upseq and purpose_tg_id == self.tg_id:
             self.builder.button(text='🚀 Продвинуться', callback_data=BeyonderUpSeqCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id))
         self.builder.button(text='↩️ Назад', callback_data=BeyonderInfoCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()

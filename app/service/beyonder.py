@@ -9,7 +9,7 @@ from app.tg.callback.back_values import BeyonderBackValues
 from app.tg.callback.wiki import WikiSearchCall
 from app.tg.fsm.state import BeyonderState
 from app.tg.fsm.utils import BeyonderFSM
-from app.exception.beyonder import BeyonderMethodActionPointsError, BeyonderMethodActionStateError
+from app.exception.beyonder import BeyonderMethodActionPointsError, BeyonderMethodActionStateError, BeyonderUpseqError
 
 class BeyonderService(BaseService):
     logic_class: type[BeyonderLogic] = BeyonderLogic
@@ -115,9 +115,12 @@ class BeyonderService(BaseService):
         path_id: int | None = None,
         purpose_tg_id: int | None = None,
     ):  
+        info = await self.logic.time_info(purpose_tg_id=purpose_tg_id, to_raise=not self.is_admin)
         if self.is_admin:
             await self.fsm.update_data(is_admin=self.is_admin, seq=seq)
-        info = await self.logic.time_info(purpose_tg_id=purpose_tg_id, to_raise=not self.is_admin)
+        else:
+            if purpose_tg_id != self.tg_id:
+                raise BeyonderUpseqError()
         if path_id is not None:
             path = await self.logic.path(id=path_id)
         else:
@@ -227,7 +230,7 @@ class BeyonderService(BaseService):
             AnswerBody(
                 text=self.text.time_info(data),
                 data=data,
-                reply_markup=self.IKB.time_info(purpose_tg_id, data.total_seconds <= 0) if not purpose_tg_id is None else None
+                reply_markup=self.IKB.time_info(purpose_tg_id, data.total_seconds <= 0 and data.is_upseq) if not purpose_tg_id is None else None
             )
         ])
 

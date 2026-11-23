@@ -56,13 +56,14 @@ class BeyonderText(BaseText):
                     time_text += f'{seconds} сек.'
             else:
                 time_text += f'дней: {time.days}'
-        else:
+        elif data.is_upseq:
             time_text = '🚀 Вы можете продвинуться'
-        return self.user_mention(data.purpose) + self.html.joined([
-            f'📅 Послед. продвижение: {datetime.fromisoformat(data.last_upseq).date()}',
-            f'⚡ След. продвижение: {datetime.fromisoformat(data.next_upseq).date()}',
-            time_text,
-        ]).blockquote()
+        else:
+            time_text = '⚗️ Вы переварили зелье'
+        texts = [f'📅 Послед. продвижение: {datetime.fromisoformat(data.last_upseq).date()}']
+        if data.is_upseq and data.total_seconds > 0:
+            texts.append(f'⚡ След. продвижение: {datetime.fromisoformat(data.next_upseq).date()}')
+        return self.user_mention(data.purpose) + self.html.joined(texts + [time_text]).blockquote()
     
     @property
     def time_redact(self):

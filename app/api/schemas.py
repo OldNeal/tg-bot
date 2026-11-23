@@ -394,6 +394,7 @@ class AnswerTimeInfo(pydantic.BaseModel):
     next_upseq: str | None
     last_upseq: str
     total_seconds: float | None
+    is_upseq: bool = True
 
 
 class AnswerTimeRedact(pydantic.BaseModel):

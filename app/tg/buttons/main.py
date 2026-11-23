@@ -58,6 +58,10 @@ class MainIKB(BotIKB):
                 text='🎒 Инвентарь',
                 callback_data=ItemInventoryCall(tg_id=self.tg_id),
             )
+        self.builder.button(text='👤 Аккаунт', callback_data=MainUserInfoCall(
+                    user_id=data.user.user_id,
+                    tg_id=self.tg_id,
+                ))
         return self.builder.adjust(1).as_markup()
 
     def user_info(self, data: AnswerBaseInfo):
