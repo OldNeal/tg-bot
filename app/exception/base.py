@@ -58,7 +58,7 @@ class RedisError(BotError):
     emodzi = '❌'
 
 class CoreError(BotError):
-    msg = None
+    msg = 'Ошибка в Core'
 
     def __init__(self, *args, level = 'warning', is_error = True, **kwargs):
         super().__init__(*args, level=level, is_error=is_error, **kwargs)

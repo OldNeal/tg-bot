@@ -9,7 +9,7 @@ client = clientele_api.APIClient(config=config.Config())
 
 
 
-@client.get("/info", response_map={200: schemas.AnswerBaseInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.get("/info", response_map={200: schemas.AnswerBaseInfo, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_info(result: schemas.AnswerBaseInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int) -> schemas.AnswerBaseInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Info
@@ -17,7 +17,7 @@ async def get_info(result: schemas.AnswerBaseInfo | schemas.BaseExceptionRespons
     return result
 
 
-@client.put("/user/update", response_map={200: schemas.AnswerUserBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.put("/user/update", response_map={200: schemas.AnswerUserBody, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def user_new(result: schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryUserUpdate) -> schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """User New
@@ -26,7 +26,7 @@ async def user_new(result: schemas.AnswerUserBody | schemas.BaseExceptionRespons
 
 
 
-@client.get("/user", response_map={200: schemas.AnswerUserBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.get("/user", response_map={200: schemas.AnswerUserBody, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def user_telegram(result: schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: typing.Optional[int] = None, tg_id: typing.Optional[int] = None) -> schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """User Telegram
@@ -35,7 +35,7 @@ async def user_telegram(result: schemas.AnswerUserBody | schemas.BaseExceptionRe
 
 
 
-@client.get("/user/search", response_map={200: schemas.AnswerUsersBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.get("/user/search", response_map={200: schemas.AnswerUsersBody, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def user_search(result: schemas.AnswerUsersBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: typing.Optional[int] = None, tg_id: typing.Optional[int] = None, username: typing.Optional[str] = None, name: typing.Optional[str] = None, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerUsersBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """User Search
@@ -44,7 +44,7 @@ async def user_search(result: schemas.AnswerUsersBody | schemas.BaseExceptionRes
 
 
 
-@client.get("/user/list", response_map={200: schemas.AnswerUsersBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.get("/user/list", response_map={200: schemas.AnswerUsersBody, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def user_list(result: schemas.AnswerUsersBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerUsersBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """User List
@@ -52,7 +52,7 @@ async def user_list(result: schemas.AnswerUsersBody | schemas.BaseExceptionRespo
     return result
 
 
-@client.patch("/user/delete", response_map={200: schemas.AnswerUserBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.patch("/user/delete", response_map={200: schemas.AnswerUserBody, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def user_delete(result: schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int) -> schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """User Delete
@@ -60,7 +60,7 @@ async def user_delete(result: schemas.AnswerUserBody | schemas.BaseExceptionResp
     return result
 
 
-@client.patch("/activity", response_map={200: schemas.AnswerActivityPoints, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+@client.patch("/activity", response_map={200: schemas.AnswerActivityPoints, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def activity_points(result: schemas.AnswerActivityPoints | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, message_count: typing.Optional[int] = None) -> schemas.AnswerActivityPoints | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Activity Points
@@ -69,7 +69,7 @@ async def activity_points(result: schemas.AnswerActivityPoints | schemas.BaseExc
 
 
 
-@client.get("/activity/points", response_map={200: schemas.AnswerActivityPoints, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+@client.get("/activity/points", response_map={200: schemas.AnswerActivityPoints, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def activity_points_count(result: schemas.AnswerActivityPoints | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int) -> schemas.AnswerActivityPoints | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Activity Points Count
@@ -78,7 +78,7 @@ async def activity_points_count(result: schemas.AnswerActivityPoints | schemas.B
 
 
 
-@client.get("/activity/limit", response_map={200: schemas.AnswerActivityPointsLimit, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+@client.get("/activity/limit", response_map={200: schemas.AnswerActivityPointsLimit, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def activity_points_limit(result: schemas.AnswerActivityPointsLimit | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int) -> schemas.AnswerActivityPointsLimit | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Activity Points Limit
@@ -86,7 +86,7 @@ async def activity_points_limit(result: schemas.AnswerActivityPointsLimit | sche
     return result
 
 
-@client.patch("/activity/limit/reset", response_map={200: schemas.AnswerActivityPointsLimitReset, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+@client.patch("/activity/limit/reset", response_map={200: schemas.AnswerActivityPointsLimitReset, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def activity_points_limit_reset(result: schemas.AnswerActivityPointsLimitReset | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int) -> schemas.AnswerActivityPointsLimitReset | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Activity Points Limit Reset
@@ -95,7 +95,7 @@ async def activity_points_limit_reset(result: schemas.AnswerActivityPointsLimitR
 
 
 
-@client.get("/beyonder/info", response_map={200: schemas.AnswerBeyonderInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse})
+@client.get("/beyonder/info", response_map={200: schemas.AnswerBeyonderInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_info(result: schemas.AnswerBeyonderInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int) -> schemas.AnswerBeyonderInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Beyonder Info
@@ -103,7 +103,7 @@ async def beyonder_info(result: schemas.AnswerBeyonderInfo | schemas.BaseExcepti
     return result
 
 
-@client.put("/beyonder/drink", response_map={200: schemas.AnswerRedactSeq, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse})
+@client.put("/beyonder/drink", response_map={200: schemas.AnswerRedactSeq, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_drink(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, path_id: typing.Optional[int] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Beyonder Drink
@@ -111,7 +111,7 @@ async def beyonder_drink(result: schemas.AnswerRedactSeq | schemas.BaseException
     return result
 
 
-@client.patch("/beyonder/upseq", response_map={200: schemas.AnswerRedactSeq, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse})
+@client.patch("/beyonder/upseq", response_map={200: schemas.AnswerRedactSeq, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_upseq(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Beyonder Upseq
@@ -119,7 +119,7 @@ async def beyonder_upseq(result: schemas.AnswerRedactSeq | schemas.BaseException
     return result
 
 
-@client.patch("/beyonder/downseq", response_map={200: schemas.AnswerRedactSeq, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse})
+@client.patch("/beyonder/downseq", response_map={200: schemas.AnswerRedactSeq, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_dowseq(result: schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: typing.Optional[int] = None, path_name: typing.Optional[str] = None, seq: typing.Optional[int] = None) -> schemas.AnswerRedactSeq | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Beyonder Dowseq
@@ -128,7 +128,7 @@ async def beyonder_dowseq(result: schemas.AnswerRedactSeq | schemas.BaseExceptio
 
 
 
-@client.get("/beyonder/time/info", response_map={200: schemas.AnswerTimeInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse})
+@client.get("/beyonder/time/info", response_map={200: schemas.AnswerTimeInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_time_info(result: schemas.AnswerTimeInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int, to_raise: typing.Optional[bool] = None) -> schemas.AnswerTimeInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Beyonder Time Info
@@ -136,7 +136,7 @@ async def beyonder_time_info(result: schemas.AnswerTimeInfo | schemas.BaseExcept
     return result
 
 
-@client.patch("/beyonder/time/replace", response_map={200: schemas.AnswerTimeReplace, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse})
+@client.patch("/beyonder/time/replace", response_map={200: schemas.AnswerTimeReplace, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_time_replace(result: schemas.AnswerTimeReplace | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, date: str, user_id: typing.Optional[int] = None) -> schemas.AnswerTimeReplace | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Beyonder Time Replace
@@ -144,7 +144,7 @@ async def beyonder_time_replace(result: schemas.AnswerTimeReplace | schemas.Base
     return result
 
 
-@client.patch("/beyonder/time/redact", response_map={200: schemas.AnswerTimeRedact, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse})
+@client.patch("/beyonder/time/redact", response_map={200: schemas.AnswerTimeRedact, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_time_redact(result: schemas.AnswerTimeRedact | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, seconds: float, operator: str, user_id: typing.Optional[int] = None) -> schemas.AnswerTimeRedact | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Beyonder Time Redact
@@ -152,7 +152,7 @@ async def beyonder_time_redact(result: schemas.AnswerTimeRedact | schemas.BaseEx
     return result
 
 
-@client.post("/beyonder/kill", response_map={200: schemas.AnswerBody, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse})
+@client.post("/beyonder/kill", response_map={200: schemas.AnswerBody, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_kill(result: schemas.AnswerBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: typing.Optional[int] = None) -> schemas.AnswerBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Beyonder Kill
@@ -160,7 +160,7 @@ async def beyonder_kill(result: schemas.AnswerBody | schemas.BaseExceptionRespon
     return result
 
 
-@client.post("/beyonder/method_action/study", response_map={200: schemas.AnswerStudyMethodAction, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse})
+@client.post("/beyonder/method_action/study", response_map={200: schemas.AnswerStudyMethodAction, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_study_method_action(result: schemas.AnswerStudyMethodAction | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, points: int) -> schemas.AnswerStudyMethodAction | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Beyonder Study Method Action
@@ -169,7 +169,7 @@ async def beyonder_study_method_action(result: schemas.AnswerStudyMethodAction |
 
 
 
-@client.get("/beyonder/list", response_map={200: schemas.AnswerBeyonderList, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse})
+@client.get("/beyonder/list", response_map={200: schemas.AnswerBeyonderList, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_list(result: schemas.AnswerBeyonderList | schemas.BaseExceptionResponse | schemas.HTTPValidationError, path_id: int, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerBeyonderList | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Beyonder List
@@ -177,7 +177,7 @@ async def beyonder_list(result: schemas.AnswerBeyonderList | schemas.BaseExcepti
     return result
 
 
-@client.post("/organ/member", response_map={200: schemas.AnswerMemberInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/member", response_map={200: schemas.AnswerMemberInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_member(result: schemas.AnswerMemberInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: typing.Optional[int] = None) -> schemas.AnswerMemberInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Member
@@ -186,7 +186,7 @@ async def organ_member(result: schemas.AnswerMemberInfo | schemas.BaseExceptionR
 
 
 
-@client.get("/organ/search", response_map={200: schemas.AnswerAllOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.get("/organ/search", response_map={200: schemas.AnswerAllOrganInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_search(result: schemas.AnswerAllOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, name: str, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Search
@@ -194,7 +194,7 @@ async def organ_search(result: schemas.AnswerAllOrganInfo | schemas.BaseExceptio
     return result
 
 
-@client.post("/organ/info", response_map={200: schemas.AnswerOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/info", response_map={200: schemas.AnswerOrganInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_info(result: schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: typing.Optional[int] = None, member_user_id: typing.Optional[int] = None) -> schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Info
@@ -202,7 +202,7 @@ async def organ_info(result: schemas.AnswerOrganInfo | schemas.BaseExceptionResp
     return result
 
 
-@client.post("/organ/info/members", response_map={200: schemas.AnswerOrganInfoMembers, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/info/members", response_map={200: schemas.AnswerOrganInfoMembers, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_info_members(result: schemas.AnswerOrganInfoMembers | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: typing.Optional[int] = None, member_user_id: typing.Optional[int] = None, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerOrganInfoMembers | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Info Members
@@ -210,7 +210,7 @@ async def organ_info_members(result: schemas.AnswerOrganInfoMembers | schemas.Ba
     return result
 
 
-@client.post("/organ/info/description", response_map={200: schemas.AnswerOrganInfoDescription, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/info/description", response_map={200: schemas.AnswerOrganInfoDescription, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_info_description(result: schemas.AnswerOrganInfoDescription | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: typing.Optional[int] = None, member_user_id: typing.Optional[int] = None) -> schemas.AnswerOrganInfoDescription | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Info Description
@@ -219,7 +219,7 @@ async def organ_info_description(result: schemas.AnswerOrganInfoDescription | sc
 
 
 
-@client.get("/organ/list", response_map={200: schemas.AnswerAllOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.get("/organ/list", response_map={200: schemas.AnswerAllOrganInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_list(result: schemas.AnswerAllOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ List
@@ -228,7 +228,7 @@ async def organ_list(result: schemas.AnswerAllOrganInfo | schemas.BaseExceptionR
 
 
 
-@client.get("/organ/top/members", response_map={200: schemas.AnswerAllOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.get("/organ/top/members", response_map={200: schemas.AnswerAllOrganInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_top_members(result: schemas.AnswerAllOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Top Members
@@ -237,7 +237,7 @@ async def organ_top_members(result: schemas.AnswerAllOrganInfo | schemas.BaseExc
 
 
 
-@client.get("/organ/top/days", response_map={200: schemas.AnswerAllOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.get("/organ/top/days", response_map={200: schemas.AnswerAllOrganInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_top_days(result: schemas.AnswerAllOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Top Days
@@ -245,7 +245,7 @@ async def organ_top_days(result: schemas.AnswerAllOrganInfo | schemas.BaseExcept
     return result
 
 
-@client.put("/organ/login", response_map={200: schemas.AnswerOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.put("/organ/login", response_map={200: schemas.AnswerOrganInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_login(result: schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int) -> schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Login
@@ -253,7 +253,7 @@ async def organ_login(result: schemas.AnswerOrganInfo | schemas.BaseExceptionRes
     return result
 
 
-@client.post("/organ/exit", response_map={200: schemas.AnswerOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/exit", response_map={200: schemas.AnswerOrganInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_exit(result: schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody) -> schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Exit
@@ -261,7 +261,7 @@ async def organ_exit(result: schemas.AnswerOrganInfo | schemas.BaseExceptionResp
     return result
 
 
-@client.put("/organ/create", response_map={200: schemas.AnswerOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.put("/organ/create", response_map={200: schemas.AnswerOrganInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_create(result: schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, name: str) -> schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Create
@@ -269,7 +269,7 @@ async def organ_create(result: schemas.AnswerOrganInfo | schemas.BaseExceptionRe
     return result
 
 
-@client.post("/organ/settings", response_map={200: schemas.AnswerOrganSetting, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/settings", response_map={200: schemas.AnswerOrganSetting, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_settings(result: schemas.AnswerOrganSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody) -> schemas.AnswerOrganSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Settings
@@ -277,7 +277,7 @@ async def organ_settings(result: schemas.AnswerOrganSetting | schemas.BaseExcept
     return result
 
 
-@client.post("/organ/settings/values", response_map={200: schemas.AnswerOrganSettingValues, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/settings/values", response_map={200: schemas.AnswerOrganSettingValues, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_settings_values(result: schemas.AnswerOrganSettingValues | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody) -> schemas.AnswerOrganSettingValues | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Settings Values
@@ -285,7 +285,7 @@ async def organ_settings_values(result: schemas.AnswerOrganSettingValues | schem
     return result
 
 
-@client.patch("/organ/settings/redact", response_map={200: schemas.AnswerOrganSetting, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.patch("/organ/settings/redact", response_map={200: schemas.AnswerOrganSetting, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_settings_redact(result: schemas.AnswerOrganSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryOrganSetting) -> schemas.AnswerOrganSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Settings Redact
@@ -293,7 +293,7 @@ async def organ_settings_redact(result: schemas.AnswerOrganSetting | schemas.Bas
     return result
 
 
-@client.patch("/organ/settings/default", response_map={200: schemas.AnswerOrganSetting, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.patch("/organ/settings/default", response_map={200: schemas.AnswerOrganSetting, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_settings_default(result: schemas.AnswerOrganSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryOrganSettingDefault) -> schemas.AnswerOrganSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Settings Default
@@ -301,7 +301,7 @@ async def organ_settings_default(result: schemas.AnswerOrganSetting | schemas.Ba
     return result
 
 
-@client.post("/organ/capture", response_map={200: schemas.AnswerOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/capture", response_map={200: schemas.AnswerOrganInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_capture(result: schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody) -> schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Capture
@@ -309,7 +309,7 @@ async def organ_capture(result: schemas.AnswerOrganInfo | schemas.BaseExceptionR
     return result
 
 
-@client.patch("/organ/uprank", response_map={200: schemas.AppValidateApiOrganAnswerredactrank, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.patch("/organ/uprank", response_map={200: schemas.AppValidateApiOrganAnswerredactrank, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_uprank(result: schemas.AppValidateApiOrganAnswerredactrank | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int, rank: typing.Optional[int] = None) -> schemas.AppValidateApiOrganAnswerredactrank | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Uprank
@@ -317,7 +317,7 @@ async def organ_uprank(result: schemas.AppValidateApiOrganAnswerredactrank | sch
     return result
 
 
-@client.patch("/organ/downrank", response_map={200: schemas.AppValidateApiOrganAnswerredactrank, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.patch("/organ/downrank", response_map={200: schemas.AppValidateApiOrganAnswerredactrank, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_downrank(result: schemas.AppValidateApiOrganAnswerredactrank | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int, rank: typing.Optional[int] = None) -> schemas.AppValidateApiOrganAnswerredactrank | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Downrank
@@ -325,7 +325,7 @@ async def organ_downrank(result: schemas.AppValidateApiOrganAnswerredactrank | s
     return result
 
 
-@client.post("/organ/kick", response_map={200: schemas.AnswerOrganInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/kick", response_map={200: schemas.AnswerOrganInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_kick(result: schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int) -> schemas.AnswerOrganInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Kick
@@ -333,7 +333,7 @@ async def organ_kick(result: schemas.AnswerOrganInfo | schemas.BaseExceptionResp
     return result
 
 
-@client.patch("/organ/titul/redact", response_map={200: schemas.AnswerRedactTitul, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.patch("/organ/titul/redact", response_map={200: schemas.AnswerRedactTitul, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_titul_redact(result: schemas.AnswerRedactTitul | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int, titul: str) -> schemas.AnswerRedactTitul | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Titul Redact
@@ -341,7 +341,7 @@ async def organ_titul_redact(result: schemas.AnswerRedactTitul | schemas.BaseExc
     return result
 
 
-@client.post("/organ/titul/delete", response_map={200: schemas.AnswerRedactTitul, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/titul/delete", response_map={200: schemas.AnswerRedactTitul, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_titul_delete(result: schemas.AnswerRedactTitul | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int) -> schemas.AnswerRedactTitul | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Titul Delete
@@ -349,7 +349,7 @@ async def organ_titul_delete(result: schemas.AnswerRedactTitul | schemas.BaseExc
     return result
 
 
-@client.post("/organ/give", response_map={200: schemas.AnswerOrganGive, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse})
+@client.post("/organ/give", response_map={200: schemas.AnswerOrganGive, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def organ_give(result: schemas.AnswerOrganGive | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int) -> schemas.AnswerOrganGive | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Organ Give
@@ -357,7 +357,7 @@ async def organ_give(result: schemas.AnswerOrganGive | schemas.BaseExceptionResp
     return result
 
 
-@client.post("/player/question/create", response_map={200: schemas.AnswerQuestion, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/player/question/create", response_map={200: schemas.AnswerQuestion, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def question_create(result: schemas.AnswerQuestion | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryQuestionCreate) -> schemas.AnswerQuestion | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question Create
@@ -365,7 +365,7 @@ async def question_create(result: schemas.AnswerQuestion | schemas.BaseException
     return result
 
 
-@client.post("/player/question/answer", response_map={200: schemas.AnswerQuestionAnswer, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/player/question/answer", response_map={200: schemas.AnswerQuestionAnswer, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def question_answer(result: schemas.AnswerQuestionAnswer | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, question_id: int, answer_id: int) -> schemas.AnswerQuestionAnswer | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question Answer
@@ -373,7 +373,7 @@ async def question_answer(result: schemas.AnswerQuestionAnswer | schemas.BaseExc
     return result
 
 
-@client.post("/player/question/answer/incorrect", response_map={200: schemas.AnswerQuestionAnswer, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/player/question/answer/incorrect", response_map={200: schemas.AnswerQuestionAnswer, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def question_answer_incorrect(result: schemas.AnswerQuestionAnswer | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, question_id: int) -> schemas.AnswerQuestionAnswer | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question Answer Incorrect
@@ -381,7 +381,7 @@ async def question_answer_incorrect(result: schemas.AnswerQuestionAnswer | schem
     return result
 
 
-@client.post("/player/question/search", response_map={200: schemas.AnswerQuestionSearch, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/player/question/search", response_map={200: schemas.AnswerQuestionSearch, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def question_search(result: schemas.AnswerQuestionSearch | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, value: str, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerQuestionSearch | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question Search
@@ -389,7 +389,7 @@ async def question_search(result: schemas.AnswerQuestionSearch | schemas.BaseExc
     return result
 
 
-@client.post("/player/question/list", response_map={200: schemas.AnswerAllQuestions, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/player/question/list", response_map={200: schemas.AnswerAllQuestions, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def question_list(result: schemas.AnswerAllQuestions | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllQuestions | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question List
@@ -397,7 +397,7 @@ async def question_list(result: schemas.AnswerAllQuestions | schemas.BaseExcepti
     return result
 
 
-@client.post("/player/question/random", response_map={200: schemas.AnswerRandomQuestion, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/player/question/random", response_map={200: schemas.AnswerRandomQuestion, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def question_random(result: schemas.AnswerRandomQuestion | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, correct_count: typing.Optional[int] = None, incorrect_count: typing.Optional[int] = None) -> schemas.AnswerRandomQuestion | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question Random
@@ -405,7 +405,7 @@ async def question_random(result: schemas.AnswerRandomQuestion | schemas.BaseExc
     return result
 
 
-@client.post("/player/question/my", response_map={200: schemas.AnswerAllQuestions, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/player/question/my", response_map={200: schemas.AnswerAllQuestions, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def question_my(result: schemas.AnswerAllQuestions | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllQuestions | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question My
@@ -413,7 +413,7 @@ async def question_my(result: schemas.AnswerAllQuestions | schemas.BaseException
     return result
 
 
-@client.post("/player/question/statistics", response_map={200: schemas.AnswerQuestionStatistics, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/player/question/statistics", response_map={200: schemas.AnswerQuestionStatistics, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def question_statistics(result: schemas.AnswerQuestionStatistics | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, question_id: int) -> schemas.AnswerQuestionStatistics | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question Statistics
@@ -421,7 +421,7 @@ async def question_statistics(result: schemas.AnswerQuestionStatistics | schemas
     return result
 
 
-@client.post("/player/question/statistics/user", response_map={200: schemas.AnswerUserQuestionStatistics, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/player/question/statistics/user", response_map={200: schemas.AnswerUserQuestionStatistics, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def question_user_statistics(result: schemas.AnswerUserQuestionStatistics | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody) -> schemas.AnswerUserQuestionStatistics | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question User Statistics
@@ -430,7 +430,7 @@ async def question_user_statistics(result: schemas.AnswerUserQuestionStatistics 
 
 
 
-@client.get("/player/question/limit", response_map={200: schemas.AnswerQuestionLimit, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.get("/player/question/limit", response_map={200: schemas.AnswerQuestionLimit, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def question_limit(result: schemas.AnswerQuestionLimit | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int) -> schemas.AnswerQuestionLimit | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Question Limit
@@ -438,7 +438,7 @@ async def question_limit(result: schemas.AnswerQuestionLimit | schemas.BaseExcep
     return result
 
 
-@client.post("/item/give", response_map={200: schemas.AnswerItemChange, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+@client.post("/item/give", response_map={200: schemas.AnswerItemChange, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def item_give(result: schemas.AnswerItemChange | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryItemChange) -> schemas.AnswerItemChange | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Item Give
@@ -446,7 +446,7 @@ async def item_give(result: schemas.AnswerItemChange | schemas.BaseExceptionResp
     return result
 
 
-@client.post("/item/take", response_map={200: schemas.AnswerItemChange, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+@client.post("/item/take", response_map={200: schemas.AnswerItemChange, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def item_take(result: schemas.AnswerItemChange | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryItemChange) -> schemas.AnswerItemChange | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Item Take
@@ -454,7 +454,7 @@ async def item_take(result: schemas.AnswerItemChange | schemas.BaseExceptionResp
     return result
 
 
-@client.post("/item/inventory", response_map={200: schemas.AnswerInventory, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+@client.post("/item/inventory", response_map={200: schemas.AnswerInventory, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def item_inventory(result: schemas.AnswerInventory | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: typing.Optional[int] = None, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerInventory | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Item Inventory
@@ -463,7 +463,7 @@ async def item_inventory(result: schemas.AnswerInventory | schemas.BaseException
 
 
 
-@client.get("/item/list", response_map={200: schemas.AnswerItems, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+@client.get("/item/list", response_map={200: schemas.AnswerItems, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def item_list(result: schemas.AnswerItems | schemas.BaseExceptionResponse | schemas.HTTPValidationError, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerItems | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Item List
@@ -472,7 +472,7 @@ async def item_list(result: schemas.AnswerItems | schemas.BaseExceptionResponse 
 
 
 
-@client.get("/item/{item_id}", response_map={200: schemas.ItemInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+@client.get("/item/{item_id}", response_map={200: schemas.ItemInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def item_info(result: schemas.BaseExceptionResponse | schemas.HTTPValidationError | schemas.ItemInfo, item_id: int) -> schemas.BaseExceptionResponse | schemas.HTTPValidationError | schemas.ItemInfo:
     """Item Info
@@ -480,7 +480,7 @@ async def item_info(result: schemas.BaseExceptionResponse | schemas.HTTPValidati
     return result
 
 
-@client.post("/item/inventory/item", response_map={200: schemas.ItemInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse})
+@client.post("/item/inventory/item", response_map={200: schemas.ItemInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def item_inventory_info(result: schemas.BaseExceptionResponse | schemas.HTTPValidationError | schemas.ItemInfo, data: schemas.QueryBody, id: int) -> schemas.BaseExceptionResponse | schemas.HTTPValidationError | schemas.ItemInfo:
     """Item Inventory Info
@@ -489,7 +489,7 @@ async def item_inventory_info(result: schemas.BaseExceptionResponse | schemas.HT
 
 
 
-@client.get("/newspaper/search", response_map={200: schemas.AnswerAllNewsPaperInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.get("/newspaper/search", response_map={200: schemas.AnswerAllNewsPaperInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_search(result: schemas.AnswerAllNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, name: str, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Search
@@ -497,7 +497,7 @@ async def news_paper_search(result: schemas.AnswerAllNewsPaperInfo | schemas.Bas
     return result
 
 
-@client.post("/newspaper/all", response_map={200: schemas.AnswerAllNewsPaperInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/all", response_map={200: schemas.AnswerAllNewsPaperInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_all(result: schemas.AnswerAllNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper All
@@ -505,7 +505,7 @@ async def news_paper_all(result: schemas.AnswerAllNewsPaperInfo | schemas.BaseEx
     return result
 
 
-@client.post("/newspaper/list", response_map={200: schemas.AnswerAllNewsPaperInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/list", response_map={200: schemas.AnswerAllNewsPaperInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_list(result: schemas.AnswerAllNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper List
@@ -513,7 +513,7 @@ async def news_paper_list(result: schemas.AnswerAllNewsPaperInfo | schemas.BaseE
     return result
 
 
-@client.post("/newspaper/editors", response_map={200: schemas.AnswerAllNewsPaperInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/editors", response_map={200: schemas.AnswerAllNewsPaperInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_list_where_editor(result: schemas.AnswerAllNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper List Where Editor
@@ -521,7 +521,7 @@ async def news_paper_list_where_editor(result: schemas.AnswerAllNewsPaperInfo | 
     return result
 
 
-@client.post("/newspaper/for_subscribe", response_map={200: schemas.AnswerAllNewsPaperInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/for_subscribe", response_map={200: schemas.AnswerAllNewsPaperInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_for_subscribe(result: schemas.AnswerAllNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper For Subscribe
@@ -529,7 +529,7 @@ async def news_paper_for_subscribe(result: schemas.AnswerAllNewsPaperInfo | sche
     return result
 
 
-@client.post("/newspaper/info", response_map={200: schemas.AnswerNewsPaperInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/info", response_map={200: schemas.AnswerNewsPaperInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_info(result: schemas.AnswerNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int) -> schemas.AnswerNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Info
@@ -537,7 +537,7 @@ async def news_paper_info(result: schemas.AnswerNewsPaperInfo | schemas.BaseExce
     return result
 
 
-@client.post("/newspaper/info/description", response_map={200: schemas.AnswerNewsPaperInfoDescription, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/info/description", response_map={200: schemas.AnswerNewsPaperInfoDescription, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_info_description(result: schemas.AnswerNewsPaperInfoDescription | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int) -> schemas.AnswerNewsPaperInfoDescription | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Info Description
@@ -545,7 +545,7 @@ async def news_paper_info_description(result: schemas.AnswerNewsPaperInfoDescrip
     return result
 
 
-@client.post("/newspaper/readers", response_map={200: schemas.AnswerNewsPaperInfoReaders, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/readers", response_map={200: schemas.AnswerNewsPaperInfoReaders, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_readers(result: schemas.AnswerNewsPaperInfoReaders | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerNewsPaperInfoReaders | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Readers
@@ -553,7 +553,7 @@ async def news_paper_readers(result: schemas.AnswerNewsPaperInfoReaders | schema
     return result
 
 
-@client.post("/newspaper/reader", response_map={200: schemas.AnswerReaderInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/reader", response_map={200: schemas.AnswerReaderInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_reader(result: schemas.AnswerReaderInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int, user_id: typing.Optional[int] = None) -> schemas.AnswerReaderInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Reader
@@ -561,7 +561,7 @@ async def news_paper_reader(result: schemas.AnswerReaderInfo | schemas.BaseExcep
     return result
 
 
-@client.put("/newspaper/create", response_map={200: schemas.AnswerNewsPaperInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.put("/newspaper/create", response_map={200: schemas.AnswerNewsPaperInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_create(result: schemas.AnswerNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, name: str) -> schemas.AnswerNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Create
@@ -569,7 +569,7 @@ async def news_paper_create(result: schemas.AnswerNewsPaperInfo | schemas.BaseEx
     return result
 
 
-@client.put("/newspaper/subscribe", response_map={200: schemas.AnswerNewsPaperInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.put("/newspaper/subscribe", response_map={200: schemas.AnswerNewsPaperInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_subscribe(result: schemas.AnswerNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int) -> schemas.AnswerNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Subscribe
@@ -577,7 +577,7 @@ async def news_paper_subscribe(result: schemas.AnswerNewsPaperInfo | schemas.Bas
     return result
 
 
-@client.patch("/newspaper/unsubscribe", response_map={200: schemas.AnswerNewsPaperInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.patch("/newspaper/unsubscribe", response_map={200: schemas.AnswerNewsPaperInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_unsubscribe(result: schemas.AnswerNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int) -> schemas.AnswerNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Unsubscribe
@@ -585,7 +585,7 @@ async def news_paper_unsubscribe(result: schemas.AnswerNewsPaperInfo | schemas.B
     return result
 
 
-@client.post("/newspaper/notify", response_map={200: schemas.AnswerNewsPaperInfoReaders, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/notify", response_map={200: schemas.AnswerNewsPaperInfoReaders, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_notify(result: schemas.AnswerNewsPaperInfoReaders | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerNewsPaperInfoReaders | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Notify
@@ -593,7 +593,7 @@ async def news_paper_notify(result: schemas.AnswerNewsPaperInfoReaders | schemas
     return result
 
 
-@client.patch("/newspaper/editor/make", response_map={200: schemas.AppValidateApiNewspaperAnswerredactrank, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.patch("/newspaper/editor/make", response_map={200: schemas.AppValidateApiNewspaperAnswerredactrank, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_make_editor(result: schemas.AppValidateApiNewspaperAnswerredactrank | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int, user_id: int) -> schemas.AppValidateApiNewspaperAnswerredactrank | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Make Editor
@@ -601,7 +601,7 @@ async def news_paper_make_editor(result: schemas.AppValidateApiNewspaperAnswerre
     return result
 
 
-@client.patch("/newspaper/editor/fire", response_map={200: schemas.AppValidateApiNewspaperAnswerredactrank, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.patch("/newspaper/editor/fire", response_map={200: schemas.AppValidateApiNewspaperAnswerredactrank, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_fire_editor(result: schemas.AppValidateApiNewspaperAnswerredactrank | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int, user_id: int) -> schemas.AppValidateApiNewspaperAnswerredactrank | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Fire Editor
@@ -609,7 +609,7 @@ async def news_paper_fire_editor(result: schemas.AppValidateApiNewspaperAnswerre
     return result
 
 
-@client.post("/newspaper/capture", response_map={200: schemas.AnswerNewsPaperInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/capture", response_map={200: schemas.AnswerNewsPaperInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_capture(result: schemas.AnswerNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int) -> schemas.AnswerNewsPaperInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Capture
@@ -617,7 +617,7 @@ async def news_paper_capture(result: schemas.AnswerNewsPaperInfo | schemas.BaseE
     return result
 
 
-@client.post("/newspaper/give", response_map={200: schemas.AnswerNewsPaperGive, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/give", response_map={200: schemas.AnswerNewsPaperGive, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_give(result: schemas.AnswerNewsPaperGive | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int, user_id: int) -> schemas.AnswerNewsPaperGive | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Give
@@ -625,7 +625,7 @@ async def news_paper_give(result: schemas.AnswerNewsPaperGive | schemas.BaseExce
     return result
 
 
-@client.post("/newspaper/settings", response_map={200: schemas.AnswerNewsPaperSetting, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/settings", response_map={200: schemas.AnswerNewsPaperSetting, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_settings(result: schemas.AnswerNewsPaperSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int) -> schemas.AnswerNewsPaperSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Settings
@@ -633,7 +633,7 @@ async def news_paper_settings(result: schemas.AnswerNewsPaperSetting | schemas.B
     return result
 
 
-@client.post("/newspaper/settings/values", response_map={200: schemas.AnswerNewsPaperSettingValues, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.post("/newspaper/settings/values", response_map={200: schemas.AnswerNewsPaperSettingValues, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_settings_values(result: schemas.AnswerNewsPaperSettingValues | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, id: int) -> schemas.AnswerNewsPaperSettingValues | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Settings Values
@@ -641,7 +641,7 @@ async def news_paper_settings_values(result: schemas.AnswerNewsPaperSettingValue
     return result
 
 
-@client.patch("/newspaper/settings/redact", response_map={200: schemas.AnswerNewsPaperSetting, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.patch("/newspaper/settings/redact", response_map={200: schemas.AnswerNewsPaperSetting, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_settings_redact(result: schemas.AnswerNewsPaperSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryNewsPaperSetting, id: int) -> schemas.AnswerNewsPaperSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Settings Redact
@@ -649,7 +649,7 @@ async def news_paper_settings_redact(result: schemas.AnswerNewsPaperSetting | sc
     return result
 
 
-@client.patch("/newspaper/settings/default", response_map={200: schemas.AnswerNewsPaperSetting, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse})
+@client.patch("/newspaper/settings/default", response_map={200: schemas.AnswerNewsPaperSetting, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def news_paper_settings_default(result: schemas.AnswerNewsPaperSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryNewsPaperSettingDefault, id: int) -> schemas.AnswerNewsPaperSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """News Paper Settings Default
@@ -658,7 +658,7 @@ async def news_paper_settings_default(result: schemas.AnswerNewsPaperSetting | s
 
 
 
-@client.get("/wiki/seq/search", response_map={200: schemas.AnswerSeqSearchInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/seq/search", response_map={200: schemas.AnswerSeqSearchInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def search_seq(result: schemas.AnswerSeqSearchInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, value: str, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerSeqSearchInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Search Seq
@@ -667,7 +667,7 @@ async def search_seq(result: schemas.AnswerSeqSearchInfo | schemas.BaseException
 
 
 
-@client.get("/wiki/seq/all", response_map={200: schemas.AnswerAllSeqInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/seq/all", response_map={200: schemas.AnswerAllSeqInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_seqs(result: schemas.AnswerAllSeqInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllSeqInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Seqs
@@ -676,7 +676,7 @@ async def get_seqs(result: schemas.AnswerAllSeqInfo | schemas.BaseExceptionRespo
 
 
 
-@client.get("/wiki/seq", response_map={200: schemas.AnswerSeqFullInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/seq", response_map={200: schemas.AnswerSeqFullInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_seq(result: schemas.AnswerSeqFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, name: typing.Optional[str] = None, id: typing.Optional[int] = None) -> schemas.AnswerSeqFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Seq
@@ -685,7 +685,7 @@ async def get_seq(result: schemas.AnswerSeqFullInfo | schemas.BaseExceptionRespo
 
 
 
-@client.get("/wiki/path/search", response_map={200: schemas.AnswerPathSearchInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/path/search", response_map={200: schemas.AnswerPathSearchInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def search_path(result: schemas.AnswerPathSearchInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, value: str, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerPathSearchInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Search Path
@@ -694,7 +694,7 @@ async def search_path(result: schemas.AnswerPathSearchInfo | schemas.BaseExcepti
 
 
 
-@client.get("/wiki/path/all", response_map={200: schemas.AnswerAllPathInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/path/all", response_map={200: schemas.AnswerAllPathInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_paths(result: schemas.AnswerAllPathInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllPathInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Paths
@@ -703,7 +703,7 @@ async def get_paths(result: schemas.AnswerAllPathInfo | schemas.BaseExceptionRes
 
 
 
-@client.get("/wiki/path", response_map={200: schemas.AnswerPathFullInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/path", response_map={200: schemas.AnswerPathFullInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_path(result: schemas.AnswerPathFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, name: typing.Optional[str] = None, id: typing.Optional[int] = None) -> schemas.AnswerPathFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Path
@@ -712,7 +712,7 @@ async def get_path(result: schemas.AnswerPathFullInfo | schemas.BaseExceptionRes
 
 
 
-@client.get("/wiki/path/seq", response_map={200: schemas.AnswerSeqFullInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/path/seq", response_map={200: schemas.AnswerSeqFullInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_seq_by_path_id(result: schemas.AnswerSeqFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, path_id: int, seq_number: int) -> schemas.AnswerSeqFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Seq By Path Id
@@ -721,7 +721,7 @@ async def get_seq_by_path_id(result: schemas.AnswerSeqFullInfo | schemas.BaseExc
 
 
 
-@client.get("/wiki/path/seqs", response_map={200: schemas.AnswerAllSeqInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/path/seqs", response_map={200: schemas.AnswerAllSeqInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_seqs_by_path_id(result: schemas.AnswerAllSeqInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, path_id: int, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllSeqInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Seqs By Path Id
@@ -730,7 +730,7 @@ async def get_seqs_by_path_id(result: schemas.AnswerAllSeqInfo | schemas.BaseExc
 
 
 
-@client.get("/wiki/ga/search", response_map={200: schemas.AnswerGASearchInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/ga/search", response_map={200: schemas.AnswerGASearchInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def search_ga(result: schemas.AnswerGASearchInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, value: str, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerGASearchInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Search Ga
@@ -739,7 +739,7 @@ async def search_ga(result: schemas.AnswerGASearchInfo | schemas.BaseExceptionRe
 
 
 
-@client.get("/wiki/ga/all", response_map={200: schemas.AnswerAllGAInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/ga/all", response_map={200: schemas.AnswerAllGAInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_gas(result: schemas.AnswerAllGAInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllGAInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Gas
@@ -748,7 +748,7 @@ async def get_gas(result: schemas.AnswerAllGAInfo | schemas.BaseExceptionRespons
 
 
 
-@client.get("/wiki/ga", response_map={200: schemas.AnswerGAFullInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/ga", response_map={200: schemas.AnswerGAFullInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_ga(result: schemas.AnswerGAFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, name: typing.Optional[str] = None, id: typing.Optional[int] = None) -> schemas.AnswerGAFullInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Ga
@@ -757,7 +757,7 @@ async def get_ga(result: schemas.AnswerGAFullInfo | schemas.BaseExceptionRespons
 
 
 
-@client.get("/wiki/ga/paths", response_map={200: schemas.AnswerAllPathInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/ga/paths", response_map={200: schemas.AnswerAllPathInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_path_by_ga_id(result: schemas.AnswerAllPathInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, ga_id: int, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllPathInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Path By Ga Id
@@ -766,7 +766,7 @@ async def get_path_by_ga_id(result: schemas.AnswerAllPathInfo | schemas.BaseExce
 
 
 
-@client.get("/wiki/group/all", response_map={200: schemas.AnswerAllGroupInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/group/all", response_map={200: schemas.AnswerAllGroupInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_groups(result: schemas.AnswerAllGroupInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, page: typing.Optional[int] = None, per_page: typing.Optional[int] = None) -> schemas.AnswerAllGroupInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Groups
@@ -775,7 +775,7 @@ async def get_groups(result: schemas.AnswerAllGroupInfo | schemas.BaseExceptionR
 
 
 
-@client.get("/wiki/group", response_map={200: schemas.AnswerGroupInfo, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse})
+@client.get("/wiki/group", response_map={200: schemas.AnswerGroupInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_group(result: schemas.AnswerGroupInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, name: str) -> schemas.AnswerGroupInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Get Group
@@ -784,7 +784,7 @@ async def get_group(result: schemas.AnswerGroupInfo | schemas.BaseExceptionRespo
 
 
 
-@client.get("/stats/all", response_map={200: schemas.AnswerAllStats, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse})
+@client.get("/stats/all", response_map={200: schemas.AnswerAllStats, 403: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def stats_all(result: schemas.AnswerAllStats | schemas.BaseExceptionResponse) -> schemas.AnswerAllStats | schemas.BaseExceptionResponse:
     """Stats All
@@ -793,7 +793,7 @@ async def stats_all(result: schemas.AnswerAllStats | schemas.BaseExceptionRespon
 
 
 
-@client.get("/logs/file/get/{category}/{file_name}", response_map={200: schemas.LogsFileGet200Response, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse})
+@client.get("/logs/file/get/{category}/{file_name}", response_map={200: schemas.LogsFileGet200Response, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def logs_file_get(result: schemas.BaseExceptionResponse | schemas.HTTPValidationError | schemas.LogsFileGet200Response, category: typing.Any, file_name: typing.Any) -> schemas.BaseExceptionResponse | schemas.HTTPValidationError | schemas.LogsFileGet200Response:
     """Logs File Get
@@ -802,7 +802,7 @@ async def logs_file_get(result: schemas.BaseExceptionResponse | schemas.HTTPVali
 
 
 
-@client.get("/logs/file/names", response_map={200: schemas.AnswerLogFileNames, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse})
+@client.get("/logs/file/names", response_map={200: schemas.AnswerLogFileNames, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def logs_file_names(result: schemas.AnswerLogFileNames | schemas.BaseExceptionResponse | schemas.HTTPValidationError, mask: typing.Optional[typing.Any] = None, type_: typing.Annotated[typing.Optional[typing.Any], clientele_api.Query(alias="type")] = None) -> schemas.AnswerLogFileNames | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """Logs File Names
@@ -811,7 +811,7 @@ async def logs_file_names(result: schemas.AnswerLogFileNames | schemas.BaseExcep
 
 
 
-@client.get("/", response_map={200: schemas.AnswerMain, 400: schemas.BaseExceptionResponse, 403: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse})
+@client.get("/", response_map={200: schemas.AnswerMain, 403: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def main(result: schemas.AnswerMain | schemas.BaseExceptionResponse) -> schemas.AnswerMain | schemas.BaseExceptionResponse:
     """Main

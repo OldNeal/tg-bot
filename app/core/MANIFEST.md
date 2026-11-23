@@ -14,12 +14,12 @@ Or with uv:
 uv add clientele
 ```
 
-API VERSION: 0.11.x
+API VERSION: 0.12.x
 OPENAPI VERSION: 3.1.0
 CLIENTELE VERSION: 2.3.0
 
 Regenerate using this command:
 
 ```sh
-clientele start-api -u http://127.0.0.1:8000/openapi.json -o app/api/ --asyncio --regen
+clientele start-api -u http://127.0.0.1:8000/openapi.json -o app/core/ --asyncio --regen
 ```

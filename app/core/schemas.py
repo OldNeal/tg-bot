@@ -437,6 +437,7 @@ class BaseExceptionResponse(pydantic.BaseModel):
     status_code: int
     headers: typing.Optional[dict[str, typing.Any] | None] = None
     content: typing.Optional[typing.Any] = None
+    kwargs: dict[str, typing.Any] = {}
 
 
 class BeyonderInfo(pydantic.BaseModel):

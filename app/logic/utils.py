@@ -22,7 +22,7 @@ def core_error_decor(func):
                     raise CoreError(result.message, status_code=result.status_code)
                 return result
             except ConnectError:
-                raise CoreTimeoutError('CORE не работает')
+                raise CoreTimeoutError('Core не работает')
         return async_wrapped
     else:
         @wraps(func)
@@ -33,7 +33,7 @@ def core_error_decor(func):
                     raise CoreError(result.message, status_code=result.status_code)
                 return result
             except ConnectError:
-                raise CoreTimeoutError('CORE не работает')
+                raise CoreTimeoutError('Core не работает')
         return sync_wrapped
 
 
