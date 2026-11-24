@@ -14,3 +14,6 @@ class MainLogic(BaseLogic):
 
     async def user_info(self, user_id: int):
         return await self.client.get_info(self.check_is_not_none(user_id, await self.get_user_id(self.purpose_tg_id)))
+
+    async def beyonder_sistem_info(self):
+        return await self.client.beyonder_sistem_info()

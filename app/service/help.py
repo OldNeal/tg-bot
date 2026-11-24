@@ -28,3 +28,13 @@ class HelpService(BaseService):
                 reply_markup=self.IKB.cmds(),
             )
         ])
+
+    async def beyonder_sistem(self):
+        data = await self.logic.beyonder_sistem_info()
+        return await self.answer([
+            AnswerBody(
+                text=self.text.beyonder_sistem(data),
+                data=data,
+                reply_markup=self.IKB.beyonder_sistem(),
+            )
+        ])

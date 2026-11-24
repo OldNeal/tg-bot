@@ -128,6 +128,15 @@ async def beyonder_dowseq(result: schemas.AnswerRedactSeq | schemas.BaseExceptio
 
 
 
+@client.get("/beyonder/sistem/info", response_map={200: schemas.AnswerBeyonderSistemInfo, 403: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
+
+async def beyonder_sistem_info(result: schemas.AnswerBeyonderSistemInfo | schemas.BaseExceptionResponse) -> schemas.AnswerBeyonderSistemInfo | schemas.BaseExceptionResponse:
+    """Beyonder Sistem Info
+    """
+    return result
+
+
+
 @client.get("/beyonder/time/info", response_map={200: schemas.AnswerTimeInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def beyonder_time_info(result: schemas.AnswerTimeInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int, to_raise: typing.Optional[bool] = None) -> schemas.AnswerTimeInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:

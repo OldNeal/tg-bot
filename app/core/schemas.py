@@ -112,6 +112,11 @@ class AnswerBeyonderList(pydantic.BaseModel):
     count: int = 0
 
 
+class AnswerBeyonderSistemInfo(pydantic.BaseModel):
+    get_activity_points_limit: int
+    sequences: list["SequenceInfo"]
+
+
 class AnswerBody(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
@@ -626,6 +631,14 @@ class Sequence(pydantic.BaseModel):
     ga_id: int
     emodzi: typing.Optional[str | None] = None
     custom_emodzi_id: typing.Optional[str | None] = None
+
+
+class SequenceInfo(pydantic.BaseModel):
+    number: int
+    days: int
+    rsp_factor: int
+    rsp: int
+    total_seconds: int
 
 
 class SettingGroupValidate(pydantic.BaseModel):

@@ -5,3 +5,6 @@ class HelpCall(BaseCall, prefix='help'):
 
 class CmdListCall(BaseCall, prefix='cmd_list'):
     pass
+
+class BeyonderSistemCall(BaseCall, prefix='beyonder_sistem'):
+    pass
