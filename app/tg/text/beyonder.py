@@ -57,9 +57,9 @@ class BeyonderText(BaseText):
             else:
                 time_text += f'дней: {time.days}'
         elif data.is_upseq:
-            time_text = '🚀 Вы можете продвинуться'
+            time_text = '🚀 Может продвинуться'
         else:
-            time_text = '⚗️ Вы переварили зелье'
+            time_text = '⚗️ Переварил зелье'
         texts = [f'📅 Послед. продвижение: {datetime.fromisoformat(data.last_upseq).date()}']
         if data.is_upseq and data.total_seconds > 0:
             texts.append(f'⚡ След. продвижение: {datetime.fromisoformat(data.next_upseq).date()}')

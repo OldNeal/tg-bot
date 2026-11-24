@@ -19,7 +19,7 @@ class ActivityText(BaseText):
     def limits(self, data: AnswerActivityPointsLimit):
         ap_emodzi = Emodzi.activity_point_emodzi()
         return f'⚡ Лимиты активности' + self.html.separator().join([
-            (f'➕ Получено недавно: {data.used} / {data.limit} {ap_emodzi}' if data.remaining > 0 else '😢 Вы исчерпали лимит награды за активность'),
+            (f'➕ Получено недавно: {data.used} / {data.limit} {ap_emodzi}' if data.remaining > 0 else '😢 Исчерпан лимит наград за активность'),
             f'🎖️ Награда за сообщение: {data.points_per_message} {ap_emodzi}',
             f'⛅ Лимиты сбрасываются каждый день',
         ]).blockquote()

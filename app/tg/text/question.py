@@ -21,7 +21,7 @@ class QuestionText(BaseText):
             (
                 f'➕ Использовано ответов: {data.used} / {data.limit}'
                 if data.remaining > 0
-                else '😢 Вы исчерпали лимит ответов на вопросы'
+                else '😢 Исчерпан лимит ответов на вопросы'
             ),
             '⛅ Лимиты сбрасываются каждый день',
         ]).blockquote()
@@ -152,7 +152,7 @@ class QuestionText(BaseText):
         is_correct: bool,
         activity_points: int = 0
     ):
-        return f'✅ Правильно, вы получили {activity_points} {Emodzi.activity_point_emodzi()}' if is_correct else '❌ Неправильно'
+        return f'✅ Правильно, держите {activity_points} {Emodzi.activity_point_emodzi()}' if is_correct else '❌ Неправильно'
 
     @classmethod
     def create_confirmation(cls, data: dict):
@@ -236,8 +236,8 @@ class QuestionText(BaseText):
         return '✒️ Отправьте причину отказа отдельным сообщением в группе.'
 
     @classmethod
-    def moderation_author_approved(cls, question: str):
-        return f'✅ Ваш вопрос "{cls.html(question).escape()}" прошёл модерацию и создан.'
+    def moderation_author_approved(cls, question: str, activity_points: int):
+        return f'✅ Ваш вопрос "{cls.html(question).escape()}" прошёл модерацию и создан. Вы получили {activity_points} {Emodzi.activity_point_emodzi()}'
 
     @classmethod
     def moderation_author_rejected(cls, question: str, reason: str):

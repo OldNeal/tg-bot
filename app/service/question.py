@@ -692,7 +692,7 @@ class QuestionService(BaseService):
             try:
                 await self.bot.send_message(
                     chat_id=author_tg_id,
-                    text=self.text.moderation_author_approved(payload['request']['question']['body']),
+                    text=self.text.moderation_author_approved(payload['request']['question']['body'], created.activity_points),
                 )
             except TelegramForbiddenError:
                 payload['author_notification_delivered'] = False

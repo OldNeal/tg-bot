@@ -295,6 +295,7 @@ class AnswerQuestion(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     question: "Question"
+    activity_points: int = 0
 
 
 class AnswerQuestionAnswer(pydantic.BaseModel):
