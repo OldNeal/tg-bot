@@ -139,6 +139,7 @@ class BaseService:
                 reply_message_id=body.reply_message_id,
                 is_ephemeral=body.is_ephemeral,
                 is_replace_callback_query_message=body.is_replace_callback_query_message,
+                is_send_to_private=body.is_send_to_private
                 ) for body in answer_body_list
                 ])
 

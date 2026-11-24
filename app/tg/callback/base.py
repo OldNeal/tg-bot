@@ -16,6 +16,9 @@ class PageCall(BaseCall, prefix='page'):
 class CancelCall(BaseCall, prefix='cancel'):
     pass
 
+class MessageDeleteCall(BaseCall, prefix='message_delete'):
+    text: str | None = None
+
 class AccertCancelCall(BaseCall, prefix='accert_cancel'):
     accert: bool = False
     cancel: bool = False

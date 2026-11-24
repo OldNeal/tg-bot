@@ -7,7 +7,7 @@ from config import settings, bot
 from app.tg.handlers.main import main_router
 from app.tg.handlers.help import help_router
 from app.tg.text.utils import TextHTML
-from app.tg.callback.base import CancelCall
+from app.tg.callback.base import CancelCall, MessageDeleteCall
 from app.tg.buttons.text import TextKeyboardMarkup, TextKeyboardButton
 
 import asyncio
@@ -72,3 +72,9 @@ async def call(
         await callback.message.edit_text(rich_message=InputRichMessage(html='✅ Отмена произошла успешно'), reply_markup=None)
     else:
         await callback.message.edit_text(rich_message=InputRichMessage(html='❗ Вы уже ввели значение'), reply_markup=None)
+
+@base_router.callback_query(MessageDeleteCall.filter())     
+async def call(callback: CallbackQuery, callback_data: MessageDeleteCall):
+    await callback.message.delete()
+    if callback_data.text:
+        await callback.answer(callback_data.text, show_alert=True)
