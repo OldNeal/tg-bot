@@ -3,6 +3,30 @@ from app.logic.utils import class_decor
 
 @class_decor
 class MainLogic(BaseLogic):
+    async def user_settings(self):
+        return await self.client.user_settings(await self.body)
+
+    async def user_settings_values(self):
+        return await self.client.user_settings_values(await self.body)
+
+    async def user_settings_redact(self, data: dict):
+        body = await self.body
+        return await self.client.user_settings_redact(self.schemas.QueryUserSetting.model_validate(
+            body.model_dump() | {'parametrs': data}
+        ))
+
+    async def user_settings_default(self, is_all: bool = False):
+        body = await self.body
+        return await self.client.user_settings_default(self.schemas.QueryUserSettingDefault.model_validate(
+            body.model_dump() | {
+                'to_default': self.schemas.UserSettingDefault(
+                    parametr=None,
+                    group=None,
+                    is_all=is_all,
+                )
+            }
+        ))
+
     async def users_list(self, page: int | None = None, per_page: int | None = None):
         return await self.client.user_list(page=page, per_page=per_page)
     

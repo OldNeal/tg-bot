@@ -1,5 +1,6 @@
 from app.tg.text.base import Templates, BaseText
 from app.validate.core import AnswerOrganInfo, AnswerMemberInfo, AnswerOrganInfoDescription, SettingGroupValidate, AnswerOrganInfoMembers, AnswerOrganGive
+from app.tg.settings import is_setting_available, values_by_tag
 
 class OrganText(BaseText):
     def __init__(self, data: AnswerOrganInfo | AnswerOrganInfoDescription | AnswerOrganInfoMembers):
@@ -117,6 +118,50 @@ class OrganText(BaseText):
     @classmethod
     def settings_values(self, values: dict):
         return '⚙️ Настройки' + self.html.json_format(values, indent=4).escape().code().pre('json')   
+
+    @classmethod
+    def settings_editor(self, groups):
+        lines = []
+        values = values_by_tag(groups)
+        for group in groups:
+            for parameter in group.parametrs:
+                if parameter.is_hidden or not is_setting_available(parameter, values):
+                    continue
+                if parameter.subparameters:
+                    emoji = parameter.emodzi or group.emodzi or '⚙️'
+                    icon = self.html(emoji).emoji(parameter.custom_emodzi_id or group.custom_emodzi_id)
+                    lines.append(f'{icon} {self.html(parameter.name).escape()}: открыть вложенные настройки')
+                    continue
+                value = parameter.value
+                choices = getattr(parameter, 'choises', None)
+                if isinstance(choices, dict):
+                    value = choices.get(value, value)
+                if isinstance(value, bool):
+                    value = '✅ Да' if value else '❌ Нет'
+                elif value is None:
+                    value = '❌'
+                emoji = parameter.emodzi or group.emodzi or '⚙️'
+                icon = self.html(emoji).emoji(parameter.custom_emodzi_id or group.custom_emodzi_id)
+                lines.append(
+                    f'{icon} {self.html(parameter.name).escape()}: {self.html(str(value)).escape()}'
+                )
+        return self.html('⚙️ Настройки организации').bold() + self.html.joined(lines).blockquote()
+
+    @classmethod
+    def settings_subparameters(self, parameter):
+        lines = []
+        for subparameter in parameter.subparameters or []:
+            if subparameter.is_hidden:
+                continue
+            value = (parameter.value or {}).get(subparameter.tag, subparameter.default_value)
+            if isinstance(value, bool):
+                value = '✅ Да' if value else '❌ Нет'
+            icon = self.html(subparameter.emodzi or '⚙️').emoji(subparameter.custom_emodzi_id)
+            lines.append(
+                f'{icon} {self.html(subparameter.name).escape()}: {self.html(str(value)).escape()}'
+            )
+        title = self.html(parameter.name).escape().bold()
+        return title + self.html.joined(lines).blockquote()
     
     @property
     def capture(self):

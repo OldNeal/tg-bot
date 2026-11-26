@@ -1,4 +1,5 @@
 from aiogram.types import CopyTextButton, InlineKeyboardButton, InlineKeyboardMarkup, DisabledButton
+from aiogram.enums import ButtonStyle
 
 from app.tg.buttons.base import BotIKB, MenuCall
 from app.tg.callback.beyonder import BeyonderInfoCall
@@ -7,6 +8,11 @@ from app.tg.callback.main import (
     MainInfoCall,
     MainUserInfoCall,
     MainUserDeleteCall,
+    MainUserSettingsCall,
+    MainUserSettingsRedactCall,
+    MainUserSettingsDefaultCall,
+    MainUserSettingsModeCall,
+    MainUserSettingEditCall,
     MainUsersCall,
     MainUsersPageCall,
     MainUsersSearchCall,
@@ -17,6 +23,7 @@ from app.tg.callback.organ import OrganMemberCall
 from app.tg.callback.items import ItemInventoryCall
 from app.tg.text.base import BaseText
 from app.validate.core import AnswerBaseInfo, AnswerUserBody
+from app.tg.settings import is_setting_available, values_by_tag
 
 class MainIKB(BotIKB):    
     search_fields = {
@@ -76,10 +83,59 @@ class MainIKB(BotIKB):
             )
         if telegram.tg_id == self.tg_id:
             self.builder.button(
+                text='⚙️ Настройки',
+                callback_data=MainUserSettingsCall(tg_id=self.tg_id),
+            )
+            self.builder.button(
                             text='🗑 Удалить аккаунт',
                             callback_data=MainUserDeleteCall(user_id=purpose.user_id, tg_id=self.tg_id),
                         )
         return self.builder.adjust(1).as_markup()
+
+    def user_settings_editor(self, groups):
+        values = values_by_tag(groups)
+        for group in groups:
+            for parameter in group.parametrs:
+                if parameter.is_hidden or not parameter.is_redact or not is_setting_available(parameter, values):
+                    continue
+                emoji = parameter.emodzi or group.emodzi or '⚙️'
+                custom_emoji_id = parameter.custom_emodzi_id or group.custom_emodzi_id
+                self.builder.button(
+                    text=f'{emoji} {parameter.name}'[:60],
+                    icon_custom_emoji_id=custom_emoji_id,
+                    callback_data=MainUserSettingEditCall(tag=parameter.tag, tg_id=self.tg_id),
+                )
+        self.builder.adjust(2)
+        self.builder.row(InlineKeyboardButton(text='🔩 Сбросить по умолчанию', callback_data=MainUserSettingsDefaultCall(tg_id=self.tg_id).pack()))
+        self.builder.row(InlineKeyboardButton(text='🧾 Редактировать через JSON', callback_data=MainUserSettingsModeCall(is_json=True, tg_id=self.tg_id).pack()))
+        self.builder.row(InlineKeyboardButton(text='↩️ К аккаунту', callback_data=MenuCall(where='user', tg_id=self.tg_id).pack()))
+        return self.builder.as_markup()
+
+    def user_settings_json(self):
+        self.builder.button(
+            text='⚙️ Редактировать кнопками',
+            callback_data=MainUserSettingsModeCall(is_json=False, tg_id=self.tg_id),
+        )
+        self.builder.button(
+            text='✏️ Изменить через JSON',
+            callback_data=MainUserSettingsRedactCall(tg_id=self.tg_id),
+        )
+        self.builder.button(
+            text='🔩 Сбросить',
+            callback_data=MainUserSettingsDefaultCall(tg_id=self.tg_id),
+        )
+        self.builder.button(
+            text='↩️ К аккаунту',
+            callback_data=MenuCall(where='user', tg_id=self.tg_id),
+        )
+        return self.builder.adjust(1).as_markup()
+
+    def user_settings_text_prompt(self):
+        self.builder.button(
+            text='↩️ К настройкам',
+            callback_data=MainUserSettingsModeCall(is_json=False, tg_id=self.tg_id),
+        )
+        return self.builder.as_markup()
 
     def back(self, where: str):
         return self.builder.button(text='↩️ Назад', callback_data=MainBackCall(where=where, tg_id=self.tg_id)).as_markup()
@@ -94,7 +150,8 @@ class MainIKB(BotIKB):
     def users(self, users: list[AnswerUserBody], page: int, max_page: int):
         for user in users:
             self.builder.button(
-                text=f'👤 {BaseText.answer_user_name(user)[:24]}',
+                text=f'{user.emodzi if user.emodzi else '👤'} {BaseText.answer_user_name(user)[:24]}',
+                icon_custom_emoji_id=user.custom_emodzi_id,
                 callback_data=MainUserInfoCall(
                     user_id=user.user_id,
                     tg_id=self.tg_id,

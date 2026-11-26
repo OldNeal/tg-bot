@@ -417,6 +417,10 @@ class AnswerTimeReplace(pydantic.BaseModel):
 class AnswerUserBody(pydantic.BaseModel):
     user_id: int
     name: typing.Optional[str | None] = None
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+    description: typing.Optional[str | None] = None
+    setting: "UserSettingValidate"
     telegram: typing.Optional[typing.Union["TelegramBody", None]] = None
 
 
@@ -424,6 +428,18 @@ class AnswerUserQuestionStatistics(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     statistics: "UserQuestionStatistics"
+
+
+class AnswerUserSetting(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    settings: "OrganSettingValidate"
+
+
+class AnswerUserSettingValues(pydantic.BaseModel):
+    user: "AnswerUserBody"
+    purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
+    values: dict[str, typing.Any]
 
 
 class AnswerUsersBody(pydantic.BaseModel):
@@ -578,6 +594,18 @@ class QueryQuestionCreate(pydantic.BaseModel):
     question: "QuestionCreate"
 
 
+class QueryUserSetting(pydantic.BaseModel):
+    user_id: int
+    is_admin: bool = False
+    parametrs: dict[str, typing.Any]
+
+
+class QueryUserSettingDefault(pydantic.BaseModel):
+    user_id: int
+    is_admin: bool = False
+    to_default: "UserSettingDefault"
+
+
 class QueryUserUpdate(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
@@ -628,6 +656,13 @@ class Sequence(pydantic.BaseModel):
     custom_emodzi_id: typing.Optional[str | None] = None
 
 
+class SettingDependency(pydantic.BaseModel):
+    tag: str
+    operator: str = 'equals'
+    value: typing.Any
+    description: typing.Optional[str | None] = None
+
+
 class SettingGroupValidate(pydantic.BaseModel):
     tag: str
     name: str
@@ -635,6 +670,32 @@ class SettingGroupValidate(pydantic.BaseModel):
     custom_emodzi_id: typing.Optional[str | None] = None
     description: typing.Optional[str | None] = None
     parametrs: list["SettingParametrValidate"]
+
+
+class SettingParametrMetadata(pydantic.BaseModel):
+    tag: str
+    name: str
+    group: str
+    type_: str = pydantic.Field(alias="type")
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+    description: typing.Optional[str | None] = None
+    is_redact: bool
+    is_hidden: bool
+    resettable: bool
+    choises: typing.Optional[dict[str, typing.Any] | None] = None
+    allowed_values: typing.Optional[list[typing.Any] | None] = None
+    min_value: typing.Optional[int | float | None] = None
+    max_value: typing.Optional[int | float | None] = None
+    min_length: typing.Optional[int | None] = None
+    max_length: typing.Optional[int | None] = None
+    pattern: typing.Optional[str | None] = None
+    key_min_value: typing.Optional[int | float | None] = None
+    key_max_value: typing.Optional[int | float | None] = None
+    depends_on: typing.Optional[list["SettingDependency"] | None] = None
+    subparameters: typing.Optional[list["SettingSubparameterMetadata"] | None] = None
+
+    model_config = pydantic.ConfigDict(populate_by_name=True)
 
 
 class SettingParametrValidate(pydantic.BaseModel):
@@ -645,10 +706,59 @@ class SettingParametrValidate(pydantic.BaseModel):
     emodzi: typing.Optional[str | None] = None
     custom_emodzi_id: typing.Optional[str | None] = None
     description: typing.Optional[str | None] = None
-    value: typing.Optional[bool | str | int | dict[str, typing.Any] | None] = None
+    is_redact: bool
+    is_hidden: bool
+    resettable: bool
+    choises: typing.Optional[dict[str, typing.Any] | None] = None
+    allowed_values: typing.Optional[list[typing.Any] | None] = None
+    min_value: typing.Optional[int | float | None] = None
+    max_value: typing.Optional[int | float | None] = None
+    min_length: typing.Optional[int | None] = None
+    max_length: typing.Optional[int | None] = None
+    pattern: typing.Optional[str | None] = None
+    key_min_value: typing.Optional[int | float | None] = None
+    key_max_value: typing.Optional[int | float | None] = None
+    depends_on: typing.Optional[list["SettingDependency"] | None] = None
+    subparameters: typing.Optional[list["SettingSubparameterValidate"] | None] = None
+    value: typing.Any
+    default_value: typing.Any
     is_default_value: bool
+
+    model_config = pydantic.ConfigDict(populate_by_name=True)
+
+
+class SettingSubparameterMetadata(pydantic.BaseModel):
+    tag: str
+    name: str
+    type_: str = pydantic.Field(default='str', alias="type")
+    default_value: typing.Any
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+    description: typing.Optional[str | None] = None
     is_redact: bool = True
     is_hidden: bool = False
+    min_length: typing.Optional[int | None] = None
+    max_length: typing.Optional[int | None] = None
+    pattern: typing.Optional[str | None] = None
+
+    model_config = pydantic.ConfigDict(populate_by_name=True)
+
+
+class SettingSubparameterValidate(pydantic.BaseModel):
+    tag: str
+    name: str
+    type_: str = pydantic.Field(default='str', alias="type")
+    default_value: typing.Any
+    emodzi: typing.Optional[str | None] = None
+    custom_emodzi_id: typing.Optional[str | None] = None
+    description: typing.Optional[str | None] = None
+    is_redact: bool = True
+    is_hidden: bool = False
+    min_length: typing.Optional[int | None] = None
+    max_length: typing.Optional[int | None] = None
+    pattern: typing.Optional[str | None] = None
+    value: typing.Any
+    is_default_value: bool
 
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
@@ -671,6 +781,23 @@ class UserQuestionStatistics(pydantic.BaseModel):
     correct: int
     incorrect: int
     accuracy: float
+
+
+class UserSettingDefault(pydantic.BaseModel):
+    parametr: str | None
+    group: str | None
+    is_all: bool = False
+
+
+class UserSettingValidate(pydantic.BaseModel):
+    hidden_top: bool
+    get_notify: bool
+    notify_platform: str
+    notify_type: str
+    use_ephemeral_message: bool
+    use_rich_message: bool = True
+    is_ephemeral: bool = False
+    is_send_to_private: bool = False
 
 
 class ValidationError(pydantic.BaseModel):

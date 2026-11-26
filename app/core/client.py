@@ -9,6 +9,15 @@ client = clientele_api.APIClient(config=config.Config())
 
 
 
+@client.get("/settings/name", response_map={200: schemas.SettingParametrMetadata, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
+
+async def setting_name(result: schemas.BaseExceptionResponse | schemas.HTTPValidationError | schemas.SettingParametrMetadata, type_: typing.Annotated[str, clientele_api.Query(alias="type")], tag: str) -> schemas.BaseExceptionResponse | schemas.HTTPValidationError | schemas.SettingParametrMetadata:
+    """Setting Name
+    """
+    return result
+
+
+
 @client.get("/info", response_map={200: schemas.AnswerBaseInfo, 403: schemas.BaseExceptionResponse, 409: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 429: schemas.BaseExceptionResponse, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 435: schemas.BaseExceptionResponse, 436: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 458: schemas.BaseExceptionResponse, 459: schemas.BaseExceptionResponse, 460: schemas.BaseExceptionResponse, 461: schemas.BaseExceptionResponse, 462: schemas.BaseExceptionResponse, 463: schemas.BaseExceptionResponse, 464: schemas.BaseExceptionResponse, 465: schemas.BaseExceptionResponse, 466: schemas.BaseExceptionResponse, 467: schemas.BaseExceptionResponse, 468: schemas.BaseExceptionResponse, 469: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 473: schemas.BaseExceptionResponse, 474: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 
 async def get_info(result: schemas.AnswerBaseInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError, user_id: int) -> schemas.AnswerBaseInfo | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
@@ -56,6 +65,38 @@ async def user_list(result: schemas.AnswerUsersBody | schemas.BaseExceptionRespo
 
 async def user_delete(result: schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody, user_id: int) -> schemas.AnswerUserBody | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
     """User Delete
+    """
+    return result
+
+
+@client.post("/user/settings", response_map={200: schemas.AnswerUserSetting, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
+
+async def user_settings(result: schemas.AnswerUserSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody) -> schemas.AnswerUserSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """User Settings
+    """
+    return result
+
+
+@client.post("/user/settings/values", response_map={200: schemas.AnswerUserSettingValues, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
+
+async def user_settings_values(result: schemas.AnswerUserSettingValues | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody) -> schemas.AnswerUserSettingValues | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """User Settings Values
+    """
+    return result
+
+
+@client.patch("/user/settings/redact", response_map={200: schemas.AnswerUserSetting, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
+
+async def user_settings_redact(result: schemas.AnswerUserSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryUserSetting) -> schemas.AnswerUserSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """User Settings Redact
+    """
+    return result
+
+
+@client.patch("/user/settings/default", response_map={200: schemas.AnswerUserSetting, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 470: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
+
+async def user_settings_default(result: schemas.AnswerUserSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryUserSettingDefault) -> schemas.AnswerUserSetting | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """User Settings Default
     """
     return result
 

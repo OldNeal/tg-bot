@@ -25,14 +25,16 @@ class ActivityService(BaseService):
             activity_count = await tracker.message_per_request(self.tg_id)
     
             data = await self.logic.activity(activity_count)
-            return await self.answer([
-                AnswerBody(
-                    text=self.text.activity(data.get_activity_points),
-                    data=data,
-                    reply_markup=self.IKB.delete_notify(),
-                    is_send_to_private=True,
-                )
-            ])
+            if data.user.setting.get_notify:
+                return await self.answer([
+                    AnswerBody(
+                        text=self.text.activity(data.get_activity_points),
+                        data=data,
+                        reply_markup=self.IKB.delete_notify(),
+                        is_send_to_private=data.user.setting.is_send_to_private,
+                        is_ephemeral=data.user.setting.is_ephemeral
+                    )
+                ])
         except Exception as e:
             self.botlog.logger.trace(e)
             return

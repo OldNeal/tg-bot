@@ -1,4 +1,5 @@
 from aiogram.filters import CommandObject
+import json5
 
 from app.exception.base import PermissionError
 from app.exception.args import UserSearchIdError, UserSearchValueError
@@ -10,6 +11,8 @@ from app.tg.buttons.main import MainIKB
 from app.tg.fsm.state import MainState
 from app.tg.fsm.utils import MainFSM
 from app.validate.core import AnswerUsersBody
+from app.exception.base import JSONEnterError
+from app.tg.settings import coerce_setting_input, is_setting_available, values_by_tag
 
 class MainService(BaseService):
     logic_class: type[MainLogic] = MainLogic
@@ -183,6 +186,7 @@ class MainService(BaseService):
         ])
 
     async def user_info(self, user_id: int | None = None):
+        await self.fsm.set_state()
         data = await self.logic.user_info(user_id if not user_id is None else await self.logic.user_id)
         return await self.answer([
             AnswerBody(
@@ -191,6 +195,159 @@ class MainService(BaseService):
                 reply_markup=self.IKB.user_info(data)
             )
         ])
+
+    USER_SETTING_CHOICES = {
+        'notify_platform': {'telegram': 'Телеграм'},
+        'notify_type': {
+            'ephemeral_message': 'Эфемерное сообщение',
+            'private_chat': 'В личный чат с ботом',
+        },
+    }
+
+    async def get_user_settings(self, is_json: bool | None = None):
+        await self.fsm.set_state()
+        await self.fsm.remove_value('user_setting_tag')
+        if is_json is None:
+            is_json = await self.fsm.get_value('user_settings_json', False)
+        await self.fsm.update_data(user_settings_json=is_json)
+        if is_json:
+            data = await self.logic.user_settings()
+            values = values_by_tag(data.settings.groups)
+            return await self.answer([
+                AnswerBody(
+                    text=self.text.json(values),
+                    data=data,
+                    reply_markup=self.IKB.user_settings_json(),
+                    is_rich_text=True,
+                )
+            ])
+        data = await self.logic.user_settings()
+        return await self.answer([
+            AnswerBody(
+                text=self.text.user_settings_editor(data.settings.groups),
+                data=data,
+                reply_markup=self.IKB.user_settings_editor(data.settings.groups),
+            )
+        ])
+
+    async def default_user_settings(self):
+        await self.logic.user_settings_default(is_all=True)
+        await self.callback.answer('⚙️ Настройки сброшены')
+        return await self.get_user_settings()
+
+    async def edit_user_setting(self, tag: str):
+        data = await self.logic.user_settings()
+        values = values_by_tag(data.settings.groups)
+        parameter = next((
+            parameter
+            for group in data.settings.groups
+            for parameter in group.parametrs
+            if parameter.tag == tag and is_setting_available(parameter, values)
+        ), None)
+        if parameter is None or not parameter.is_redact or parameter.is_hidden:
+            return await self.get_user_settings(is_json=False)
+
+        if isinstance(parameter.value, bool):
+            values[tag] = not parameter.value
+            await self.logic.user_settings_redact(values)
+        elif getattr(parameter, 'choises', None) or tag in self.USER_SETTING_CHOICES:
+            choices = getattr(parameter, 'choises', None) or self.USER_SETTING_CHOICES[tag]
+            options = list(choices) if isinstance(choices, dict) else list(choices)
+            if not options:
+                return await self.get_user_settings(is_json=False)
+            current_index = options.index(parameter.value) if parameter.value in options else -1
+            values[tag] = options[(current_index + 1) % len(options)]
+            await self.logic.user_settings_redact(values)
+        elif getattr(parameter, 'allowed_values', None):
+            options = list(parameter.allowed_values)
+            current_index = options.index(parameter.value) if parameter.value in options else -1
+            values[tag] = options[(current_index + 1) % len(options)]
+            await self.logic.user_settings_redact(values)
+        else:
+            await self.fsm.set_state(MainState.setting_text)
+            await self.fsm.update_data(user_setting_tag=tag)
+            await self.fsm.save_message(self.message.chat.id, self.message.message_id)
+            prompt = f'✒️ Введите новое значение для «{parameter.name}»'
+            return await self.answer([AnswerBody(
+                text=prompt,
+                reply_markup=self.IKB.user_settings_text_prompt(),
+            )])
+        return await self.get_user_settings(is_json=False)
+
+    async def redact_user_setting_text(self):
+        tag = await self.fsm.get_value('user_setting_tag')
+        if not tag:
+            await self.fsm.set_state()
+            return await self.get_user_settings(is_json=False)
+        data = await self.logic.user_settings()
+        parameter = next((
+            parameter
+            for group in data.settings.groups
+            for parameter in group.parametrs
+            if parameter.tag == tag
+        ), None)
+        if parameter is None:
+            await self.fsm.set_state()
+            return await self.get_user_settings(is_json=False)
+        try:
+            value = coerce_setting_input(self.message.text or '', parameter)
+        except ValueError as error:
+            await self.answer([AnswerBody(
+                text=f'⚠️ {error}',
+                reply_markup=self.IKB.user_settings_text_prompt(),
+            )])
+            return False
+        current_values = values_by_tag(data.settings.groups)
+        current_values[tag] = value
+        await self.logic.user_settings_redact(current_values)
+        saved_message = await self.fsm.get_message()
+        await self.fsm.set_state()
+        if all(saved_message):
+            await self.bot.delete_message(*saved_message)
+        await self.fsm.remove_value('user_setting_tag')
+        await self.fsm.remove_message()
+        return await self.get_user_settings(is_json=False)
+
+    async def to_redact_user_settings(self):
+        await self.fsm.set_state(MainState.settings)
+        await self.fsm.update_data(user_settings_json=True)
+        await self.fsm.save_message(self.message.chat.id, self.message.message_id)
+        return await self.answer([AnswerBody(
+            text='✒️ Отправьте новые настройки в формате JSON',
+            reply_markup=self.IKB.user_settings_json(),
+        )])
+
+    async def redact_user_settings(self):
+        try:
+            values = json5.loads(self.message.text)
+            if not isinstance(values, dict):
+                raise TypeError('Ожидается JSON-объект')
+            settings = await self.logic.user_settings()
+            current_values = values_by_tag(settings.settings.groups)
+            new_values = current_values | values
+            parameters = {
+                parameter.tag: parameter
+                for group in settings.settings.groups
+                for parameter in group.parametrs
+            }
+            unavailable = [
+                parameters[tag].name
+                for tag, value in values.items()
+                if tag in parameters
+                and value != current_values.get(tag)
+                and not is_setting_available(parameters[tag], new_values)
+            ]
+            if unavailable:
+                names = ', '.join(unavailable)
+                await self.answer([AnswerBody(
+                    text=f'⚠️ Нельзя изменить настройки, пока не выполнены их зависимости: {names}. Проверьте зависимые параметры и отправьте JSON ещё раз.',
+                    reply_markup=self.IKB.user_settings_json(),
+                )])
+                return False
+            await self.logic.user_settings_redact(new_values)
+        except (ValueError, TypeError) as error:
+            raise JSONEnterError('Ввел невалидный json', json=self.message.text) from error
+        return await self.get_user_settings()
 
     async def update_user(self):
         await self.logic.update_user()

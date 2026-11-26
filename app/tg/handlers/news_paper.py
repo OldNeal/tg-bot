@@ -24,6 +24,8 @@ from app.tg.callback.news_paper import (
     NewsPaperSettingsCall,
     NewsPaperSettingsDefaultCall,
     NewsPaperSettingsRedactCall,
+    NewsPaperSettingsModeCall,
+    NewsPaperSettingEditCall,
     NewsPaperUnsubscribeCall,
     ReaderCall
 )
@@ -210,6 +212,27 @@ async def settings_call(
     await service.get_settings(news_paper_id=callback_data.news_paper_id)
 
 
+@news_paper_router.callback_query(NewsPaperSettingsModeCall.filter())
+async def settings_mode_call(
+    callback: CallbackQuery,
+    callback_data: NewsPaperSettingsModeCall,
+    service: NewsPaperService,
+):
+    await service.get_settings(
+        news_paper_id=callback_data.news_paper_id,
+        is_json=callback_data.is_json,
+    )
+
+
+@news_paper_router.callback_query(NewsPaperSettingEditCall.filter())
+async def setting_edit_call(
+    callback: CallbackQuery,
+    callback_data: NewsPaperSettingEditCall,
+    service: NewsPaperService,
+):
+    await service.edit_setting(callback_data.news_paper_id, callback_data.tag)
+
+
 @news_paper_router.callback_query(NewsPaperSettingsRedactCall.filter())
 async def settings_redact_call(
     callback: CallbackQuery,
@@ -231,10 +254,17 @@ async def settings_default_call(
 @news_paper_router.message(NewsPaperState.settings, F.text)
 async def settings_text_state(message: Message, service: NewsPaperService):
     prompt_message = await service.fsm.get_message()
-    await service.redact_settings()
+    saved = await service.redact_settings()
+    if saved is False:
+        return
     await service.fsm.set_state()
     await service.bot.delete_message(*prompt_message)
     await service.fsm.remove_message()
+
+
+@news_paper_router.message(NewsPaperState.setting_text, F.text)
+async def setting_text_state(message: Message, service: NewsPaperService):
+    await service.redact_setting_text()
 
 
 @news_paper_router.message(Command('newspaper'), F.text.contains('all'))

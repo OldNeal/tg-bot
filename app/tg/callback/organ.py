@@ -44,8 +44,15 @@ class OrganSettingParametrDefaultCall(OrganCall, prefix='organ_setting_parametr_
 class OrganSettingParametrBooleanCall(OrganCall, prefix='organ_setting_parametr_boolean'):
     tag: str
 
+class OrganSettingEditCall(OrganCall, prefix='organ_setting_edit'):
+    tag: str
+
 class OrganSettingRedactCall(OrganCall, prefix='organ_setting_redact'):
     pass
+
+class OrganSettingSubparameterCall(OrganCall, prefix='organ_setting_subparameter'):
+    tag: str
+    subtag: str | None = None
 
 class OrganSettingCall(OrganCall, prefix='organ_setting'):
     pass

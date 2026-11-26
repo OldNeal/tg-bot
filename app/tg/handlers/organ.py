@@ -27,6 +27,9 @@ from app.tg.callback.organ import (
     OrganSettingCall,
     OrganSettingParametrDefaultCall,
     OrganSettingRedactCall,
+    OrganSettingSubparameterCall,
+    OrganSettingEditCall,
+    OrganSettingModeCall,
     OrganTitulDeleteCall,
     OrganTitulRedactCall,
 )
@@ -629,6 +632,33 @@ async def call(
     await service.to_redact_settings()
 
 
+@organ_router.callback_query(OrganSettingModeCall.filter())
+async def setting_mode_call(
+    callback: CallbackQuery,
+    callback_data: OrganSettingModeCall,
+    service: OrganService,
+):
+    await service.get_settings(is_json=callback_data.is_json)
+
+
+@organ_router.callback_query(OrganSettingEditCall.filter())
+async def setting_edit_call(
+    callback: CallbackQuery,
+    callback_data: OrganSettingEditCall,
+    service: OrganService,
+):
+    await service.edit_setting(callback_data.tag)
+
+
+@organ_router.callback_query(OrganSettingSubparameterCall.filter())
+async def setting_subparameter_call(
+    callback: CallbackQuery,
+    callback_data: OrganSettingSubparameterCall,
+    service: OrganService,
+):
+    await service.edit_setting_subparameter(callback_data.tag, callback_data.subtag)
+
+
 @organ_router.callback_query(OrganSettingParametrDefaultCall.filter(F.is_all == True))
 async def call(
     callback: CallbackQuery,
@@ -645,10 +675,22 @@ async def text_state(
     service: OrganService,
 ):
     msg0 = await service.fsm.get_message()
-    await service.redact_settings()
+    saved = await service.redact_settings()
+    if saved is False:
+        return
     await service.fsm.set_state()
     await service.bot.delete_message(*msg0)
     await service.fsm.remove_message()
+
+
+@organ_router.message(OrganState.setting_subparameter, F.text)
+async def setting_subparameter_text(message: Message, service: OrganService):
+    await service.redact_setting_subparameter()
+
+
+@organ_router.message(OrganState.setting_text, F.text)
+async def setting_text(message: Message, service: OrganService):
+    await service.redact_setting_text()
 
 
 @organ_router.message(Command('organ'), F.text.contains('capture'))

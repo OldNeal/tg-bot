@@ -47,6 +47,9 @@ class OrganLogic(BaseLogic):
     async def settings(self):
         return await self.client.organ_settings_values(await self.body)
 
+    async def settings_detail(self):
+        return await self.client.organ_settings(await self.body)
+
     async def settings_redact(self, data: dict):
         body = await self.body
         return await self.client.organ_settings_redact(QueryOrganSetting.model_validate(body.model_dump() | {

@@ -9,6 +9,7 @@ from app.tg.fsm.utils import OrganFSM
 from app.tg.callback.back_values import OrganBackValues
 from app.exception.organ import OrganPermissioError
 from app.exception.base import JSONEnterError
+from app.tg.settings import coerce_setting_input, is_setting_available, values_by_tag
 
 class OrganService(BaseService):
     logic_class: type[OrganLogic] = OrganLogic
@@ -228,36 +229,242 @@ class OrganService(BaseService):
     async def enter_name_for_create(self):
         return await self.create(self.message.text)
 
-    async def get_settings(self):
+    async def get_settings(self, is_json: bool | None = None):
         await self.fsm.set_state()
-        data = await self.logic.settings()
+        await self.fsm.remove_value('setting_tag')
+        if is_json is None:
+            is_json = await self.fsm.get_value('organ_settings_json', False)
+        await self.fsm.update_data(organ_settings_json=is_json)
+        data = await self.logic.settings_detail()
+        values = {
+            parameter.tag: parameter.value
+            for group in data.settings.groups
+            for parameter in group.parametrs
+        }
+        if is_json:
+            return await self.answer([
+                AnswerBody(
+                    text=self.text(data).settings_values(values),
+                    data=data,
+                    reply_markup=self.IKB.settings_json(self.is_bot_message),
+                    is_rich_text=True,
+                )
+            ])
         return await self.answer([
             AnswerBody(
-                text=self.text(data).settings_values(data.values),
+                text=self.text.settings_editor(data.settings.groups),
                 data=data,
-                reply_markup=self.IKB.settings_values(self.is_bot_message),
+                reply_markup=self.IKB.settings_values(self.is_bot_message, data.settings.groups)
             )
         ])
+
+    async def setting_subparameters(self, tag: str):
+        data = await self.logic.settings_detail()
+        parameter = next((
+            parameter
+            for group in data.settings.groups
+            for parameter in group.parametrs
+            if parameter.tag == tag and parameter.subparameters
+        ), None)
+        if parameter is None:
+            return await self.get_settings()
+        return await self.answer([
+            AnswerBody(
+                text=self.text(data).settings_subparameters(parameter),
+                data=data,
+                reply_markup=self.IKB.settings_subparameters(parameter)
+            )
+        ])
+
+    async def edit_setting_subparameter(self, tag: str, subtag: str | None = None):
+        if subtag is None:
+            return await self.setting_subparameters(tag)
+        data = await self.logic.settings_detail()
+        setting_values = values_by_tag(data.settings.groups)
+        parameter = next((
+            parameter
+            for group in data.settings.groups
+            for parameter in group.parametrs
+            if parameter.tag == tag and is_setting_available(parameter, setting_values)
+        ), None)
+        subparameter = next((
+            subparameter for subparameter in (parameter.subparameters or [])
+            if subparameter.tag == subtag and subparameter.is_redact and not subparameter.is_hidden
+        ), None) if parameter else None
+        if parameter is None or subparameter is None:
+            return await self.get_settings()
+
+        current = parameter.value.get(subtag, subparameter.default_value)
+        if subparameter.type_ == 'bool' and isinstance(current, bool):
+            await self.save_setting_subparameter(tag, subtag, not current)
+            return await self.setting_subparameters(tag)
+
+        await self.fsm.set_state(OrganState.setting_subparameter)
+        await self.fsm.update_data(setting_tag=tag, setting_subtag=subtag)
+        await self.fsm.save_message(self.message.chat.id, self.message.message_id)
+        return await self.answer([AnswerBody(
+            text=f'✒️ Введите новое значение для «{subparameter.name}»',
+            reply_markup=self.IKB.settings_subparameter_prompt(tag),
+        )])
+
+    async def save_setting_subparameter(self, tag: str, subtag: str, value):
+        data = await self.logic.settings()
+        values = data.values
+        parent_value = dict(values.get(tag) or {})
+        parent_value[subtag] = value
+        values[tag] = parent_value
+        await self.logic.settings_redact(values)
+
+    async def redact_setting_subparameter(self):
+        tag = await self.fsm.get_value('setting_tag')
+        subtag = await self.fsm.get_value('setting_subtag')
+        if not tag or subtag is None:
+            await self.fsm.set_state()
+            return await self.get_settings()
+        data = await self.logic.settings_detail()
+        parameter = next((
+            parameter
+            for group in data.settings.groups
+            for parameter in group.parametrs
+            if parameter.tag == tag
+        ), None)
+        subparameter = next((
+            subparameter for subparameter in (parameter.subparameters or [])
+            if subparameter.tag == subtag
+        ), None) if parameter else None
+        if subparameter is None:
+            await self.fsm.set_state()
+            return await self.get_settings(is_json=False)
+        try:
+            value = coerce_setting_input(self.message.text or '', subparameter)
+        except ValueError as error:
+            await self.answer([AnswerBody(
+                text=f'⚠️ {error}',
+                reply_markup=self.IKB.settings_subparameter_prompt(tag),
+            )])
+            return False
+        await self.save_setting_subparameter(tag, subtag, value)
+        msg0 = await self.fsm.get_message()
+        await self.fsm.set_state()
+        if all(msg0):
+            await self.bot.delete_message(*msg0)
+        await self.fsm.remove_value('setting_tag')
+        await self.fsm.remove_value('setting_subtag')
+        await self.fsm.remove_message()
+        return await self.setting_subparameters(tag)
 
     async def default_settings(self):
         await self.logic.settings_default(is_all=True)
         await self.callback.answer('⚙️ Настройки сброшены')
         return await self.get_settings()
 
+    async def edit_setting(self, tag: str):
+        data = await self.logic.settings_detail()
+        values = values_by_tag(data.settings.groups)
+        parameter = next((
+            parameter
+            for group in data.settings.groups
+            for parameter in group.parametrs
+            if parameter.tag == tag and is_setting_available(parameter, values)
+        ), None)
+        if parameter is None or parameter.is_hidden or not parameter.is_redact:
+            return await self.get_settings(is_json=False)
+        if parameter.subparameters:
+            return await self.setting_subparameters(tag)
+        if isinstance(parameter.value, bool):
+            values[tag] = not parameter.value
+            await self.logic.settings_redact(values)
+            return await self.get_settings(is_json=False)
+        choices = getattr(parameter, 'choises', None)
+        options = list(choices) if isinstance(choices, dict) else list(parameter.allowed_values or [])
+        if options:
+            current_index = options.index(parameter.value) if parameter.value in options else -1
+            values[tag] = options[(current_index + 1) % len(options)]
+            await self.logic.settings_redact(values)
+            return await self.get_settings(is_json=False)
+
+        await self.fsm.set_state(OrganState.setting_text)
+        await self.fsm.update_data(setting_tag=tag)
+        await self.fsm.save_message(self.message.chat.id, self.message.message_id)
+        return await self.answer([AnswerBody(
+            text=f'✒️ Введите новое значение для «{parameter.name}»',
+            reply_markup=self.IKB.settings_text_prompt(),
+        )])
+
+    async def redact_setting_text(self):
+        tag = await self.fsm.get_value('setting_tag')
+        if not tag:
+            await self.fsm.set_state()
+            return await self.get_settings(is_json=False)
+        data = await self.logic.settings_detail()
+        values = values_by_tag(data.settings.groups)
+        parameter = next((
+            parameter
+            for group in data.settings.groups
+            for parameter in group.parametrs
+            if parameter.tag == tag
+        ), None)
+        if parameter is None:
+            await self.fsm.set_state()
+            return await self.get_settings(is_json=False)
+        try:
+            value = coerce_setting_input(self.message.text or '', parameter)
+        except ValueError as error:
+            await self.answer([AnswerBody(
+                text=f'⚠️ {error}',
+                reply_markup=self.IKB.settings_text_prompt(),
+            )])
+            return False
+        values[tag] = value
+        await self.logic.settings_redact(values)
+        msg0 = await self.fsm.get_message()
+        await self.fsm.set_state()
+        if all(msg0):
+            await self.bot.delete_message(*msg0)
+        await self.fsm.remove_value('setting_tag')
+        await self.fsm.remove_message()
+        return await self.get_settings(is_json=False)
+
     async def to_redact_settings(self):
         await self.fsm.set_state(OrganState.settings)
+        await self.fsm.update_data(organ_settings_json=True)
         await self.fsm.save_message(self.message.chat.id, self.message.message_id)
         return await self.answer([
             AnswerBody(
                 text=self.text.to_enter_paramet(),
-                reply_markup=self.IKB.back(OrganBackValues.settings),
+                reply_markup=self.IKB.settings_json(self.is_bot_message),
             )
         ])
 
     async def redact_settings(self):
         try:
-            await self.logic.settings_redact(json5.loads(self.message.text))
-        except json.JSONDecodeError as error:
+            values = json5.loads(self.message.text)
+            if not isinstance(values, dict):
+                raise TypeError('Ожидается JSON-объект')
+            data = await self.logic.settings_detail()
+            current_values = values_by_tag(data.settings.groups)
+            new_values = current_values | values
+            parameters = {
+                parameter.tag: parameter
+                for group in data.settings.groups
+                for parameter in group.parametrs
+            }
+            unavailable = [
+                parameters[tag].name
+                for tag, value in values.items()
+                if tag in parameters
+                and value != current_values.get(tag)
+                and not is_setting_available(parameters[tag], new_values)
+            ]
+            if unavailable:
+                names = ', '.join(unavailable)
+                await self.answer([AnswerBody(
+                    text=f'⚠️ Нельзя изменить настройки, пока не выполнены их зависимости: {names}. Проверьте зависимые параметры и отправьте JSON ещё раз.',
+                    reply_markup=self.IKB.settings_json(self.is_bot_message),
+                )])
+                return False
+            await self.logic.settings_redact(new_values)
+        except (json.JSONDecodeError, TypeError) as error:
             raise JSONEnterError(
                 'Ввел невалидный json',
                 json=self.message.text,
@@ -352,6 +559,7 @@ class OrganService(BaseService):
     async def titul_redact(self, titul: str | None = None, purpose_tg_id: int | None = None):
         target_tg_id = await self.fsm.get_value('purpose_tg_id', purpose_tg_id if purpose_tg_id is not None else self.tg_id)
         data = await self.logic.titul_redact(target_tg_id, titul or self.message.text)
+        await self.fsm.remove_value('purpose_tg_id')
         return await self.answer([
             AnswerBody(
                 text=self.text(data).titul(data.old_titul, data.new_titul),

@@ -13,6 +13,11 @@ from app.tg.callback.main import (
     MainInfoCall,
     MainUserInfoCall,
     MainUserDeleteCall,
+    MainUserSettingsCall,
+    MainUserSettingsRedactCall,
+    MainUserSettingsDefaultCall,
+    MainUserSettingsModeCall,
+    MainUserSettingEditCall,
     MainUsersCall,
     MainUsersPageCall,
     MainUsersSearchCall,
@@ -186,6 +191,47 @@ async def user_info_call(
     service: MainService,
 ):
     await service.user_info(callback_data.user_id)
+
+
+@main_router.callback_query(MainUserSettingsCall.filter())
+async def user_settings_call(callback: CallbackQuery, callback_data: MainUserSettingsCall, service: MainService):
+    await service.get_user_settings()
+
+
+@main_router.callback_query(MainUserSettingsRedactCall.filter())
+async def user_settings_redact_call(callback: CallbackQuery, callback_data: MainUserSettingsRedactCall, service: MainService):
+    await service.to_redact_user_settings()
+
+
+@main_router.callback_query(MainUserSettingsDefaultCall.filter())
+async def user_settings_default_call(callback: CallbackQuery, callback_data: MainUserSettingsDefaultCall, service: MainService):
+    await service.default_user_settings()
+
+
+@main_router.callback_query(MainUserSettingsModeCall.filter())
+async def user_settings_mode_call(callback: CallbackQuery, callback_data: MainUserSettingsModeCall, service: MainService):
+    await service.get_user_settings(is_json=callback_data.is_json)
+
+
+@main_router.callback_query(MainUserSettingEditCall.filter())
+async def user_setting_edit_call(callback: CallbackQuery, callback_data: MainUserSettingEditCall, service: MainService):
+    await service.edit_user_setting(callback_data.tag)
+
+
+@main_router.message(MainState.settings, F.text)
+async def user_settings_text(message: Message, service: MainService):
+    msg0 = await service.fsm.get_message()
+    saved = await service.redact_user_settings()
+    if saved is False:
+        return
+    await service.fsm.set_state()
+    await service.bot.delete_message(*msg0)
+    await service.fsm.remove_message()
+
+
+@main_router.message(MainState.setting_text, F.text)
+async def user_setting_text(message: Message, service: MainService):
+    await service.redact_user_setting_text()
 
 
 @main_router.callback_query(MenuCall.filter(F.where == 'main'))

@@ -37,9 +37,11 @@ class BaseText:
         return text.openmessage(user.telegram.tg_id) if user.telegram else text
 
     @classmethod
-    def json(self, data: dict):
+    def json(self, data: dict, is_rich: bool = True):
         text = self.html.json_format(data, 4)
-        return self.html.anchor('start-json') + text.pre('json').details('JSON', text.count('\n') > 10) + self.html('Вверх').href('#start-json')
+        if is_rich:
+            return self.html.anchor('start-json') + text.pre('json').details(' JSON', text.count('\n') > 10) + self.html('Вверх').href('#start-json')
+        return 'JSON' + text.pre('json')
 
     @classmethod
     def page_text(self, page: int, max_page: int):
