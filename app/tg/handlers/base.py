@@ -2,8 +2,11 @@ from aiogram.types import InputRichMessage, Message, CallbackQuery, EphemeralMes
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
+from aiogram.enums import ChatMemberStatus
+import json
 
 from config import settings, bot
+from app.redis.base import redis_client
 from app.tg.handlers.main import main_router
 from app.tg.handlers.help import help_router
 from app.tg.text.utils import TextHTML
@@ -14,6 +17,57 @@ import asyncio
 
 base_router = Router()
 base_router.include_routers(main_router, help_router)
+
+@base_router.message(Command('pending_questions'))
+async def pending_questions(message: Message):
+    if message.chat.id != settings.question_moderation_chat_id:
+        return
+
+    member = await bot.get_chat_member(message.chat.id, message.from_user.id)
+    if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.CREATOR):
+        return
+
+    chat = await bot.get_chat(message.chat.id)
+    links = []
+    key_pattern = f'question_moderation:{message.chat.id}:*'
+    async for key in redis_client.scan_iter(match=key_pattern):
+        # Legacy author-only keys are ignored; each pending request has a message id.
+        if key.count(':') < 3:
+            continue
+        payload_text = await redis_client.get(key)
+        if not payload_text:
+            continue
+        try:
+            payload = json.loads(payload_text)
+            if payload.get('status', 'pending') != 'pending':
+                continue
+            message_id = int(payload['moderation_message_id'])
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+            continue
+
+        if chat.username:
+            url = f'https://t.me/{chat.username}/{message_id}'
+        elif str(message.chat.id).startswith('-100'):
+            url = f'https://t.me/c/{str(message.chat.id)[4:]}/{message_id}'
+        else:
+            continue
+        links.append((message_id, url))
+
+    links.sort()
+    if not links:
+        await message.answer('Необработанных вопросов нет.')
+        return
+
+    # Keep each response below Telegram's message length limit.
+    lines = [f'<a href="{url}">Вопрос #{message_id}</a>' for message_id, url in links]
+    chunk = ''
+    for line in lines:
+        if len(chunk) + len(line) + 1 > 4000:
+            await message.answer(chunk)
+            chunk = ''
+        chunk += ('\n' if chunk else '') + line
+    if chunk:
+        await message.answer(chunk)
 
 @base_router.message(Command('chat_id'))
 @base_router.message(Command('topic_id'))

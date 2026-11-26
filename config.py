@@ -154,3 +154,10 @@ async def to_menu_cmds():
     await bot.set_my_commands(user_menu, scope=BotCommandScopeAllGroupChats())
     await bot.set_my_commands(user_menu, scope=BotCommandScopeAllPrivateChats())
     await bot.set_my_commands(user_menu, scope=BotCommandScopeAllChatAdministrators())
+    moderation_menu = [
+        BotCommand(command='pending_questions', description='❔ Необработанные вопросы')
+    ] + user_menu
+    await bot.set_my_commands(
+        moderation_menu,
+        scope=BotCommandScopeChat(chat_id=settings.question_moderation_chat_id),
+    )

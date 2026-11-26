@@ -627,8 +627,6 @@ class QueryUserUpdate(pydantic.BaseModel):
 class Question(pydantic.BaseModel):
     body: str
     description: typing.Optional[str | None] = None
-    difficulty: int = 1
-    tags: typing.Optional[list[str]] = None
     question_id: int
     answers: list["QuestionAnswer"]
 
@@ -655,8 +653,6 @@ class QuestionAnswerUpdate(pydantic.BaseModel):
 class QuestionCreate(pydantic.BaseModel):
     body: str
     description: typing.Optional[str | None] = None
-    difficulty: int = 1
-    tags: typing.Optional[list[str]] = None
     correct_answers: list[str]
     incorrect_answers: list[str]
 
@@ -667,6 +663,7 @@ class QuestionUpdate(pydantic.BaseModel):
     description: typing.Optional[str | None] = None
     difficulty: typing.Optional[int | None] = None
     tags: typing.Optional[list[str] | None] = None
+    is_hidden: typing.Optional[bool | None] = None
     answers: typing.Optional[list["QuestionAnswerUpdate"] | None] = None
 
 
@@ -866,13 +863,13 @@ class AppValidateApiOrganAnswerredactrank(pydantic.BaseModel):
     old_rank: int
 
 
-class ResponseOrganDeleteOrganPatch(pydantic.BaseModel):
+class ResponseOrganDeleteOrganDeletePatch(pydantic.BaseModel):
     pass
 
-class ResponseQuestionDeletePlayerQuestionPatch(pydantic.BaseModel):
+class ResponseQuestionDeletePlayerQuestionDeletePatch(pydantic.BaseModel):
     pass
 
-class ResponseNewsPaperDeleteNewspaperPatch(pydantic.BaseModel):
+class ResponseNewsPaperDeleteNewspaperDeletePatch(pydantic.BaseModel):
     pass
 
 class LogsFileGet200Response(pydantic.BaseModel):
