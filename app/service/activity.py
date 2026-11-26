@@ -25,7 +25,7 @@ class ActivityService(BaseService):
             activity_count = await tracker.message_per_request(self.tg_id)
     
             data = await self.logic.activity(activity_count)
-            if data.user.setting.get_notify:
+            if data.user.setting.get_notify and (data.user.setting.is_send_to_private or data.user.setting.is_ephemeral):
                 return await self.answer([
                     AnswerBody(
                         text=self.text.activity(data.get_activity_points),
