@@ -70,4 +70,5 @@ class NewsPaperSettingEditCall(NewsPaperSettingsCall, prefix='news_paper_setting
     tag: str
 
 class NewsPaperSettingsDefaultCall(NewsPaperSettingsCall, prefix='news_paper_settings_default'):
-    pass
+    tag: str | None = None
+    is_all: bool = False

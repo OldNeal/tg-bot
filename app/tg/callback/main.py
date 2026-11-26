@@ -38,7 +38,8 @@ class MainUserSettingsRedactCall(MainCall, prefix='main_user_settings_redact'):
     pass
 
 class MainUserSettingsDefaultCall(MainCall, prefix='main_user_settings_default'):
-    pass
+    tag: str | None = None
+    is_all: bool = False
 
 class MainUserSettingsModeCall(MainCall, prefix='main_user_settings_mode'):
     is_json: bool = False

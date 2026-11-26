@@ -689,6 +689,7 @@ class SettingParametrMetadata(pydantic.BaseModel):
     name: str
     group: str
     type_: str = pydantic.Field(alias="type")
+    value_type: typing.Optional[str | None] = None
     emodzi: typing.Optional[str | None] = None
     custom_emodzi_id: typing.Optional[str | None] = None
     description: typing.Optional[str | None] = None
@@ -715,6 +716,7 @@ class SettingParametrValidate(pydantic.BaseModel):
     name: str
     group: str
     type_: str = pydantic.Field(alias="type")
+    value_type: typing.Optional[str | None] = None
     emodzi: typing.Optional[str | None] = None
     custom_emodzi_id: typing.Optional[str | None] = None
     description: typing.Optional[str | None] = None
@@ -733,7 +735,7 @@ class SettingParametrValidate(pydantic.BaseModel):
     depends_on: typing.Optional[list["SettingDependency"] | None] = None
     subparameters: typing.Optional[list["SettingSubparameterValidate"] | None] = None
     value: typing.Any
-    default_value: typing.Any
+    default_value: typing.Any = None
     is_default_value: bool
 
     model_config = pydantic.ConfigDict(populate_by_name=True)
@@ -743,7 +745,7 @@ class SettingSubparameterMetadata(pydantic.BaseModel):
     tag: str
     name: str
     type_: str = pydantic.Field(default='str', alias="type")
-    default_value: typing.Any
+    default_value: typing.Any = None
     emodzi: typing.Optional[str | None] = None
     custom_emodzi_id: typing.Optional[str | None] = None
     description: typing.Optional[str | None] = None
@@ -760,7 +762,7 @@ class SettingSubparameterValidate(pydantic.BaseModel):
     tag: str
     name: str
     type_: str = pydantic.Field(default='str', alias="type")
-    default_value: typing.Any
+    default_value: typing.Any = None
     emodzi: typing.Optional[str | None] = None
     custom_emodzi_id: typing.Optional[str | None] = None
     description: typing.Optional[str | None] = None

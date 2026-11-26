@@ -64,7 +64,8 @@ class OrganIKB(BotIKB):
 
     def organs(self, organs: list[OrganInfo], page: int, max_page: int, where: str | None = None):
         for organ in organs:
-            self.builder.button(text=f'{organ.emodzi or '🏛'} {self.ogr_name(organ.name)}', icon_custom_emoji_id=organ.custom_emodzi_id, callback_data=OrganInfoCall(organ_id=organ.id, tg_id=self.tg_id))
+            callback = OrganLoginCall(organ_id=organ.id, tg_id=self.tg_id) if where == 'login' else OrganInfoCall(organ_id=organ.id, tg_id=self.tg_id)
+            self.builder.button(text=f'{organ.emodzi or '🏛'} {self.ogr_name(organ.name)}', icon_custom_emoji_id=organ.custom_emodzi_id, callback_data=callback)
         self.builder.adjust(1)
         pages = []
         if max_page > 1:
@@ -226,16 +227,26 @@ class OrganIKB(BotIKB):
         ))
         return self.builder.as_markup()
 
-    def settings_subparameter_prompt(self, tag: str):
+    def settings_subparameter_prompt(self, tag: str, subtag: str | None = None, has_default: bool = False):
+        if subtag is not None:
+            self.builder.button(
+                text='🔩 Сбросить параметр',
+                callback_data=OrganSettingParametrDefaultCall(tag=tag, subtag=subtag, tg_id=self.tg_id),
+            )
         self.builder.button(
             text='↩️ К параметрам',
             callback_data=OrganSettingSubparameterCall(tag=tag, tg_id=self.tg_id),
         )
-        return self.builder.as_markup()
+        return self.builder.adjust(1).as_markup()
 
-    def settings_text_prompt(self):
+    def settings_text_prompt(self, tag: str | None = None, is_resettable: bool = False):
+        if tag:
+            self.builder.button(
+                text='🔩 Сбросить параметр',
+                callback_data=OrganSettingParametrDefaultCall(tag=tag, tg_id=self.tg_id),
+            )
         self.builder.button(text='↩️ К настройкам', callback_data=OrganSettingModeCall(is_json=False, tg_id=self.tg_id))
-        return self.builder.as_markup()
+        return self.builder.adjust(1).as_markup()
 
     def member_back(self, purpose_tg_id: int):
         self.builder.button(text='↩️ Назад', callback_data=OrganMemberCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id))

@@ -76,7 +76,7 @@ async def method_action_back_call(
 ):
     await service.cancel_method_action_study(callback_data.purpose_tg_id)
 
-@beyonder_router.message(BeyonderState.method_action_study, F.text, F.text.not_contains('/'))
+@beyonder_router.message(BeyonderState.method_action_study, F.text, ~F.text.startswith('/'))
 async def study_method_action_input(message: Message, service: BeyonderService):
     prompt_message = await service.fsm.get_message()
     await service.study_method_action_input()

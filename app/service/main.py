@@ -230,9 +230,23 @@ class MainService(BaseService):
             )
         ])
 
-    async def default_user_settings(self):
-        await self.logic.user_settings_default(is_all=True)
-        await self.callback.answer('⚙️ Настройки сброшены')
+    async def default_user_settings(self, tag: str | None = None, is_all: bool = False):
+        if tag and not is_all:
+            data = await self.logic.user_settings()
+            values = values_by_tag(data.settings.groups)
+            parameter = next((
+                parameter
+                for group in data.settings.groups
+                for parameter in group.parametrs
+                if parameter.tag == tag
+            ), None)
+            if parameter is None:
+                return await self.get_user_settings(is_json=False)
+            values[tag] = getattr(parameter, 'default_value', None)
+            await self.logic.user_settings_redact(values)
+        else:
+            await self.logic.user_settings_default(parametr=tag, is_all=is_all)
+        await self.callback.answer('⚙️ Настройка сброшена' if tag else '⚙️ Настройки сброшены')
         return await self.get_user_settings()
 
     async def edit_user_setting(self, tag: str):
@@ -270,7 +284,7 @@ class MainService(BaseService):
             prompt = f'✒️ Введите новое значение для «{parameter.name}»'
             return await self.answer([AnswerBody(
                 text=prompt,
-                reply_markup=self.IKB.user_settings_text_prompt(),
+                reply_markup=self.IKB.user_settings_text_prompt(tag, not parameter.is_default_value),
             )])
         return await self.get_user_settings(is_json=False)
 
@@ -294,7 +308,7 @@ class MainService(BaseService):
         except ValueError as error:
             await self.answer([AnswerBody(
                 text=f'⚠️ {error}',
-                reply_markup=self.IKB.user_settings_text_prompt(),
+                reply_markup=self.IKB.user_settings_text_prompt(tag, not parameter.is_default_value),
             )])
             return False
         current_values = values_by_tag(data.settings.groups)

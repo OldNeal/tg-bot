@@ -159,7 +159,7 @@ class OrganService(BaseService):
             )
         ])
 
-    async def login(self, organ_id: int):
+    async def login(self, organ_id: int | None = None, name: str | None = None):
         if organ_id:
             data = await self.logic.login(organ_id=organ_id)
             return await self.answer([
@@ -167,6 +167,18 @@ class OrganService(BaseService):
                     text=self.text(data).login,
                     data=data,
                     reply_markup=self.IKB.organ_back(data.organ.id)
+                )
+            ])
+        if name:
+            data = await self.logic.search(value=name, page=0)
+            page = data.page.number
+            max_page = data.page.max
+            await self.fsm.update_data(search_value=data.search_value or name, page=page)
+            return await self.answer([
+                AnswerBody(
+                    text=self.text.search(data.search_value or name, data.count, page, max_page),
+                    data=data,
+                    reply_markup=self.IKB.organs(data.organs, page, max_page, 'login'),
                 )
             ])
         return await self.search()
@@ -304,7 +316,11 @@ class OrganService(BaseService):
         await self.fsm.save_message(self.message.chat.id, self.message.message_id)
         return await self.answer([AnswerBody(
             text=f'✒️ Введите новое значение для «{subparameter.name}»',
-            reply_markup=self.IKB.settings_subparameter_prompt(tag),
+            reply_markup=self.IKB.settings_subparameter_prompt(
+                tag,
+                subtag,
+                has_default=not subparameter.is_default_value,
+            ),
         )])
 
     async def save_setting_subparameter(self, tag: str, subtag: str, value):
@@ -340,7 +356,11 @@ class OrganService(BaseService):
         except ValueError as error:
             await self.answer([AnswerBody(
                 text=f'⚠️ {error}',
-                reply_markup=self.IKB.settings_subparameter_prompt(tag),
+                reply_markup=self.IKB.settings_subparameter_prompt(
+                    tag,
+                    subtag,
+                has_default=not subparameter.is_default_value,
+                ),
             )])
             return False
         await self.save_setting_subparameter(tag, subtag, value)
@@ -353,9 +373,50 @@ class OrganService(BaseService):
         await self.fsm.remove_message()
         return await self.setting_subparameters(tag)
 
-    async def default_settings(self):
-        await self.logic.settings_default(is_all=True)
-        await self.callback.answer('⚙️ Настройки сброшены')
+    async def default_settings(
+        self,
+        tag: str | None = None,
+        subtag: str | None = None,
+        is_all: bool = False,
+    ):
+        if subtag is not None and tag is not None:
+            detail = await self.logic.settings_detail()
+            parent = next((
+                parameter
+                for group in detail.settings.groups
+                for parameter in group.parametrs
+                if parameter.tag == tag
+            ), None)
+            subparameter = next((
+                subparameter for subparameter in (parent.subparameters or [])
+                if subparameter.tag == subtag
+            ), None) if parent else None
+            if subparameter is None:
+                return await self.get_settings(is_json=False)
+            await self.save_setting_subparameter(tag, subtag, getattr(subparameter, 'default_value', None))
+            await self.fsm.set_state()
+            await self.fsm.remove_value('setting_tag')
+            await self.fsm.remove_value('setting_subtag')
+            await self.fsm.remove_message()
+            await self.callback.answer('⚙️ Параметр сброшен')
+            return await self.setting_subparameters(tag)
+
+        if tag is not None and not is_all:
+            detail = await self.logic.settings_detail()
+            values = values_by_tag(detail.settings.groups)
+            parameter = next((
+                parameter
+                for group in detail.settings.groups
+                for parameter in group.parametrs
+                if parameter.tag == tag
+            ), None)
+            if parameter is None:
+                return await self.get_settings(is_json=False)
+            values[tag] = getattr(parameter, 'default_value', None)
+            await self.logic.settings_redact(values)
+        else:
+            await self.logic.settings_default(parametr=tag, is_all=is_all)
+        await self.callback.answer('⚙️ Настройка сброшена' if tag else '⚙️ Настройки сброшены')
         return await self.get_settings()
 
     async def edit_setting(self, tag: str):
@@ -388,7 +449,7 @@ class OrganService(BaseService):
         await self.fsm.save_message(self.message.chat.id, self.message.message_id)
         return await self.answer([AnswerBody(
             text=f'✒️ Введите новое значение для «{parameter.name}»',
-            reply_markup=self.IKB.settings_text_prompt(),
+            reply_markup=self.IKB.settings_text_prompt(tag, not parameter.is_default_value),
         )])
 
     async def redact_setting_text(self):
@@ -412,7 +473,7 @@ class OrganService(BaseService):
         except ValueError as error:
             await self.answer([AnswerBody(
                 text=f'⚠️ {error}',
-                reply_markup=self.IKB.settings_text_prompt(),
+                reply_markup=self.IKB.settings_text_prompt(tag, not parameter.is_default_value),
             )])
             return False
         values[tag] = value

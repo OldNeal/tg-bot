@@ -39,6 +39,7 @@ class OrganSettingModeCall(OrganCall, prefix='organ_setting_mode'):
 
 class OrganSettingParametrDefaultCall(OrganCall, prefix='organ_setting_parametr_default'):
     tag: str | None = None
+    subtag: str | None = None
     is_all: bool = False
 
 class OrganSettingParametrBooleanCall(OrganCall, prefix='organ_setting_parametr_boolean'):

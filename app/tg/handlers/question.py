@@ -154,25 +154,25 @@ async def moderation_call(
     )
 
 
-@question_router.message(QuestionState.create, F.text)
+@question_router.message(QuestionState.create, F.text, ~F.text.startswith('/'))
 async def create_text(message: Message, service: QuestionService):
     msg0 = await service.fsm.get_message()
     await service.create_input()
     await service.bot.delete_message(*msg0)
 
 
-@question_router.message(QuestionState.json_create, F.text)
+@question_router.message(QuestionState.json_create, F.text, ~F.text.startswith('/'))
 async def create_json_text(message: Message, service: QuestionService):
     await service.create_json_input()
 
 
-@question_router.message(QuestionState.moderation_edit, F.text)
+@question_router.message(QuestionState.moderation_edit, F.text, ~F.text.startswith('/'))
 async def moderation_edit_text(message: Message, service: QuestionService):
     msg0 = await service.fsm.get_message()
     await service.moderation_edit_input()
     await service.bot.delete_message(*msg0)
 
-@question_router.message(QuestionState.moderation_reason, F.text)
+@question_router.message(QuestionState.moderation_reason, F.text, ~F.text.startswith('/'))
 async def moderation_reason_text(message: Message, service: QuestionService):
     msg0 = await service.fsm.get_message()
     await service.moderation_rejection_reason()

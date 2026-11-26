@@ -195,7 +195,7 @@ async def call(
     await service.to_enter_search_value(callback_data.type)
 
 
-@wiki_router.message(WikiState.search)
+@wiki_router.message(WikiState.search, F.text, ~F.text.startswith('/'))
 async def text_state(message: Message, service: WikiService):
     await service.enter_search_value()
 

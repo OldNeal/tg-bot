@@ -159,7 +159,7 @@ async def call(
     await service.search(is_new_search=True)
 
 
-@organ_router.message(OrganState.search)
+@organ_router.message(OrganState.search, F.text, ~F.text.startswith('/'))
 async def text_state(
     message: Message,
     state: FSMContext,
@@ -407,6 +407,7 @@ async def call(
     name='login',
     description='Войти в организацию',
     arguments=[
+        Optionals.organ_name,
         Optionals.organ_id,
         Optionals.tg_id,
         Optionals.to_json,
@@ -418,13 +419,14 @@ async def call(
 async def cmd(
     message: Message,
     service: OrganService,
+    name: str | None = None,
     organ_id: int | None = None,
     purpose_tg_id: int | None = None,
     to_json: bool = False,
     is_reply: bool = False,
     is_admin: bool = False,
 ):
-    await service.login(organ_id=organ_id)
+    await service.login(organ_id=organ_id, name=name)
 
 
 @organ_router.message(Command('organ'), F.text.contains('login'))
@@ -564,7 +566,7 @@ async def call(
     await service.to_enter_name_for_create()
 
 
-@organ_router.message(OrganState.create)
+@organ_router.message(OrganState.create, F.text, ~F.text.startswith('/'))
 async def text_state(
     message: Message,
     state: FSMContext,
@@ -665,10 +667,22 @@ async def call(
     callback_data: OrganSettingParametrDefaultCall,
     service: OrganService,
 ):
-    await service.default_settings()
+    await service.default_settings(is_all=True)
 
 
-@organ_router.message(OrganState.settings)
+@organ_router.callback_query(OrganSettingParametrDefaultCall.filter(F.is_all == False))
+async def setting_parameter_default_call(
+    callback: CallbackQuery,
+    callback_data: OrganSettingParametrDefaultCall,
+    service: OrganService,
+):
+    await service.default_settings(
+        tag=callback_data.tag,
+        subtag=callback_data.subtag,
+    )
+
+
+@organ_router.message(OrganState.settings, F.text, ~F.text.startswith('/'))
 async def text_state(
     message: Message,
     state: FSMContext,
@@ -683,12 +697,12 @@ async def text_state(
     await service.fsm.remove_message()
 
 
-@organ_router.message(OrganState.setting_subparameter, F.text)
+@organ_router.message(OrganState.setting_subparameter, F.text, ~F.text.startswith('/'))
 async def setting_subparameter_text(message: Message, service: OrganService):
     await service.redact_setting_subparameter()
 
 
-@organ_router.message(OrganState.setting_text, F.text)
+@organ_router.message(OrganState.setting_text, F.text, ~F.text.startswith('/'))
 async def setting_text(message: Message, service: OrganService):
     await service.redact_setting_text()
 
@@ -1033,7 +1047,7 @@ async def call(
     await service.titul(purpose_tg_id=callback_data.purpose_tg_id)
 
 
-@organ_router.message(OrganState.titul)
+@organ_router.message(OrganState.titul, F.text, ~F.text.startswith('/'))
 async def text_state(
     message: Message,
     state: FSMContext,

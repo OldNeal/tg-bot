@@ -84,7 +84,7 @@ async def call(
     await service.paths(value=callback_data.value, page=callback_data.page)
 
 
-@stats_router.message(StatsState.search)
+@stats_router.message(StatsState.search, F.text, ~F.text.startswith('/'))
 async def text_state(
     message: Message,
     service: StatsService

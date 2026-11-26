@@ -173,7 +173,7 @@ async def capture_call(
 ):
     await service.capture(callback_data.news_paper_id)
 
-@news_paper_router.message(NewsPaperState.search, F.text)
+@news_paper_router.message(NewsPaperState.search, F.text, ~F.text.startswith('/'))
 async def search_text_state(message: Message, service: NewsPaperService):
     prompt_message = await service.fsm.get_message()
     await service.to_search()
@@ -248,10 +248,14 @@ async def settings_default_call(
     callback_data: NewsPaperSettingsDefaultCall,
     service: NewsPaperService,
 ):
-    await service.default_settings(callback_data.news_paper_id)
+    await service.default_settings(
+        callback_data.news_paper_id,
+        tag=callback_data.tag,
+        is_all=callback_data.is_all,
+    )
 
 
-@news_paper_router.message(NewsPaperState.settings, F.text)
+@news_paper_router.message(NewsPaperState.settings, F.text, ~F.text.startswith('/'))
 async def settings_text_state(message: Message, service: NewsPaperService):
     prompt_message = await service.fsm.get_message()
     saved = await service.redact_settings()
@@ -262,7 +266,7 @@ async def settings_text_state(message: Message, service: NewsPaperService):
     await service.fsm.remove_message()
 
 
-@news_paper_router.message(NewsPaperState.setting_text, F.text)
+@news_paper_router.message(NewsPaperState.setting_text, F.text, ~F.text.startswith('/'))
 async def setting_text_state(message: Message, service: NewsPaperService):
     await service.redact_setting_text()
 
@@ -468,7 +472,7 @@ async def create(
     await service.create(name=name)
 
 
-@news_paper_router.message(NewsPaperState.create, F.text)
+@news_paper_router.message(NewsPaperState.create, F.text, ~F.text.startswith('/'))
 async def create_text_state(message: Message, service: NewsPaperService):
     prompt_message = await service.fsm.get_message()
     await service.enter_name_for_create()
@@ -595,6 +599,7 @@ async def fire_editor(
     name='sub',
     description='Подписаться на газету',
     arguments=[
+        Optionals.news_paper_name,
         Optionals.optional_news_paper_id,
         Optionals.to_json,
     ],
@@ -603,10 +608,14 @@ async def fire_editor(
 async def subscribe_command(
     message: Message,
     service: NewsPaperService,
+    name: str | None = None,
     id: int | None = None,
     to_json: bool = False,
 ):
-    await service.subscribe(news_paper_id=id)
+    if name:
+        await service.search(value=name, page=0, action_mode='subscribe')
+    else:
+        await service.subscribe(news_paper_id=id)
 
 
 @news_paper_router.message(Command('unsub'))

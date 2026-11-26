@@ -198,7 +198,7 @@ class NewsPaperIKB(BotIKB):
                     ),
                 )
         self.builder.adjust(2)
-        self.builder.row(InlineKeyboardButton(text='🔩 Сбросить', callback_data=NewsPaperSettingsDefaultCall(news_paper_id=news_paper_id, tg_id=self.tg_id).pack()))
+        self.builder.row(InlineKeyboardButton(text='🔩 Сбросить', callback_data=NewsPaperSettingsDefaultCall(news_paper_id=news_paper_id, is_all=True, tg_id=self.tg_id).pack()))
         self.builder.row(InlineKeyboardButton(text='🧾 Редактировать через JSON', callback_data=NewsPaperSettingsModeCall(news_paper_id=news_paper_id, is_json=True, tg_id=self.tg_id).pack()))
         self.builder.row(InlineKeyboardButton(text='↩️ Назад', callback_data=NewsPaperInfoCall(news_paper_id=news_paper_id, tg_id=self.tg_id).pack()))
         return self.builder.as_markup()
@@ -206,7 +206,7 @@ class NewsPaperIKB(BotIKB):
     def settings_json(self, news_paper_id: int):
         self.builder.button(text='⚙️ Редактировать кнопками', callback_data=NewsPaperSettingsModeCall(news_paper_id=news_paper_id, is_json=False, tg_id=self.tg_id))
         self.builder.button(text='✏️ Изменить через JSON', callback_data=NewsPaperSettingsRedactCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
-        self.builder.button(text='🔩 Сбросить', callback_data=NewsPaperSettingsDefaultCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
+        self.builder.button(text='🔩 Сбросить', callback_data=NewsPaperSettingsDefaultCall(news_paper_id=news_paper_id, is_all=True, tg_id=self.tg_id))
         self.builder.button(text='↩️ Назад', callback_data=NewsPaperInfoCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()
 
@@ -214,9 +214,14 @@ class NewsPaperIKB(BotIKB):
         self.builder.button(text='↩️ К настройкам', callback_data=NewsPaperSettingsModeCall(news_paper_id=news_paper_id, is_json=False, tg_id=self.tg_id))
         return self.builder.as_markup()
 
-    def settings_text_prompt(self, news_paper_id: int):
+    def settings_text_prompt(self, news_paper_id: int, tag: str | None = None, is_resettable: bool = False):
+        if tag:
+            self.builder.button(
+                text='🔩 Сбросить параметр',
+                callback_data=NewsPaperSettingsDefaultCall(news_paper_id=news_paper_id, tag=tag, tg_id=self.tg_id),
+            )
         self.builder.button(text='↩️ К настройкам', callback_data=NewsPaperSettingsModeCall(news_paper_id=news_paper_id, is_json=False, tg_id=self.tg_id))
-        return self.builder.as_markup()
+        return self.builder.adjust(1).as_markup()
 
     def reader(
         self,

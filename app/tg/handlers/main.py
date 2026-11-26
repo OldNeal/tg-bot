@@ -161,7 +161,7 @@ async def users_page_call(
     await service.users_page(callback_data.page)
 
 
-@main_router.message(MainState.users_search)
+@main_router.message(MainState.users_search, F.text, ~F.text.startswith('/'))
 async def users_search_text(
     message: Message,
     state: FSMContext,
@@ -205,7 +205,7 @@ async def user_settings_redact_call(callback: CallbackQuery, callback_data: Main
 
 @main_router.callback_query(MainUserSettingsDefaultCall.filter())
 async def user_settings_default_call(callback: CallbackQuery, callback_data: MainUserSettingsDefaultCall, service: MainService):
-    await service.default_user_settings()
+    await service.default_user_settings(callback_data.tag, callback_data.is_all)
 
 
 @main_router.callback_query(MainUserSettingsModeCall.filter())
@@ -218,7 +218,7 @@ async def user_setting_edit_call(callback: CallbackQuery, callback_data: MainUse
     await service.edit_user_setting(callback_data.tag)
 
 
-@main_router.message(MainState.settings, F.text)
+@main_router.message(MainState.settings, F.text, ~F.text.startswith('/'))
 async def user_settings_text(message: Message, service: MainService):
     msg0 = await service.fsm.get_message()
     saved = await service.redact_user_settings()
@@ -229,7 +229,7 @@ async def user_settings_text(message: Message, service: MainService):
     await service.fsm.remove_message()
 
 
-@main_router.message(MainState.setting_text, F.text)
+@main_router.message(MainState.setting_text, F.text, ~F.text.startswith('/'))
 async def user_setting_text(message: Message, service: MainService):
     await service.redact_user_setting_text()
 

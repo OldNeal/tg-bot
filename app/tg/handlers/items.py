@@ -133,7 +133,7 @@ async def item_quantity_call(
     )
 
 
-@items_router.message(ItemState.quantity)
+@items_router.message(ItemState.quantity, F.text, ~F.text.startswith('/'))
 async def item_quantity_input(
     message: Message,
     state: FSMContext,

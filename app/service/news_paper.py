@@ -42,18 +42,18 @@ class NewsPaperService(BaseService):
             )
         ])
 
-    async def search(self, value: str | None = None, page: int | None = None):
+    async def search(self, value: str | None = None, page: int | None = None, action_mode: str = 'search'):
         value = value or await self.fsm.get_value('search_value')
         if not value:
             return await self.to_enter_search()
         page = page if page is not None else await self.fsm.get_value('page', 0)
         data = await self.logic.search(name=value, page=page)
-        return await self._show_news_papers(data, 'search', page, value)
+        return await self._show_news_papers(data, action_mode, page, value)
 
     async def _show_news_papers(
         self,
         data: AnswerAllNewsPaperInfo,
-        mode: Literal['search', 'all', 'list', 'editors'],
+        mode: Literal['search', 'all', 'list', 'editors', 'subscribe'],
         page: int,
         value: str | None = None,
     ):
@@ -61,7 +61,7 @@ class NewsPaperService(BaseService):
         max_page = data.page.max
         page = data.page.number
         count = data.count
-        if mode == 'search':
+        if mode in {'search', 'subscribe'}:
             search_value = data.search_value or value
             if search_value is None:
                 raise ValueError('Не указан поисковый запрос для списка газет')
@@ -211,13 +211,32 @@ class NewsPaperService(BaseService):
             )
         ])
 
-    async def default_settings(self, news_paper_id: int | None = None):
+    async def default_settings(
+        self,
+        news_paper_id: int | None = None,
+        tag: str | None = None,
+        is_all: bool = True,
+    ):
         if news_paper_id is None:
             news_paper_id = await self.fsm.get_value('news_paper_id')
         if news_paper_id is None:
             raise ValueError('Не указан ID газеты для настроек')
-        await self.logic.settings_default(news_paper_id, is_all=True)
-        await self.callback.answer('⚙️ Настройки сброшены')
+        if tag is not None and not is_all:
+            data = await self.logic.settings(news_paper_id)
+            values = values_by_tag(data.settings.groups)
+            parameter = next((
+                parameter
+                for group in data.settings.groups
+                for parameter in group.parametrs
+                if parameter.tag == tag
+            ), None)
+            if parameter is None:
+                return await self.get_settings(news_paper_id, is_json=False)
+            values[tag] = getattr(parameter, 'default_value', None)
+            await self.logic.settings_redact(news_paper_id, values)
+        else:
+            await self.logic.settings_default(news_paper_id, parametr=tag, is_all=is_all)
+        await self.callback.answer('⚙️ Параметр сброшен' if tag else '⚙️ Настройки сброшены')
         return await self.get_settings(news_paper_id)
 
     async def edit_setting(self, news_paper_id: int, tag: str):
@@ -250,7 +269,7 @@ class NewsPaperService(BaseService):
         await self.fsm.save_message(self.message.chat.id, self.message.message_id)
         return await self.answer([AnswerBody(
             text=f'✒️ Введите новое значение для «{parameter.name}»',
-            reply_markup=self.IKB.settings_text_prompt(news_paper_id),
+            reply_markup=self.IKB.settings_text_prompt(news_paper_id, tag, not parameter.is_default_value),
         )])
 
     async def redact_setting_text(self):
@@ -275,7 +294,7 @@ class NewsPaperService(BaseService):
         except ValueError as error:
             await self.answer([AnswerBody(
                 text=f'⚠️ {error}',
-                reply_markup=self.IKB.settings_text_prompt(news_paper_id),
+                reply_markup=self.IKB.settings_text_prompt(news_paper_id, tag, not parameter.is_default_value),
             )])
             return False
         values[tag] = value
