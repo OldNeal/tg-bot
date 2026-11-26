@@ -611,8 +611,7 @@ class QuestionService(BaseService):
         )
         await self.store.client.set(
             storage_key,
-            json.dumps(payload, ensure_ascii=False),
-            ex=self.settings.data_ttl,
+            json.dumps(payload, ensure_ascii=False)
         )
         return message
 
