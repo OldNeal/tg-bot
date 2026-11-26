@@ -22,6 +22,7 @@ from app.tg.callback.news_paper import (
     NewsPaperSettingsModeCall,
     NewsPaperSettingEditCall,
     NewsPaperUnsubscribeCall,
+    NewsPaperDeleteCall,
     ReaderCall,
 )
 from app.tg.settings import is_setting_available, values_by_tag
@@ -91,6 +92,8 @@ class NewsPaperIKB(BotIKB):
         self.builder.button(text='🗞 Читатели', callback_data=NewsPaperPageCall(news_paper_id=news_paper_id, page=0, mode='readers', tg_id=self.tg_id))
         if for_buttons.is_redact_setting:
             self.builder.button(text='⚙️ Настройки', callback_data=NewsPaperSettingsCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
+        if for_buttons.is_delete:
+            self.builder.button(text='🗑️ Удалить газету', callback_data=NewsPaperDeleteCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
         if for_buttons.is_news:
             self.builder.button(text='📣 Выпустить новость', callback_data=NewsPaperNotifyCall(news_paper_id=news_paper_id, tg_id=self.tg_id))
         if for_buttons.is_capture:
@@ -298,6 +301,11 @@ class NewsPaperIKB(BotIKB):
                 tg_id=self.tg_id,
             ),
         )
+        return self.builder.adjust(2).as_markup()
+
+    def confirm_delete(self, news_paper_id: int):
+        self.builder.button(text='✅ Да, удалить', callback_data=NewsPaperDeleteCall(accert=True, news_paper_id=news_paper_id, tg_id=self.tg_id))
+        self.builder.button(text='❌ Нет, отмена', callback_data=NewsPaperDeleteCall(cancel=True, news_paper_id=news_paper_id, tg_id=self.tg_id))
         return self.builder.adjust(2).as_markup()
 
     def back_to_menu(self):

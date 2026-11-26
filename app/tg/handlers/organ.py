@@ -31,6 +31,7 @@ from app.tg.callback.organ import (
     OrganSettingEditCall,
     OrganSettingModeCall,
     OrganTitulDeleteCall,
+    OrganDeleteCall,
     OrganTitulRedactCall,
 )
 from app.tg.fsm.state import OrganState
@@ -227,6 +228,18 @@ async def call(
         organ_id=callback_data.organ_id,
         purpose_tg_id=callback_data.purpose_tg_id,
     )
+
+@organ_router.callback_query(OrganDeleteCall.filter(F.accert == True))
+async def delete_organ_confirmed(callback: CallbackQuery, callback_data: OrganDeleteCall, service: OrganService):
+    await service.delete_organ(callback_data.organ_id, confirmed=True)
+
+@organ_router.callback_query(OrganDeleteCall.filter(F.cancel == True))
+async def delete_organ_cancelled(callback: CallbackQuery, callback_data: OrganDeleteCall, service: OrganService):
+    await service.info(organ_id=callback_data.organ_id)
+
+@organ_router.callback_query(OrganDeleteCall.filter())
+async def delete_organ_prompt(callback: CallbackQuery, callback_data: OrganDeleteCall, service: OrganService):
+    await service.delete_organ(callback_data.organ_id)
 
 
 @organ_router.message(Command('organ'), F.text.contains('members'))

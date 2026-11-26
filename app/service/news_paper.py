@@ -151,6 +151,18 @@ class NewsPaperService(BaseService):
             )
         ])
 
+    async def delete_news_paper(self, news_paper_id: int, confirmed: bool = False):
+        if not confirmed:
+            data = await self.logic.info(news_paper_id)
+            return await self.answer([AnswerBody(
+                text=f'❓ Удалить газету «{data.news_paper.name}»? Это действие нельзя отменить.',
+                data=data,
+                reply_markup=self.IKB.confirm_delete(news_paper_id),
+            )])
+        await self.logic.delete(news_paper_id)
+        await self.fsm.remove_value('news_paper_id')
+        return await self.menu()
+
     async def info_description(self, news_paper_id: int):
         data = await self.logic.info_description(news_paper_id)
         return await self.answer([

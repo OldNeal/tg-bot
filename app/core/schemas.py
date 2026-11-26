@@ -482,6 +482,7 @@ class ForButtons(pydantic.BaseModel):
     is_capture: bool = False
     is_give: bool = False
     is_news: bool = False
+    is_delete: bool = False
 
 
 class HTTPValidationError(pydantic.BaseModel):
@@ -599,6 +600,12 @@ class QueryQuestionCreate(pydantic.BaseModel):
     question: "QuestionCreate"
 
 
+class QueryQuestionUpdate(pydantic.BaseModel):
+    user_id: int
+    is_admin: bool = False
+    question: "QuestionUpdate"
+
+
 class QueryUserSetting(pydantic.BaseModel):
     user_id: int
     is_admin: bool = False
@@ -620,6 +627,8 @@ class QueryUserUpdate(pydantic.BaseModel):
 class Question(pydantic.BaseModel):
     body: str
     description: typing.Optional[str | None] = None
+    difficulty: int = 1
+    tags: typing.Optional[list[str]] = None
     question_id: int
     answers: list["QuestionAnswer"]
 
@@ -637,11 +646,28 @@ class QuestionAnswerStatistics(pydantic.BaseModel):
     count: int
 
 
+class QuestionAnswerUpdate(pydantic.BaseModel):
+    answer_id: typing.Optional[int | None] = None
+    body: str
+    is_correct: bool
+
+
 class QuestionCreate(pydantic.BaseModel):
     body: str
     description: typing.Optional[str | None] = None
+    difficulty: int = 1
+    tags: typing.Optional[list[str]] = None
     correct_answers: list[str]
     incorrect_answers: list[str]
+
+
+class QuestionUpdate(pydantic.BaseModel):
+    question_id: int
+    name: typing.Optional[str | None] = None
+    description: typing.Optional[str | None] = None
+    difficulty: typing.Optional[int | None] = None
+    tags: typing.Optional[list[str] | None] = None
+    answers: typing.Optional[list["QuestionAnswerUpdate"] | None] = None
 
 
 class ReaderInfo(pydantic.BaseModel):
@@ -667,7 +693,8 @@ class SequenceInfo(pydantic.BaseModel):
     rsp_factor: int
     rsp: int
     total_seconds: int
-    
+
+
 class SettingDependency(pydantic.BaseModel):
     tag: str
     operator: str = 'equals'
@@ -735,7 +762,7 @@ class SettingParametrValidate(pydantic.BaseModel):
     depends_on: typing.Optional[list["SettingDependency"] | None] = None
     subparameters: typing.Optional[list["SettingSubparameterValidate"] | None] = None
     value: typing.Any
-    default_value: typing.Any = None
+    default_value: typing.Any
     is_default_value: bool
 
     model_config = pydantic.ConfigDict(populate_by_name=True)
@@ -745,7 +772,7 @@ class SettingSubparameterMetadata(pydantic.BaseModel):
     tag: str
     name: str
     type_: str = pydantic.Field(default='str', alias="type")
-    default_value: typing.Any = None
+    default_value: typing.Optional[typing.Any] = None
     emodzi: typing.Optional[str | None] = None
     custom_emodzi_id: typing.Optional[str | None] = None
     description: typing.Optional[str | None] = None
@@ -762,7 +789,7 @@ class SettingSubparameterValidate(pydantic.BaseModel):
     tag: str
     name: str
     type_: str = pydantic.Field(default='str', alias="type")
-    default_value: typing.Any = None
+    default_value: typing.Optional[typing.Any] = None
     emodzi: typing.Optional[str | None] = None
     custom_emodzi_id: typing.Optional[str | None] = None
     description: typing.Optional[str | None] = None
@@ -838,6 +865,15 @@ class AppValidateApiOrganAnswerredactrank(pydantic.BaseModel):
     new_rank: int
     old_rank: int
 
+
+class ResponseOrganDeleteOrganPatch(pydantic.BaseModel):
+    pass
+
+class ResponseQuestionDeletePlayerQuestionPatch(pydantic.BaseModel):
+    pass
+
+class ResponseNewsPaperDeleteNewspaperPatch(pydantic.BaseModel):
+    pass
 
 class LogsFileGet200Response(pydantic.BaseModel):
     pass

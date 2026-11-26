@@ -27,7 +27,8 @@ from app.tg.callback.news_paper import (
     NewsPaperSettingsModeCall,
     NewsPaperSettingEditCall,
     NewsPaperUnsubscribeCall,
-    ReaderCall
+    ReaderCall,
+    NewsPaperDeleteCall,
 )
 from app.tg.fsm.state import NewsPaperState
 from app.tg.middlewares import ServiceMiddleware
@@ -172,6 +173,18 @@ async def capture_call(
     service: NewsPaperService,
 ):
     await service.capture(callback_data.news_paper_id)
+
+@news_paper_router.callback_query(NewsPaperDeleteCall.filter(F.accert == True))
+async def delete_news_paper_confirmed(callback: CallbackQuery, callback_data: NewsPaperDeleteCall, service: NewsPaperService):
+    await service.delete_news_paper(callback_data.news_paper_id, confirmed=True)
+
+@news_paper_router.callback_query(NewsPaperDeleteCall.filter(F.cancel == True))
+async def delete_news_paper_cancelled(callback: CallbackQuery, callback_data: NewsPaperDeleteCall, service: NewsPaperService):
+    await service.info(callback_data.news_paper_id)
+
+@news_paper_router.callback_query(NewsPaperDeleteCall.filter())
+async def delete_news_paper_prompt(callback: CallbackQuery, callback_data: NewsPaperDeleteCall, service: NewsPaperService):
+    await service.delete_news_paper(callback_data.news_paper_id)
 
 @news_paper_router.message(NewsPaperState.search, F.text, ~F.text.startswith('/'))
 async def search_text_state(message: Message, service: NewsPaperService):

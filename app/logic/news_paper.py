@@ -38,6 +38,9 @@ class NewsPaperLogic(BaseLogic):
     async def create(self, name: str):
         return await self.client.news_paper_create(await self.body, name)
 
+    async def delete(self, news_paper_id: int):
+        return await self.client.news_paper_delete(await self.body, news_paper_id)
+
     async def subscribe(self, news_paper_id: int):
         return await self.client.news_paper_subscribe(await self.body, news_paper_id)
 

@@ -603,6 +603,7 @@ class QuestionService(BaseService):
                 int(payload['author_tg_id']),
                 self.tg_id,
             ),
+            message_thread_id=self.settings.question_create_topic_id
         )
         payload['moderation_message_id'] = message.message_id
         storage_key = self.moderation_storage_key(

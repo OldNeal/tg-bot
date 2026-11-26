@@ -68,6 +68,18 @@ class OrganService(BaseService):
             )
         ])
 
+    async def delete_organ(self, organ_id: int, confirmed: bool = False):
+        if not confirmed:
+            data = await self.logic.info(organ_id=organ_id)
+            return await self.answer([AnswerBody(
+                text=f'❓ Удалить организацию «{data.organ.name}»? Это действие нельзя отменить.',
+                data=data,
+                reply_markup=self.IKB.confirm_delete(organ_id),
+            )])
+        await self.logic.delete(organ_id)
+        await self.fsm.remove_value('organ_id')
+        return await self.menu()
+
     async def search(self, value: str | None = None, is_new_search: bool = False, page: int | None = None):
         page = page if page is not None else await self.fsm.get_value('page', 0)
         value = await self.fsm.get_value('search_value', value)

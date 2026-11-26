@@ -29,6 +29,8 @@ class Settings:
     owner = int(os.getenv('owner'))
 
     question_moderation_chat_id = int(os.getenv('question_moderation_chat_id'))
+    question_create_topic_id = int(os.getenv('question_create_topic_id', '0')) or None
+    question_update_topic_id = int(os.getenv('question_update_topic_id', '0')) or None
 
     _use_proxy = os.getenv('use_proxy', 'f')
     proxy_url = os.getenv('proxy_url')

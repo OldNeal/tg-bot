@@ -78,6 +78,9 @@ class OrganLoginCall(OrganInfoCall, prefix='organ_login'):
 class OrganCaptureCall(OrganCall, prefix='organ_capture'):
     pass
 
+class OrganDeleteCall(OrganCall, AccertCancelCall, prefix='organ_delete'):
+    organ_id: int
+
 class OrganSearchCall(OrganCall, prefix='organ_search'):
     pass
 

@@ -65,6 +65,9 @@ class OrganLogic(BaseLogic):
     async def capture(self):
         return await self.client.organ_capture(await self.body)
 
+    async def delete(self, organ_id: int):
+        return await self.client.organ_delete(await self.body, organ_id)
+
 
 
 

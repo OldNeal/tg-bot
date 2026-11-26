@@ -7,6 +7,9 @@ class QuestionLogic(BaseLogic):
     async def create(self, question):
         return await self.client.question_create(question)
 
+    async def update(self, question):
+        return await self.client.question_update(question)
+
     async def mine(self, page: int = 0):
         return await self.client.question_my(
             await self.body,

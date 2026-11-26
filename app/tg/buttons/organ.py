@@ -28,7 +28,8 @@ from app.tg.callback.organ import (OrganBackCall,
                                         OrganMemberPageCall,
                                         OrganSearchCall,
                                         OrganCreateCall,
-                                        OrganMyCall)
+                                        OrganMyCall,
+                                        OrganDeleteCall)
 from app.tg.callback.back_values import OrganBackValues
 from app.tg.callback.main import MainInfoCall
 from app.validate.core import OrganSettingValidate, AnswerMemberInfo, OrganInfo, AnswerOrganInfo
@@ -52,6 +53,8 @@ class OrganIKB(BotIKB):
         self.builder.button(text='👥 Участники', callback_data=OrganInfoMembersCall(organ_id=data.organ.id, tg_id=self.tg_id))
         if data.for_buttons.is_redact_setting and data.organ.id == data.for_buttons.organ_id:
             self.builder.button(text='⚙️ Настройки', callback_data=OrganSettingCall(tg_id=self.tg_id))
+        if data.for_buttons.is_delete:
+            self.builder.button(text='🗑️ Удалить организацию', callback_data=OrganDeleteCall(organ_id=data.organ.id, tg_id=self.tg_id))
         if data.for_buttons.is_capture and data.for_buttons.is_member and data.organ.id == data.for_buttons.organ_id:
             self.builder.button(text='👑 Захватить власть', callback_data=OrganCaptureCall(tg_id=self.tg_id))
         if data.for_buttons.is_member and data.organ.id == data.for_buttons.organ_id:
@@ -158,6 +161,11 @@ class OrganIKB(BotIKB):
             self.builder.button(text='❌ Нет', callback_data=OrganMemberCall(purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
         else:
             self.builder.button(text='❌ Нет', callback_data=OrganKickCall(cancel=True, purpose_tg_id=telegram.tg_id, tg_id=self.tg_id))
+        return self.builder.adjust(2).as_markup()
+
+    def confirm_delete(self, organ_id: int):
+        self.builder.button(text='✅ Да, удалить', callback_data=OrganDeleteCall(accert=True, organ_id=organ_id, tg_id=self.tg_id))
+        self.builder.button(text='❌ Нет, отмена', callback_data=OrganDeleteCall(cancel=True, organ_id=organ_id, tg_id=self.tg_id))
         return self.builder.adjust(2).as_markup()
 
     def redact_titul(self, purpose_tg_id: int, is_back: bool = False):

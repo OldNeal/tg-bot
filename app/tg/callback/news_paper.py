@@ -42,6 +42,9 @@ class NewsPaperNotifyCall(NewsPaperCall, prefix='news_paper_notify'):
 class NewsPaperCaptureCall(NewsPaperCall, prefix='news_paper_capture'):
     news_paper_id: int
 
+class NewsPaperDeleteCall(NewsPaperCall, AccertCancelCall, prefix='news_paper_delete'):
+    news_paper_id: int
+
 class NewsPaperMakeEditorCall(ReaderCall, prefix='news_paper_make_editor'):
     pass
 
