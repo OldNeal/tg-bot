@@ -10,6 +10,7 @@ from app.tg.buttons.news_paper import NewsPaperIKB
 from app.tg.fsm.state import NewsPaperState
 from app.tg.fsm.utils import NewsPaperFSM
 from app.tg.text.news_paper import NewsPaperText
+from app.tg.settings import coerce_setting_input, is_setting_available, values_by_tag
 
 class NewsPaperAction:
     subscribe = 'subscribe'
@@ -181,7 +182,7 @@ class NewsPaperService(BaseService):
             )
         ])
 
-    async def get_settings(self, news_paper_id: int | None = None):
+    async def get_settings(self, news_paper_id: int | None = None, is_json: bool | None = None):
         if news_paper_id is None:
             news_paper_id = await self.fsm.get_value('news_paper_id')
         if news_paper_id is None:
@@ -189,14 +190,24 @@ class NewsPaperService(BaseService):
 
         await self.fsm.set_state()
         await self.fsm.update_data(news_paper_id=news_paper_id)
-        data = await self.logic.settings_values(news_paper_id)
+        if is_json is None:
+            is_json = await self.fsm.get_value('news_paper_settings_json', False)
+        await self.fsm.update_data(news_paper_settings_json=is_json)
+        data = await self.logic.settings(news_paper_id)
+        values = values_by_tag(data.settings.groups)
+        if is_json:
+            return await self.answer([
+                AnswerBody(
+                    text=self.text.settings_values(values),
+                    data=data,
+                    reply_markup=self.IKB.settings_json(news_paper_id),
+                )
+            ])
         return await self.answer([
             AnswerBody(
-                text=self.text.settings_values(data.values),
+                text=self.text.settings_editor(data.settings.groups),
                 data=data,
-                reply_markup=self.IKB.settings_values(
-                    news_paper_id
-                ),
+                reply_markup=self.IKB.settings_values(news_paper_id, data.settings.groups),
             )
         ])
 
@@ -209,18 +220,87 @@ class NewsPaperService(BaseService):
         await self.callback.answer('⚙️ Настройки сброшены')
         return await self.get_settings(news_paper_id)
 
+    async def edit_setting(self, news_paper_id: int, tag: str):
+        data = await self.logic.settings(news_paper_id)
+        values = values_by_tag(data.settings.groups)
+        parameter = next((
+            parameter
+            for group in data.settings.groups
+            for parameter in group.parametrs
+            if parameter.tag == tag and is_setting_available(parameter, values)
+        ), None)
+        if parameter is None or parameter.is_hidden or not parameter.is_redact:
+            return await self.get_settings(news_paper_id, is_json=False)
+
+        if isinstance(parameter.value, bool):
+            values[tag] = not parameter.value
+            await self.logic.settings_redact(news_paper_id, values)
+            return await self.get_settings(news_paper_id, is_json=False)
+
+        choices = getattr(parameter, 'choises', None)
+        options = list(choices) if isinstance(choices, dict) else list(parameter.allowed_values or [])
+        if options:
+            current_index = options.index(parameter.value) if parameter.value in options else -1
+            values[tag] = options[(current_index + 1) % len(options)]
+            await self.logic.settings_redact(news_paper_id, values)
+            return await self.get_settings(news_paper_id, is_json=False)
+
+        await self.fsm.update_data(news_paper_id=news_paper_id, news_paper_setting_tag=tag)
+        await self.fsm.set_state(NewsPaperState.setting_text)
+        await self.fsm.save_message(self.message.chat.id, self.message.message_id)
+        return await self.answer([AnswerBody(
+            text=f'✒️ Введите новое значение для «{parameter.name}»',
+            reply_markup=self.IKB.settings_text_prompt(news_paper_id),
+        )])
+
+    async def redact_setting_text(self):
+        news_paper_id = await self.fsm.get_value('news_paper_id')
+        tag = await self.fsm.get_value('news_paper_setting_tag')
+        if news_paper_id is None or not tag:
+            await self.fsm.set_state()
+            return await self.get_settings(news_paper_id)
+        data = await self.logic.settings(news_paper_id)
+        values = values_by_tag(data.settings.groups)
+        parameter = next((
+            parameter
+            for group in data.settings.groups
+            for parameter in group.parametrs
+            if parameter.tag == tag
+        ), None)
+        if parameter is None:
+            await self.fsm.set_state()
+            return await self.get_settings(news_paper_id, is_json=False)
+        try:
+            value = coerce_setting_input(self.message.text or '', parameter)
+        except ValueError as error:
+            await self.answer([AnswerBody(
+                text=f'⚠️ {error}',
+                reply_markup=self.IKB.settings_text_prompt(news_paper_id),
+            )])
+            return False
+        values[tag] = value
+        await self.logic.settings_redact(news_paper_id, values)
+        saved_message = await self.fsm.get_message()
+        await self.fsm.set_state()
+        if all(saved_message):
+            await self.bot.delete_message(*saved_message)
+        await self.fsm.remove_value('news_paper_setting_tag')
+        await self.fsm.remove_message()
+        return await self.get_settings(news_paper_id, is_json=False)
+
     async def to_redact_settings(self, news_paper_id: int | None = None):
         if news_paper_id is None:
             news_paper_id = await self.fsm.get_value('news_paper_id')
         if news_paper_id is None:
             raise ValueError('Не указан ID газеты для настроек')
         await self.fsm.update_data(news_paper_id=news_paper_id)
+        await self.fsm.update_data(news_paper_settings_json=True)
         await self.fsm.set_state(NewsPaperState.settings)
         await self.fsm.save_message(self.message.chat.id, self.message.message_id)
         return await self.answer([
             AnswerBody(
                 text=self.text.to_enter_settings(),
-                reply_markup=self.IKB.back_to_settings(news_paper_id),
+                reply_markup=self.IKB.settings_json(news_paper_id),
             )
         ])
 
@@ -230,12 +310,36 @@ class NewsPaperService(BaseService):
             raise ValueError('Не указан ID газеты для настроек')
         try:
             parametrs = json5.loads(self.message.text)
-        except (json.JSONDecodeError, ValueError) as error:
+            if not isinstance(parametrs, dict):
+                raise TypeError('Ожидается JSON-объект')
+            data = await self.logic.settings(news_paper_id)
+            current_values = values_by_tag(data.settings.groups)
+            new_values = current_values | parametrs
+            parameters = {
+                parameter.tag: parameter
+                for group in data.settings.groups
+                for parameter in group.parametrs
+            }
+            unavailable = [
+                parameters[tag].name
+                for tag, value in parametrs.items()
+                if tag in parameters
+                and value != current_values.get(tag)
+                and not is_setting_available(parameters[tag], new_values)
+            ]
+            if unavailable:
+                names = ', '.join(unavailable)
+                await self.answer([AnswerBody(
+                    text=f'⚠️ Нельзя изменить настройки, пока не выполнены их зависимости: {names}. Проверьте зависимые параметры и отправьте JSON ещё раз.',
+                    reply_markup=self.IKB.settings_json(news_paper_id),
+                )])
+                return False
+        except (json.JSONDecodeError, ValueError, TypeError) as error:
             raise JSONEnterError(
                 'Ввел невалидный json',
                 json=self.message.text,
             ) from error
-        await self.logic.settings_redact(news_paper_id, parametrs)
+        await self.logic.settings_redact(news_paper_id, new_values)
         return await self.get_settings(news_paper_id)
 
     async def readers(self, news_paper_id: int, page: int | None = None):

@@ -30,3 +30,18 @@ class MainUserInfoCall(MainCall, prefix='main_user_info'):
 class MainUserDeleteCall(MainCall, prefix='main_user_delete'):
     user_id: int
     confirmed: bool | None = None
+
+class MainUserSettingsCall(MainCall, prefix='main_user_settings'):
+    pass
+
+class MainUserSettingsRedactCall(MainCall, prefix='main_user_settings_redact'):
+    pass
+
+class MainUserSettingsDefaultCall(MainCall, prefix='main_user_settings_default'):
+    pass
+
+class MainUserSettingsModeCall(MainCall, prefix='main_user_settings_mode'):
+    is_json: bool = False
+
+class MainUserSettingEditCall(MainCall, prefix='main_user_setting_edit'):
+    tag: str

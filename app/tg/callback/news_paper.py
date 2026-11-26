@@ -63,5 +63,11 @@ class NewsPaperSettingsCall(NewsPaperCall, prefix='news_paper_settings'):
 class NewsPaperSettingsRedactCall(NewsPaperSettingsCall, prefix='news_paper_settings_redact'):
     pass
 
+class NewsPaperSettingsModeCall(NewsPaperSettingsCall, prefix='news_paper_settings_mode'):
+    is_json: bool = False
+
+class NewsPaperSettingEditCall(NewsPaperSettingsCall, prefix='news_paper_setting_edit'):
+    tag: str
+
 class NewsPaperSettingsDefaultCall(NewsPaperSettingsCall, prefix='news_paper_settings_default'):
     pass

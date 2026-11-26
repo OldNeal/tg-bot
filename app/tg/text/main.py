@@ -1,5 +1,6 @@
 from app.tg.text.base import Templates, BaseText
 from app.validate.core import AnswerBaseInfo, AnswerUserBody
+from app.tg.settings import is_setting_available, values_by_tag
 
 class MainText(BaseText):
     def __init__(self, data: AnswerBaseInfo):
@@ -8,6 +9,39 @@ class MainText(BaseText):
     @classmethod
     def menu(self):
         return '🧭 Главное меню'
+
+    @classmethod
+    def user_settings_editor(cls, groups):
+        choice_labels = {
+            'notify_platform': {'telegram': 'Телеграм'},
+            'notify_type': {
+                'ephemeral_message': 'Эфемерное сообщение',
+                'private_chat': 'В личный чат с ботом',
+            },
+        }
+        lines = []
+        values = values_by_tag(groups)
+        for group in groups:
+            for parameter in group.parametrs:
+                if parameter.is_hidden or not is_setting_available(parameter, values):
+                    continue
+                value = parameter.value
+                choices = getattr(parameter, 'choises', None) or choice_labels.get(parameter.tag)
+                if isinstance(choices, dict):
+                    value = choices.get(value, value)
+                if isinstance(value, bool):
+                    value = '✅ Да' if value else '❌ Нет'
+                elif value is None:
+                    value = '❌'
+
+                emoji = parameter.emodzi or group.emodzi or '⚙️'
+                custom_emoji_id = parameter.custom_emodzi_id or group.custom_emodzi_id
+                icon = cls.html(emoji).emoji(custom_emoji_id)
+                line = f'{icon} {cls.html(parameter.name).escape()}: {cls.html(str(value)).escape()}'
+                lines.append(line)
+
+        title = cls.html('⚙️ Настройки аккаунта').bold()
+        return title + cls.html.joined(lines).blockquote()
 
     @property
     def info(self):
@@ -36,7 +70,7 @@ class MainText(BaseText):
 
         user_id = telegram.tg_id if telegram else user.user_id
         username = telegram.username if telegram else None
-        return '🪪 ' + self.user_mention(user) + self.html(self.html.joined([
+        return f'{self.html(user.emodzi or '🪪').custom_emoji(user.custom_emodzi_id) if user.custom_emodzi_id else user.emodzi or '🪪'} ' + self.user_mention(user) + self.html(self.html.joined([
                 f'🏷 ID: {user_id} ({user.user_id})',
                 f'🔗 Юз: {self.html(username or '❌').escape().openmessage(telegram.tg_id) if telegram else '❌'}',
             ] + member_text + beyonder_text)).blockquote()

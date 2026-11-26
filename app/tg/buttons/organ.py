@@ -8,6 +8,9 @@ from app.tg.callback.organ import (OrganBackCall,
                                         OrganSettingGroupCall, 
                                         OrganSettingParametrBooleanCall, 
                                         OrganSettingParametrDefaultCall,
+                                        OrganSettingSubparameterCall,
+                                        OrganSettingEditCall,
+                                        OrganSettingModeCall,
                                         OrganInfoCall,
                                         OrganMemberCall,
                                         OrganInfoDescCall,
@@ -29,6 +32,7 @@ from app.tg.callback.organ import (OrganBackCall,
 from app.tg.callback.back_values import OrganBackValues
 from app.tg.callback.main import MainInfoCall
 from app.validate.core import OrganSettingValidate, AnswerMemberInfo, OrganInfo, AnswerOrganInfo
+from app.tg.settings import is_setting_available, values_by_tag
 
 
 class OrganIKB(BotIKB):    
@@ -163,12 +167,75 @@ class OrganIKB(BotIKB):
             self.builder.button(text='❌ Отменить', callback_data=CancelCall(tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()
 
-    def settings_values(self, is_back: bool):
-        self.builder.button(text='✒️ Изменить', callback_data=OrganSettingRedactCall(tg_id=self.tg_id))
-        self.builder.button(text='🔩 Сбросить ', callback_data=OrganSettingParametrDefaultCall(is_all=True, tg_id=self.tg_id))
+    def settings_values(self, is_back: bool, groups=None):
+        groups = groups or []
+        values = values_by_tag(groups)
+        for group in groups or []:
+            for parameter in group.parametrs:
+                if parameter.is_hidden or not parameter.is_redact or not is_setting_available(parameter, values):
+                    continue
+                if parameter.subparameters:
+                    emoji = parameter.emodzi or group.emodzi or '⚙️'
+                    self.builder.button(
+                        text=f'{emoji} {parameter.name}'[:60],
+                        icon_custom_emoji_id=parameter.custom_emodzi_id or group.custom_emodzi_id,
+                        callback_data=OrganSettingSubparameterCall(tag=parameter.tag, tg_id=self.tg_id),
+                    )
+                    continue
+                emoji = parameter.emodzi or group.emodzi or '⚙️'
+                custom_emoji_id = parameter.custom_emodzi_id or group.custom_emodzi_id
+                self.builder.button(
+                    text=f'{emoji} {parameter.name}'[:60],
+                    icon_custom_emoji_id=custom_emoji_id,
+                    callback_data=OrganSettingEditCall(tag=parameter.tag, tg_id=self.tg_id),
+                )
+        self.builder.adjust(2)
+        self.builder.row(InlineKeyboardButton(text='🔩 Сбросить по умолчанию', callback_data=OrganSettingParametrDefaultCall(is_all=True, tg_id=self.tg_id).pack()))
+        self.builder.row(InlineKeyboardButton(text='🧾 Редактировать через JSON', callback_data=OrganSettingModeCall(is_json=True, tg_id=self.tg_id).pack()))
         if is_back:
-            self.builder.button(text='↩️ Назад', callback_data=OrganInfoCall(purpose_tg_id=self.tg_id, tg_id=self.tg_id))
+            self.builder.row(InlineKeyboardButton(text='↩️ Назад', callback_data=OrganInfoCall(purpose_tg_id=self.tg_id, tg_id=self.tg_id).pack()))
+        return self.builder.as_markup()
+
+    def settings_json(self, is_back: bool = False):
+        self.builder.button(text='⚙️ Редактировать кнопками', callback_data=OrganSettingModeCall(is_json=False, tg_id=self.tg_id))
+        self.builder.button(text='✏️ Изменить через JSON', callback_data=OrganSettingRedactCall(tg_id=self.tg_id))
+        self.builder.button(text='🔩 Сбросить по умолчанию', callback_data=OrganSettingParametrDefaultCall(is_all=True, tg_id=self.tg_id))
+        if is_back:
+            self.builder.button(text='↩️ К организации', callback_data=OrganInfoCall(purpose_tg_id=self.tg_id, tg_id=self.tg_id))
+        else:
+            self.builder.button(text='↩️ В меню организаций', callback_data=OrganBackCall(where=OrganBackValues.menu, tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()
+
+    def settings_subparameters(self, parameter):
+        for subparameter in parameter.subparameters or []:
+            if subparameter.is_hidden or not subparameter.is_redact:
+                continue
+            self.builder.button(
+                text=f'{subparameter.emodzi or "⚙️"} {subparameter.name}'[:60],
+                icon_custom_emoji_id=subparameter.custom_emodzi_id,
+                callback_data=OrganSettingSubparameterCall(
+                    tag=parameter.tag,
+                    subtag=subparameter.tag,
+                    tg_id=self.tg_id,
+                ),
+            )
+        self.builder.adjust(2)
+        self.builder.row(InlineKeyboardButton(
+            text='↩️ К настройкам',
+            callback_data=OrganSettingCall(tg_id=self.tg_id).pack(),
+        ))
+        return self.builder.as_markup()
+
+    def settings_subparameter_prompt(self, tag: str):
+        self.builder.button(
+            text='↩️ К параметрам',
+            callback_data=OrganSettingSubparameterCall(tag=tag, tg_id=self.tg_id),
+        )
+        return self.builder.as_markup()
+
+    def settings_text_prompt(self):
+        self.builder.button(text='↩️ К настройкам', callback_data=OrganSettingModeCall(is_json=False, tg_id=self.tg_id))
+        return self.builder.as_markup()
 
     def member_back(self, purpose_tg_id: int):
         self.builder.button(text='↩️ Назад', callback_data=OrganMemberCall(purpose_tg_id=purpose_tg_id, tg_id=self.tg_id))
