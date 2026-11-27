@@ -1,9 +1,10 @@
 from app.tg.text.base import BaseText
 from app.tg.text.emodzi import Emodzi
 from app.validate.core import  (
-    AnswerActivityPointsLimitReset,
     AnswerActivityPoints,
-    AnswerActivityPointsLimit
+    AnswerActivityPointsGlobalLimitReset,
+    AnswerActivityPointsLimit,
+    AnswerActivityPointsLimitReset,
 )
 
 class ActivityText(BaseText):
@@ -14,6 +15,10 @@ class ActivityText(BaseText):
     @classmethod
     def limit_reset(self, data: AnswerActivityPointsLimitReset):
         return f'⚡ У пользователя {self.user_mention(data.purpose)} был сброшен лимит получения очков активности'
+
+    @classmethod
+    def global_limit_reset(self, data: AnswerActivityPointsGlobalLimitReset):
+        return f'⚡ Сброшен лимит получения очков активности у всех пользователей ({data.deleted})'
     
     @classmethod
     def limits(self, data: AnswerActivityPointsLimit):

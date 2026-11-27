@@ -135,6 +135,14 @@ async def activity_points_limit_reset(result: schemas.AnswerActivityPointsLimitR
     return result
 
 
+@client.patch("/activity/limit/reset/global", response_map={200: schemas.AnswerActivityPointsGlobalLimitReset, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 438: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
+
+async def activity_points_limit_reset_global(result: schemas.AnswerActivityPointsGlobalLimitReset | schemas.BaseExceptionResponse | schemas.HTTPValidationError, data: schemas.QueryBody) -> schemas.AnswerActivityPointsGlobalLimitReset | schemas.BaseExceptionResponse | schemas.HTTPValidationError:
+    """Activity Points Limit Reset Global
+    """
+    return result
+
+
 
 @client.get("/beyonder/info", response_map={200: schemas.AnswerBeyonderInfo, 403: schemas.BaseExceptionResponse, 422: schemas.HTTPValidationError, 432: schemas.BaseExceptionResponse, 433: schemas.BaseExceptionResponse, 434: schemas.BaseExceptionResponse, 437: schemas.BaseExceptionResponse, 439: schemas.BaseExceptionResponse, 453: schemas.BaseExceptionResponse, 454: schemas.BaseExceptionResponse, 455: schemas.BaseExceptionResponse, 456: schemas.BaseExceptionResponse, 457: schemas.BaseExceptionResponse, 471: schemas.BaseExceptionResponse, 472: schemas.BaseExceptionResponse, 500: schemas.BaseExceptionResponse})
 

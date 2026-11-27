@@ -16,6 +16,10 @@ class AnswerActivityPoints(pydantic.BaseModel):
     get_activity_points: int = 0
 
 
+class AnswerActivityPointsGlobalLimitReset(pydantic.BaseModel):
+    deleted: int = 0
+
+
 class AnswerActivityPointsLimit(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None

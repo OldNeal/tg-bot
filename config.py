@@ -147,10 +147,16 @@ admin_cmds = cmds | {
     'activity_reset':'⛓️‍💥 Сброс лимита очков активности',
 }
 
+owner_cmds = admin_cmds | {
+    'activity_reset_global':'⛓️‍💥 Сбросить лимит активности всем',
+}
+
 async def to_menu_cmds():
     admin_menu = [BotCommand(command=cmd, description=desc) for cmd, desc in admin_cmds.items()]
+    owner_menu = [BotCommand(command=cmd, description=desc) for cmd, desc in owner_cmds.items()]
     user_menu = [BotCommand(command=cmd, description=desc) for cmd, desc in cmds.items()]
     [await bot.set_my_commands(admin_menu, scope=BotCommandScopeChat(chat_id=admin)) for admin in settings.admins]
+    await bot.set_my_commands(owner_menu, scope=BotCommandScopeChat(chat_id=settings.owner))
     await bot.set_my_commands(user_menu, scope=BotCommandScopeAllGroupChats())
     await bot.set_my_commands(user_menu, scope=BotCommandScopeAllPrivateChats())
     await bot.set_my_commands(user_menu, scope=BotCommandScopeAllChatAdministrators())

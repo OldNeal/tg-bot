@@ -29,6 +29,17 @@ async def activity_reset_command(
 ):
     await service.activity_reset(purpose_tg_id)
 
+
+@activity_router.message(Command('activity_reset_global'))
+@command(
+    name='activity_reset_global',
+    description='Сброс лимита очков активности у всех пользователей (владелец)',
+    arguments=[Optionals.is_admin],
+    error_handler=DEFAULT_BOT_ERROR_HANDLER,
+)
+async def activity_reset_global_command(message: Message, service: ActivityService, is_admin: bool | None = None):
+    await service.activity_reset_global()
+
 @activity_router.callback_query(ItemActionCall.filter(F.action == 'activity_limits'))
 async def call(
     callback: CallbackQuery,

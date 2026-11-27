@@ -62,3 +62,9 @@ class ActivityService(BaseService):
         target_tg_id = purpose_tg_id or self.purpose_tg_id or self.tg_id
         data = await self.logic.activity_reset(target_tg_id)
         return await self.answer([AnswerBody(text=self.text.limit_reset(data))])
+
+    async def activity_reset_global(self):
+        if self.tg_id != self.settings.owner:
+            raise PermissionError()
+        data = await self.logic.activity_reset_global()
+        return await self.answer([AnswerBody(text=self.text.global_limit_reset(data))])

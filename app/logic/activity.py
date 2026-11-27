@@ -11,5 +11,8 @@ class ActivityLogic(BaseLogic):
         user_id = await self.get_user_id(purpose_tg_id)
         return await self.client.activity_points_limit_reset(await self.body, user_id)
 
+    async def activity_reset_global(self):
+        return await self.client.activity_points_limit_reset_global(await self.body)
+
     async def limits(self):
         return await self.client.activity_points_limit(await self.user_id)
