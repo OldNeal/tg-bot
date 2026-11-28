@@ -12,7 +12,7 @@ from app.tg.fsm.state import MainState
 from app.tg.fsm.utils import MainFSM
 from app.validate.core import AnswerUsersBody
 from app.exception.base import JSONEnterError
-from app.tg.settings import coerce_setting_input, is_setting_available, values_by_tag
+from app.tg.settings import coerce_setting_input, is_setting_available, selected_setting_group, values_by_tag
 
 class MainService(BaseService):
     logic_class: type[MainLogic] = MainLogic
@@ -204,7 +204,7 @@ class MainService(BaseService):
         },
     }
 
-    async def get_user_settings(self, is_json: bool | None = None):
+    async def get_user_settings(self, is_json: bool | None = None, group_tag: str | None = None):
         await self.fsm.set_state()
         await self.fsm.remove_value('user_setting_tag')
         if is_json is None:
@@ -222,13 +222,23 @@ class MainService(BaseService):
                 )
             ])
         data = await self.logic.user_settings()
+        if group_tag is None:
+            group_tag = await self.fsm.get_value('user_settings_group')
+        selected = selected_setting_group(data.settings.groups, group_tag)
+        group_tag = selected.tag if selected else None
+        await self.fsm.update_data(user_settings_group=group_tag)
         return await self.answer([
             AnswerBody(
-                text=self.text.user_settings_editor(data.settings.groups),
+                text=self.text.user_settings_editor(data.settings.groups, group_tag),
                 data=data,
-                reply_markup=self.IKB.user_settings_editor(data.settings.groups),
+                reply_markup=self.IKB.user_settings_editor(data.settings.groups, group_tag),
             )
         ])
+
+    async def default_user_settings_group(self, group_tag: str):
+        await self.logic.user_settings_default(group=group_tag, is_all=False)
+        await self.callback.answer('⚙️ Настройки группы сброшены')
+        return await self.get_user_settings(is_json=False, group_tag=group_tag)
 
     async def default_user_settings(self, tag: str | None = None, is_all: bool = False):
         if tag and not is_all:

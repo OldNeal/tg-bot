@@ -31,6 +31,8 @@ class Settings:
     question_moderation_chat_id = int(os.getenv('question_moderation_chat_id'))
     question_create_topic_id = int(os.getenv('question_create_topic_id', '0')) or None
     question_update_topic_id = int(os.getenv('question_update_topic_id', '0')) or None
+    question_create_redis_key = os.getenv('question_create_redis_key', 'question_moderation')
+    question_update_redis_key = os.getenv('question_update_redis_key', 'question_update_moderation')
 
     _use_proxy = os.getenv('use_proxy', 'f')
     proxy_url = os.getenv('proxy_url')
@@ -43,6 +45,12 @@ class Settings:
     redis_host = os.getenv('redis_host', 'localhost')   
     redis_port = int(os.getenv('redis_port', 6379))
     redis_password = os.getenv('redis_password')
+
+    telegram_notifications_enabled = os.getenv('telegram_notifications_enabled', 'true').strip().lower() in {'t', 'true', '1'}
+    telegram_notify_activity_points = os.getenv('telegram_notify_activity_points', 'true').strip().lower() in {'t', 'true', '1'}
+    telegram_notify_item_give = os.getenv('telegram_notify_item_give', 'true').strip().lower() in {'t', 'true', '1'}
+    telegram_notify_item_take = os.getenv('telegram_notify_item_take', 'true').strip().lower() in {'t', 'true', '1'}
+    telegram_notify_organ = os.getenv('telegram_notify_organ', 'true').strip().lower() in {'t', 'true', '1'}
 
     docs_url = os.getenv('docs_url')
     news_url = os.getenv('news_url')

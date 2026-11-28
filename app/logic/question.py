@@ -29,8 +29,11 @@ class QuestionLogic(BaseLogic):
     async def limits(self):
         return await self.client.question_limit(await self.user_id)
 
-    async def random_question(self):
-        return await self.client.question_random(await self.body)
+    async def random_question(self, difficulty: int):
+        return await self.client.question_random(
+            await self.body,
+            difficulty=difficulty,
+        )
 
     async def answer(self, question_id: int, answer_id: int):
         return await self.client.question_answer(

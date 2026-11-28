@@ -1,6 +1,6 @@
 from app.tg.text.base import Templates, BaseText
 from app.validate.core import AnswerOrganInfo, AnswerMemberInfo, AnswerOrganInfoDescription, SettingGroupValidate, AnswerOrganInfoMembers, AnswerOrganGive
-from app.tg.settings import is_setting_available, values_by_tag
+from app.tg.settings import is_setting_available, selected_setting_group, values_by_tag
 
 class OrganText(BaseText):
     def __init__(self, data: AnswerOrganInfo | AnswerOrganInfoDescription | AnswerOrganInfoMembers):
@@ -120,10 +120,11 @@ class OrganText(BaseText):
         return '⚙️ Настройки' + self.html.json_format(values, indent=4).escape().code().pre('json')   
 
     @classmethod
-    def settings_editor(self, groups):
+    def settings_editor(self, groups, group_tag: str | None = None):
         lines = []
         values = values_by_tag(groups)
-        for group in groups:
+        selected = selected_setting_group(groups, group_tag)
+        for group in [selected] if selected else []:
             for parameter in group.parametrs:
                 if parameter.is_hidden or not is_setting_available(parameter, values):
                     continue
@@ -145,7 +146,9 @@ class OrganText(BaseText):
                 lines.append(
                     f'{icon} {self.html(parameter.name).escape()}: {self.html(str(value)).escape()}'
                 )
-        return self.html('⚙️ Настройки организации').bold() + self.html.joined(lines).blockquote()
+        group_name = f' ({selected.name})' if selected else ''
+        title = self.html(f'⚙️ Настройки организации{group_name}').escape().bold()
+        return title + self.html.joined(lines).blockquote()
 
     @classmethod
     def settings_subparameters(self, parameter):

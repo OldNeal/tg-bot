@@ -1,6 +1,6 @@
 from app.tg.text.base import Templates, BaseText
 from app.validate.core import AnswerBaseInfo, AnswerUserBody
-from app.tg.settings import is_setting_available, values_by_tag
+from app.tg.settings import is_setting_available, selected_setting_group, values_by_tag
 
 class MainText(BaseText):
     def __init__(self, data: AnswerBaseInfo):
@@ -11,7 +11,7 @@ class MainText(BaseText):
         return '🧭 Главное меню'
 
     @classmethod
-    def user_settings_editor(cls, groups):
+    def user_settings_editor(cls, groups, group_tag: str | None = None):
         choice_labels = {
             'notify_platform': {'telegram': 'Телеграм'},
             'notify_type': {
@@ -21,7 +21,8 @@ class MainText(BaseText):
         }
         lines = []
         values = values_by_tag(groups)
-        for group in groups:
+        selected = selected_setting_group(groups, group_tag)
+        for group in [selected] if selected else []:
             for parameter in group.parametrs:
                 if parameter.is_hidden or not is_setting_available(parameter, values):
                     continue
@@ -40,7 +41,8 @@ class MainText(BaseText):
                 line = f'{icon} {cls.html(parameter.name).escape()}: {cls.html(str(value)).escape()}'
                 lines.append(line)
 
-        title = cls.html('⚙️ Настройки аккаунта').bold()
+        group_name = f' ({selected.name})' if selected else ''
+        title = cls.html(f'⚙️ Настройки аккаунта{group_name}').escape().bold()
         return title + cls.html.joined(lines).blockquote()
 
     @property

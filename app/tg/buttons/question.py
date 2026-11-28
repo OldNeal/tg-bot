@@ -8,9 +8,18 @@ from app.tg.callback.question import (
     QuestionModerationCall,
     PendingQuestionsRefreshCall,
     QuestionMenuCall,
+    QuestionMineCall,
+    QuestionRandomCall,
+    QuestionRandomDifficultyCall,
+    QuestionStartCreateCall,
+    QuestionStartJsonCreateCall,
+    QuestionUserStatsCall,
+    QuestionLimitsCall,
+    QuestionLeaveQuizCall,
     QuestionPageCall,
     QuestionQuizAnswerCall,
     QuestionSelectCall,
+    QuestionEditCall,
 )
 from app.validate.core import Question, QuestionAnswer
 
@@ -26,33 +35,48 @@ class QuestionIKB(BotIKB):
     def menu(self):
         self.builder.button(
             text='🎲 Ответить на случайный вопрос',
-            callback_data=QuestionMenuCall(action='random', tg_id=self.tg_id),
+            callback_data=QuestionRandomCall(tg_id=self.tg_id),
         )
         self.builder.button(
             text='📊 Моя статистика',
-            callback_data=QuestionMenuCall(action='userstats', tg_id=self.tg_id),
+            callback_data=QuestionUserStatsCall(tg_id=self.tg_id),
         )
         self.builder.button(
             text='⚡ Лимиты ответов',
-            callback_data=QuestionMenuCall(action='limits', tg_id=self.tg_id),
+            callback_data=QuestionLimitsCall(tg_id=self.tg_id),
         )
         self.builder.button(
             text='📝 Мои вопросы',
-            callback_data=QuestionMenuCall(action='mine', tg_id=self.tg_id),
+            callback_data=QuestionMineCall(tg_id=self.tg_id),
         )
         self.builder.button(
             text='➕ Создать вопрос',
-            callback_data=QuestionMenuCall(action='create', tg_id=self.tg_id),
+            callback_data=QuestionStartCreateCall(tg_id=self.tg_id),
         )
         self.builder.button(
             text='📋 Создать через JSON',
-            callback_data=QuestionMenuCall(action='json', tg_id=self.tg_id),
+            callback_data=QuestionStartJsonCreateCall(tg_id=self.tg_id),
         )
         self.builder.button(
             text='↩️ В главное меню',
             callback_data=MenuCall(where='main', tg_id=self.tg_id),
         )
         return self.builder.adjust(1, 2, 1, 2, 1).as_markup()
+
+    def random_difficulty(self):
+        for difficulty in range(1, 11):
+            self.builder.button(
+                text=str(difficulty),
+                callback_data=QuestionRandomDifficultyCall(
+                    difficulty=difficulty,
+                    tg_id=self.tg_id,
+                ),
+            )
+        self.builder.button(
+            text='↩️ К меню вопросов',
+            callback_data=QuestionMenuCall(action='menu', tg_id=self.tg_id),
+        )
+        return self.builder.adjust(5, 5, 1).as_markup()
 
     def back_to_menu(self):
         self.builder.button(
@@ -107,10 +131,14 @@ class QuestionIKB(BotIKB):
         )
         return self.builder.adjust(1).as_markup()
 
-    def question(self, page: int = 0):
+    def question(self, question: Question, page: int = 0):
+        self.builder.button(
+            text='✏️ Изменить вопрос',
+            callback_data=QuestionEditCall(action='open', question_id=question.question_id, tg_id=self.tg_id),
+        )
         self.builder.button(
             text='↩️ К моим вопросам',
-            callback_data=QuestionMenuCall(action='mine', page=page, tg_id=self.tg_id),
+            callback_data=QuestionMineCall(page=page, tg_id=self.tg_id),
         )
         return self.builder.adjust(1).as_markup()
 
@@ -128,10 +156,7 @@ class QuestionIKB(BotIKB):
         self.builder.row(
             InlineKeyboardButton(
                 text='↩️ Отказаться отвечать',
-                callback_data=QuestionMenuCall(
-                    action='leave_quiz',
-                    tg_id=self.tg_id,
-                ).pack(),
+                callback_data=QuestionLeaveQuizCall(tg_id=self.tg_id).pack(),
             ),
         )
         return self.builder.as_markup()
@@ -139,7 +164,7 @@ class QuestionIKB(BotIKB):
     def quiz_result(self):
         self.builder.button(
             text='🎲 Другой вопрос',
-            callback_data=QuestionMenuCall(action='random', tg_id=self.tg_id),
+            callback_data=QuestionRandomCall(tg_id=self.tg_id),
         )
         self.builder.button(
             text='↩️ К меню вопросов',
@@ -151,6 +176,8 @@ class QuestionIKB(BotIKB):
         labels = {
             'body': '❔ Изменить вопрос',
             'description': '📜 Изменить описание',
+            'difficulty': '⚖️ Изменить сложность',
+            'tags': '🏷 Изменить теги',
             'correct_answers': '✏️ Изменить правильные ответы',
             'incorrect_answers': '✏️ Изменить неправильные ответы',
         }
@@ -177,6 +204,25 @@ class QuestionIKB(BotIKB):
         )
         return self.builder.adjust(1).as_markup()
 
+    def edit_confirmation(self, question_id: int):
+        labels = {
+            'body': '❔ Изменить вопрос', 'description': '📜 Изменить описание',
+            'difficulty': '⚖️ Изменить сложность', 'tags': '🏷 Изменить теги',
+            'correct_answers': '✏️ Изменить правильные ответы',
+            'incorrect_answers': '✏️ Изменить неправильные ответы',
+        }
+        for field, label in labels.items():
+            self.builder.button(text=label, callback_data=QuestionEditCall(action='field', question_id=question_id, field=field, tg_id=self.tg_id))
+        self.builder.button(text='✅ Отправить на модерацию', callback_data=QuestionEditCall(action='submit', question_id=question_id, tg_id=self.tg_id))
+        self.builder.button(text='❌ Отменить', callback_data=QuestionEditCall(action='cancel', question_id=question_id, tg_id=self.tg_id))
+        return self.builder.adjust(1).as_markup()
+
+    def edit_prompt(self, question_id: int, show_review: bool = False):
+        if show_review:
+            self.builder.button(text='↩️ К проверке', callback_data=QuestionEditCall(action='review', question_id=question_id, tg_id=self.tg_id))
+        self.builder.button(text='❌ Отменить редактирование', callback_data=QuestionEditCall(action='cancel', question_id=question_id, tg_id=self.tg_id))
+        return self.builder.adjust(1).as_markup()
+
     def create_edit_prompt(self, show_review: bool = False):
         self.builder.button(
             text='⚖️ Правила создания',
@@ -193,9 +239,9 @@ class QuestionIKB(BotIKB):
         )
         return self.builder.adjust(1).as_markup()
 
-    def moderation_request(self, author_tg_id: int, moderator_tg_id: int | None = None):
+    def moderation_request(self, author_tg_id: int, moderator_tg_id: int | None = None, operation: str = 'create'):
         self.builder.button(
-                text='✅ Создать',
+                text='✅ Опубликовать' if operation == 'update' else '✅ Создать',
                 callback_data=QuestionModerationCall(
                     action='approve',
                     tg_id=author_tg_id,
@@ -221,6 +267,8 @@ class QuestionIKB(BotIKB):
         labels = {
             'body': '❔ Текст вопроса',
             'description': '📜 Описание',
+            'difficulty': '⚖️ Сложность',
+            'tags': '🏷 Теги',
             'correct_answers': '✅ Правильные ответы',
             'incorrect_answers': '❌ Неправильные ответы',
         }

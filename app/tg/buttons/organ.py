@@ -5,7 +5,8 @@ from app.tg.callback.organ import (OrganBackCall,
                                         OrganSettingParametrCall, 
                                         OrganSettingRedactCall, 
                                         OrganSettingModeCall, 
-                                        OrganSettingGroupCall, 
+                                        OrganSettingGroupCall,
+                                        OrganSettingGroupDefaultCall,
                                         OrganSettingParametrBooleanCall, 
                                         OrganSettingParametrDefaultCall,
                                         OrganSettingSubparameterCall,
@@ -33,7 +34,7 @@ from app.tg.callback.organ import (OrganBackCall,
 from app.tg.callback.back_values import OrganBackValues
 from app.tg.callback.main import MainInfoCall
 from app.validate.core import OrganSettingValidate, AnswerMemberInfo, OrganInfo, AnswerOrganInfo
-from app.tg.settings import is_setting_available, values_by_tag
+from app.tg.settings import is_setting_available, selected_setting_group, values_by_tag
 
 
 class OrganIKB(BotIKB):    
@@ -176,10 +177,11 @@ class OrganIKB(BotIKB):
             self.builder.button(text='❌ Отменить', callback_data=CancelCall(tg_id=self.tg_id))
         return self.builder.adjust(1).as_markup()
 
-    def settings_values(self, is_back: bool, groups=None):
+    def settings_values(self, is_back: bool, groups=None, group_tag: str | None = None):
         groups = groups or []
         values = values_by_tag(groups)
-        for group in groups or []:
+        selected = selected_setting_group(groups, group_tag)
+        for group in [selected] if selected else []:
             for parameter in group.parametrs:
                 if parameter.is_hidden or not parameter.is_redact or not is_setting_available(parameter, values):
                     continue
@@ -199,6 +201,11 @@ class OrganIKB(BotIKB):
                     callback_data=OrganSettingEditCall(tag=parameter.tag, tg_id=self.tg_id),
                 )
         self.builder.adjust(2)
+        self.setting_groups(
+            groups, selected.tag if selected else None,
+            lambda tag: OrganSettingGroupCall(tag=tag, tg_id=self.tg_id),
+            reset_callback=OrganSettingGroupDefaultCall(tag=selected.tag, tg_id=self.tg_id) if selected else None,
+        )
         self.builder.row(InlineKeyboardButton(text='🔩 Сбросить по умолчанию', callback_data=OrganSettingParametrDefaultCall(is_all=True, tg_id=self.tg_id).pack()))
         self.builder.row(InlineKeyboardButton(text='🧾 Редактировать через JSON', callback_data=OrganSettingModeCall(is_json=True, tg_id=self.tg_id).pack()))
         if is_back:

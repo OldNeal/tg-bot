@@ -8,6 +8,9 @@ class AnswerInCorrectError(BotError):
 
 class QuestionBodyError(BotError):
     msg = 'Текст вопроса не может быть пустым'  
+
+class QuestionDifficultyError(BotError):
+    msg = 'Сложность должна быть целым числом от 1 до 10'
     
 class QuestionAnswersError(BotError):
     msg = 'Для вопроса нужны минимум 1 правильный и 3 неправильных ответа'  

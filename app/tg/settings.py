@@ -11,6 +11,22 @@ def values_by_tag(groups) -> dict[str, Any]:
     }
 
 
+def visible_setting_groups(groups):
+    values = values_by_tag(groups)
+    return [
+        group for group in groups
+        if any(
+            not parameter.is_hidden and is_setting_available(parameter, values)
+            for parameter in group.parametrs
+        )
+    ]
+
+
+def selected_setting_group(groups, group_tag: str | None = None):
+    visible = visible_setting_groups(groups)
+    return next((group for group in visible if group.tag == group_tag), next(iter(visible), None))
+
+
 def is_setting_available(parameter, values: dict[str, Any]) -> bool:
     for dependency in getattr(parameter, 'depends_on', None) or []:
         tag = dependency.tag

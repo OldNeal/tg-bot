@@ -17,6 +17,8 @@ from app.tg.callback.main import (
     MainUserSettingsRedactCall,
     MainUserSettingsDefaultCall,
     MainUserSettingsModeCall,
+    MainUserSettingsGroupCall,
+    MainUserSettingsGroupDefaultCall,
     MainUserSettingEditCall,
     MainUsersCall,
     MainUsersPageCall,
@@ -211,6 +213,20 @@ async def user_settings_default_call(callback: CallbackQuery, callback_data: Mai
 @main_router.callback_query(MainUserSettingsModeCall.filter())
 async def user_settings_mode_call(callback: CallbackQuery, callback_data: MainUserSettingsModeCall, service: MainService):
     await service.get_user_settings(is_json=callback_data.is_json)
+
+
+@main_router.callback_query(MainUserSettingsGroupDefaultCall.filter())
+async def settings_group_default_call(
+    callback: CallbackQuery,
+    callback_data: MainUserSettingsGroupDefaultCall,
+    service: MainService,
+):
+    await service.default_user_settings_group(callback_data.tag)
+
+
+@main_router.callback_query(MainUserSettingsGroupCall.filter())
+async def user_settings_group_call(callback: CallbackQuery, callback_data: MainUserSettingsGroupCall, service: MainService):
+    await service.get_user_settings(is_json=False, group_tag=callback_data.tag)
 
 
 @main_router.callback_query(MainUserSettingEditCall.filter())

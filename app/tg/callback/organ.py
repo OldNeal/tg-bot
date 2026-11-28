@@ -34,6 +34,9 @@ class OrganSettingParametrCall(OrganCall, prefix='organ_setting_parametr'):
 class OrganSettingGroupCall(OrganCall, prefix='organ_setting_group'):
     tag: str
 
+class OrganSettingGroupDefaultCall(OrganSettingGroupCall, prefix='organ_group_default'):
+    pass
+
 class OrganSettingModeCall(OrganCall, prefix='organ_setting_mode'):
     is_json: bool = False
 

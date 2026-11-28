@@ -25,6 +25,8 @@ from app.tg.callback.news_paper import (
     NewsPaperSettingsDefaultCall,
     NewsPaperSettingsRedactCall,
     NewsPaperSettingsModeCall,
+    NewsPaperSettingsGroupCall,
+    NewsPaperSettingsGroupDefaultCall,
     NewsPaperSettingEditCall,
     NewsPaperUnsubscribeCall,
     ReaderCall,
@@ -234,6 +236,28 @@ async def settings_mode_call(
     await service.get_settings(
         news_paper_id=callback_data.news_paper_id,
         is_json=callback_data.is_json,
+    )
+
+
+@news_paper_router.callback_query(NewsPaperSettingsGroupDefaultCall.filter())
+async def settings_group_default_call(
+    callback: CallbackQuery,
+    callback_data: NewsPaperSettingsGroupDefaultCall,
+    service: NewsPaperService,
+):
+    await service.default_settings_group(callback_data.news_paper_id, callback_data.tag)
+
+
+@news_paper_router.callback_query(NewsPaperSettingsGroupCall.filter())
+async def settings_group_call(
+    callback: CallbackQuery,
+    callback_data: NewsPaperSettingsGroupCall,
+    service: NewsPaperService,
+):
+    await service.get_settings(
+        news_paper_id=callback_data.news_paper_id,
+        is_json=False,
+        group_tag=callback_data.tag,
     )
 
 

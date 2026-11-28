@@ -10,7 +10,7 @@ from app.tg.buttons.news_paper import NewsPaperIKB
 from app.tg.fsm.state import NewsPaperState
 from app.tg.fsm.utils import NewsPaperFSM
 from app.tg.text.news_paper import NewsPaperText
-from app.tg.settings import coerce_setting_input, is_setting_available, values_by_tag
+from app.tg.settings import coerce_setting_input, is_setting_available, selected_setting_group, values_by_tag
 
 class NewsPaperAction:
     subscribe = 'subscribe'
@@ -194,7 +194,7 @@ class NewsPaperService(BaseService):
             )
         ])
 
-    async def get_settings(self, news_paper_id: int | None = None, is_json: bool | None = None):
+    async def get_settings(self, news_paper_id: int | None = None, is_json: bool | None = None, group_tag: str | None = None):
         if news_paper_id is None:
             news_paper_id = await self.fsm.get_value('news_paper_id')
         if news_paper_id is None:
@@ -215,13 +215,23 @@ class NewsPaperService(BaseService):
                     reply_markup=self.IKB.settings_json(news_paper_id),
                 )
             ])
+        if group_tag is None:
+            group_tag = await self.fsm.get_value('news_paper_settings_group')
+        selected = selected_setting_group(data.settings.groups, group_tag)
+        group_tag = selected.tag if selected else None
+        await self.fsm.update_data(news_paper_settings_group=group_tag)
         return await self.answer([
             AnswerBody(
-                text=self.text.settings_editor(data.settings.groups),
+                text=self.text.settings_editor(data.settings.groups, group_tag),
                 data=data,
-                reply_markup=self.IKB.settings_values(news_paper_id, data.settings.groups),
+                reply_markup=self.IKB.settings_values(news_paper_id, data.settings.groups, group_tag),
             )
         ])
+
+    async def default_settings_group(self, news_paper_id: int, group_tag: str):
+        await self.logic.settings_default(news_paper_id, group=group_tag, is_all=False)
+        await self.callback.answer('⚙️ Настройки группы сброшены')
+        return await self.get_settings(news_paper_id, is_json=False, group_tag=group_tag)
 
     async def default_settings(
         self,

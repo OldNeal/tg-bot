@@ -30,6 +30,8 @@ from app.tg.callback.organ import (
     OrganSettingSubparameterCall,
     OrganSettingEditCall,
     OrganSettingModeCall,
+    OrganSettingGroupCall,
+    OrganSettingGroupDefaultCall,
     OrganTitulDeleteCall,
     OrganDeleteCall,
     OrganTitulRedactCall,
@@ -654,6 +656,24 @@ async def setting_mode_call(
     service: OrganService,
 ):
     await service.get_settings(is_json=callback_data.is_json)
+
+
+@organ_router.callback_query(OrganSettingGroupDefaultCall.filter())
+async def settings_group_default_call(
+    callback: CallbackQuery,
+    callback_data: OrganSettingGroupDefaultCall,
+    service: OrganService,
+):
+    await service.default_settings_group(callback_data.tag)
+
+
+@organ_router.callback_query(OrganSettingGroupCall.filter())
+async def setting_group_call(
+    callback: CallbackQuery,
+    callback_data: OrganSettingGroupCall,
+    service: OrganService,
+):
+    await service.get_settings(is_json=False, group_tag=callback_data.tag)
 
 
 @organ_router.callback_query(OrganSettingEditCall.filter())

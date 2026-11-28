@@ -17,12 +17,13 @@ from app.exception.question import (
     AnswerCorrectError,
     AnswerInCorrectError,
     QuestionBodyError,
+    QuestionDifficultyError,
     QuestionModerationPermissionError,
     QuestionModerationReasonError,
     QuestionModerationRequestError,
     QuestionPrivateChatError
 )
-from app.validate.core import QueryQuestionCreate, QuestionCreate
+from app.validate.core import QueryQuestionCreate, QueryQuestionUpdate, QuestionCreate, QuestionUpdate, QuestionAnswerUpdate
 
 ANSWER_QUESTION_TIME_LIMIT_MIN = 1
 
@@ -47,34 +48,27 @@ class QuestionService(BaseService):
             chat_id=self.settings.question_moderation_chat_id,
             user_id=self.tg_id,
         )
-        if member.status not in (
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.CREATOR,
-        ):
+        if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.CREATOR):
             raise QuestionModerationPermissionError()
+
+    @property
+    def question_create_namespace(self):
+        return self.settings.question_create_redis_key or 'question_moderation'
+
+    @property
+    def question_update_namespace(self):
+        return self.settings.question_update_redis_key or 'question_update_moderation'
+
+    @property
+    def question_moderation_topic_id(self):
+        return self.settings.question_create_topic_id
 
     async def pending_questions(self):
         await self.require_moderator()
-        payloads = []
-        pattern = f'question_moderation:{self.settings.question_moderation_chat_id}:*'
-        async for key in self.store.client.scan_iter(match=pattern):
-            # The legacy key has no message id and is not a separate request.
-            if key.count(':') < 3:
-                continue
-            payload_text = await self.store.client.get(key)
-            if not payload_text:
-                continue
-            try:
-                payload = json.loads(payload_text)
-                if (
-                    payload.get('status', 'pending') == 'pending'
-                    and payload['request']['question']['body']
-                ):
-                    payloads.append(payload)
-            except (KeyError, TypeError, json.JSONDecodeError):
-                continue
-
-        payloads.sort(key=lambda item: int(item.get('moderation_message_id', 0)))
+        payloads = await self.store.question.pending_moderation(
+            self.settings.question_moderation_chat_id,
+            (self.question_create_namespace, self.question_update_namespace),
+        )
         print(payloads)
         return await self.answer([
             AnswerBody(
@@ -83,26 +77,14 @@ class QuestionService(BaseService):
             )
         ])
 
-    def moderation_storage_key(
-        self,
-        author_tg_id: int,
-        moderation_message_id: int | None = None,
-    ):
-        key = f'question_moderation:{self.settings.question_moderation_chat_id}:{author_tg_id}'
-        if moderation_message_id is not None:
-            key += f':{moderation_message_id}'
-        return key
-
     async def moderation_payload(self, author_tg_id: int):
         try:
-            payload_text = await self.store.client.get(self.moderation_storage_key(
+            payload_text = await self.store.question.get_moderation(
+                self.settings.question_moderation_chat_id,
                 author_tg_id,
                 self.message.message_id,
-            ))
-            if payload_text is None:
-                payload_text = await self.store.client.get(
-                    self.moderation_storage_key(author_tg_id),
-                )
+                (self.question_create_namespace, self.question_update_namespace),
+            )
             if payload_text is None:
                 raise QuestionModerationRequestError()
             payload = json.loads(payload_text)
@@ -121,14 +103,8 @@ class QuestionService(BaseService):
         return payload, request, stored_author_tg_id
 
     async def update_moderation_message(self, payload: dict):
-        await self.store.client.set(
-            self.moderation_storage_key(
-                int(payload['author_tg_id']),
-                int(payload['moderation_message_id']),
-            ),
-            json.dumps(payload, ensure_ascii=False),
-            ex=self.settings.data_ttl,
-        )
+        namespace = self.question_update_namespace if payload.get('operation') == 'update' else self.question_create_namespace
+        await self.store.question.save_moderation(namespace, self.settings.question_moderation_chat_id, payload, self.settings.data_ttl)
         await self.bot.edit_message_text(
             text=self.text.moderation_payload(payload),
             chat_id=self.chat.id,
@@ -137,6 +113,7 @@ class QuestionService(BaseService):
                 self.IKB.moderation_request(
                     int(payload['author_tg_id']),
                     self.tg_id,
+                    payload.get('operation', 'create'),
                 )
                 if payload.get('status', 'pending') == 'pending'
                 else None
@@ -163,7 +140,7 @@ class QuestionService(BaseService):
             except JobLookupError:
                 pass
         if question_id:
-            await self.store.client.delete(f'quiz_active:{self.tg_id}:{question_id}')
+            await self.store.question.delete_active_quiz(self.tg_id, question_id)
         for key in (
             'quiz_question_id',
             'quiz_correct_answer_id',
@@ -221,11 +198,20 @@ class QuestionService(BaseService):
             )
         ])
 
-    async def random_question(self):
+    async def random_question(self, difficulty: int | None = None):
         await self.require_private_chat()
+        if difficulty is not None and not 1 <= difficulty <= 10:
+            raise QuestionDifficultyError()
         await self.clear_quiz()
         await self.fsm.set_state()
-        data = await self.logic.random_question()
+        if difficulty is None:
+            return await self.answer([
+                AnswerBody(
+                    text=self.text.random_difficulty(),
+                    reply_markup=self.IKB.random_difficulty(),
+                )
+            ])
+        data = await self.logic.random_question(difficulty)
         question = data.question
         answers = list(question.answers)
         random.shuffle(answers)
@@ -315,9 +301,122 @@ class QuestionService(BaseService):
             AnswerBody(
                 text=self.text.question_card(question, statistics),
                 data=statistics,
-                reply_markup=self.IKB.question(page),
+                reply_markup=self.IKB.question(question, page),
             )
         ])
+
+    async def start_edit(self, question_id: int):
+        await self.require_private_chat()
+        data = await self.logic.mine(0)
+        question = None
+        max_page = data.page.max if data.page else 1
+        for page in range(max_page):
+            page_data = data if page == 0 else await self.logic.mine(page)
+            question = next((item for item in page_data.questions if item.question_id == question_id), None)
+            if question:
+                break
+        if question is None:
+            return await self.questions()
+        correct = [answer for answer in question.answers if answer.is_correct]
+        incorrect = [answer for answer in question.answers if not answer.is_correct]
+        values = {
+            'body': question.body,
+            'description': question.description,
+            'correct_answers': [answer.body for answer in correct],
+            'incorrect_answers': [answer.body for answer in incorrect],
+            'answer_ids': {
+                'correct_answers': [answer.answer_id for answer in correct],
+                'incorrect_answers': [answer.answer_id for answer in incorrect],
+            },
+        }
+        if 'difficulty' in question.model_fields_set:
+            values['difficulty'] = question.difficulty
+        if 'tags' in question.model_fields_set:
+            values['tags'] = question.tags or []
+        await self.fsm.update_data(edit_question=values, edit_step='confirm', edit_id=question_id)
+        await self.fsm.set_state(QuestionState.edit)
+        await self.fsm.save_message(self.chat.id, self.message.message_id)
+        return await self.answer([AnswerBody(text=self.text.edit_confirmation(values), reply_markup=self.IKB.edit_confirmation(question_id))])
+
+    async def edit_field(self, question_id: int, field: str):
+        values = await self.fsm.get_value('edit_question', {})
+        if field not in ('body', 'description', 'difficulty', 'tags', 'correct_answers', 'incorrect_answers') or not values:
+            return await self.start_edit(question_id)
+        await self.fsm.update_data(edit_step=field)
+        step = {'correct_answers': 'correct', 'incorrect_answers': 'incorrect'}.get(field, field)
+        return await self.answer([AnswerBody(text=self.text.create_prompt(step, values.get(field)), reply_markup=self.IKB.edit_prompt(question_id, True))])
+
+    async def edit_review(self, question_id: int):
+        values = await self.fsm.get_value('edit_question', {})
+        if not values:
+            return await self.start_edit(question_id)
+        await self.fsm.update_data(edit_step='confirm')
+        return await self.answer([AnswerBody(text=self.text.edit_confirmation(values), reply_markup=self.IKB.edit_confirmation(question_id))])
+
+    async def edit_input(self):
+        await self.require_private_chat()
+        values = await self.fsm.get_value('edit_question', {})
+        field = await self.fsm.get_value('edit_step')
+        question_id = await self.fsm.get_value('edit_id')
+        value = self.message.text or ''
+        if not values or not question_id or field not in ('body', 'description', 'difficulty', 'tags', 'correct_answers', 'incorrect_answers'):
+            return await self.questions()
+        if field == 'body':
+            if not value.strip(): raise QuestionBodyError()
+            values[field] = value.strip()
+        elif field == 'description':
+            values[field] = None if value.strip() == '-' else value.strip()
+        elif field == 'difficulty':
+            try:
+                difficulty = int(value.strip())
+            except ValueError:
+                raise QuestionDifficultyError()
+            if not 1 <= difficulty <= 10:
+                raise QuestionDifficultyError()
+            values[field] = difficulty
+        elif field == 'tags':
+            values[field] = [] if value.strip() in ('', '-') else [tag.strip() for tag in value.splitlines() if tag.strip()]
+        else:
+            answers = [line.strip() for line in value.splitlines() if line.strip()]
+            if field == 'correct_answers' and not answers: raise AnswerCorrectError()
+            if field == 'incorrect_answers' and len(answers) < 3: raise AnswerInCorrectError()
+            values['answer_ids'][field] = values['answer_ids'][field][:len(answers)]
+            values[field] = answers
+        await self.fsm.update_data(edit_question=values, edit_step='confirm')
+        return await self.edit_review(question_id)
+
+    async def submit_edit(self, question_id: int):
+        await self.require_private_chat()
+        values = await self.fsm.get_value('edit_question', {})
+        if not values:
+            return await self.start_edit(question_id)
+        author_id = await self.logic.user_id
+        request = QueryQuestionCreate(
+            user_id=author_id, request_id=self.logic.request_id,
+            purpose_user_id=author_id,
+            question=QuestionCreate.model_validate({
+                'body': values['body'], 'description': values.get('description'),
+                'correct_answers': values['correct_answers'], 'incorrect_answers': values['incorrect_answers'],
+                **({'difficulty': values['difficulty']} if 'difficulty' in values else {}),
+                **({'tags': values['tags']} if 'tags' in values else {}),
+            }),
+        )
+        await self.send_to_moderation({
+            'request': request.model_dump(mode='json', exclude_unset=True), 'operation': 'update',
+            'question_id': question_id, 'answer_ids': values['answer_ids'],
+            'author_tg_id': self.tg_id, 'author_name': self.user.full_name,
+            'status': 'pending', 'is_anonim': False,
+        })
+        await self.fsm.set_state()
+        for key in ('edit_question', 'edit_step', 'edit_id', 'chat_id', 'message_id'):
+            await self.fsm.remove_value(key)
+        return await self.answer([AnswerBody(text=self.text.sent_to_moderation(), reply_markup=self.IKB.menu())])
+
+    async def cancel_edit(self):
+        for key in ('edit_question', 'edit_step', 'edit_id', 'chat_id', 'message_id'):
+            await self.fsm.remove_value(key)
+        await self.fsm.set_state()
+        return await self.menu()
 
     async def user_statistics(self):
         await self.require_private_chat()
@@ -495,6 +594,18 @@ class QuestionService(BaseService):
             step = 'description'
         elif step == 'description':
             question_data['description'] = None if value.strip() == '-' else value.strip()
+            step = 'difficulty'
+        elif step == 'difficulty':
+            try:
+                difficulty = int(value.strip())
+            except ValueError:
+                raise QuestionDifficultyError()
+            if not 1 <= difficulty <= 10:
+                raise QuestionDifficultyError()
+            question_data['difficulty'] = difficulty
+            step = 'tags'
+        elif step == 'tags':
+            question_data['tags'] = [] if value.strip() in ('', '-') else [tag.strip() for tag in value.splitlines() if tag.strip()]
             step = 'correct_answers'
         elif step in ('correct_answers', 'incorrect_answers'):
             answers = [line.strip() for line in value.splitlines() if line.strip()]
@@ -527,7 +638,7 @@ class QuestionService(BaseService):
 
     async def edit_create_field(self, field: str):
         await self.require_private_chat()
-        if field not in ('body', 'description', 'correct_answers', 'incorrect_answers'):
+        if field not in ('body', 'description', 'difficulty', 'tags', 'correct_answers', 'incorrect_answers'):
             return await self.review_create()
         await self.fsm.update_data(create_step=field, create_editing=True)
         step_name = {
@@ -546,15 +657,19 @@ class QuestionService(BaseService):
     async def review_create(self):
         await self.require_private_chat()
         question_data = await self.fsm.get_value('create_question', {})
-        steps = ('body', 'description', 'correct_answers', 'incorrect_answers')
+        steps = ('body', 'description', 'difficulty', 'tags', 'correct_answers', 'incorrect_answers')
         missing_step = next(
             (
                 step for step in steps
-                if step not in question_data
-                or (step != 'description' and not question_data[step])
-                or (
-                    step == 'incorrect_answers'
-                    and len(question_data[step]) < 3
+                if (
+                    step == 'body' and not question_data.get(step)
+                    or step == 'description' and step not in question_data
+                    or step == 'difficulty' and not isinstance(question_data.get(step), int)
+                    or step == 'difficulty' and not 1 <= question_data.get(step, 0) <= 10
+                    or step == 'tags' and step not in question_data
+                    or step in ('correct_answers', 'incorrect_answers') and step not in question_data
+                    or step == 'correct_answers' and not question_data.get(step)
+                    or step == 'incorrect_answers' and len(question_data.get(step, [])) < 3
                 )
             ),
             None,
@@ -605,6 +720,8 @@ class QuestionService(BaseService):
                 description=question_data.get('description'),
                 correct_answers=question_data['correct_answers'],
                 incorrect_answers=question_data['incorrect_answers'],
+                difficulty=question_data.get('difficulty', 1),
+                tags=question_data.get('tags') or None,
             ),
         )
         await self.send_to_moderation({
@@ -626,23 +743,30 @@ class QuestionService(BaseService):
         ])
 
     async def send_to_moderation(self, payload: dict):
+        operation = payload.get('operation', 'create')
+        if operation == 'update':
+            message_thread_id = self.settings.question_update_topic_id
+        elif operation == 'create':
+            message_thread_id = self.settings.question_create_topic_id
+        else:
+            message_thread_id = None
         message = await self.bot.send_message(
             chat_id=self.settings.question_moderation_chat_id,
             text=self.text.moderation_payload(payload),
             reply_markup=self.ikb_class(self.tg_id).moderation_request(
                 int(payload['author_tg_id']),
                 self.tg_id,
+                operation,
             ),
-            message_thread_id=self.settings.question_create_topic_id
+            message_thread_id=message_thread_id
         )
         payload['moderation_message_id'] = message.message_id
-        storage_key = self.moderation_storage_key(
-            int(payload['author_tg_id']),
-            message.message_id,
-        )
-        await self.store.client.set(
-            storage_key,
-            json.dumps(payload, ensure_ascii=False)
+        namespace = self.question_update_namespace if operation == 'update' else self.question_create_namespace
+        await self.store.question.save_moderation(
+            namespace,
+            self.settings.question_moderation_chat_id,
+            payload,
+            self.settings.data_ttl,
         )
         return message
 
@@ -670,12 +794,15 @@ class QuestionService(BaseService):
                 reply_markup=self.IKB.moderation_request(
                     author_tg_id,
                     self.tg_id,
+                    payload.get('operation', 'create'),
                 ),
             )
         if action == 'field':
             if field not in (
                 'body',
                 'description',
+                'difficulty',
+                'tags',
                 'correct_answers',
                 'incorrect_answers',
             ):
@@ -712,17 +839,40 @@ class QuestionService(BaseService):
             await self.fsm.update_data(moderation_prompt_id=prompt.message_id)
             return prompt
         if action == 'approve':
-            approved_request = request.model_copy(
-                update={'user_id': await self.logic.user_id},
-            )
-            created = await self.logic.create(approved_request)
+            if payload.get('operation') == 'update':
+                answer_ids = payload.get('answer_ids', {})
+                q = request.question
+                answers = []
+                for field, is_correct in (('correct_answers', True), ('incorrect_answers', False)):
+                    ids = answer_ids.get(field, [])
+                    answers.extend(QuestionAnswerUpdate(answer_id=ids[index] if index < len(ids) else None, body=body, is_correct=is_correct) for index, body in enumerate(getattr(q, field)))
+                update_values = {
+                    'question_id': int(payload['question_id']),
+                    'name': q.body,
+                    'description': q.description,
+                    'answers': answers,
+                }
+                if 'difficulty' in q.model_fields_set:
+                    update_values['difficulty'] = q.difficulty
+                if 'tags' in q.model_fields_set:
+                    update_values['tags'] = q.tags
+                update_request = QueryQuestionUpdate(
+                    user_id=request.purpose_user_id,
+                    question=QuestionUpdate(**update_values),
+                )
+                created = await self.logic.update(update_request)
+                author_message = self.text.moderation_author_updated(q.body)
+            else:
+                approved_request = request.model_copy(update={'user_id': await self.logic.user_id})
+                created = await self.logic.create(approved_request)
+                author_message = self.text.moderation_author_approved(payload['request']['question']['body'], created.activity_points)
             payload['status'] = 'approved'
-            payload['question_id'] = created.question.question_id
+            payload['question_id'] = getattr(created.question, 'question_id', payload.get('question_id'))
             await self.update_moderation_message(payload)
             try:
                 await self.bot.send_message(
                     chat_id=author_tg_id,
-                    text=self.text.moderation_author_approved(payload['request']['question']['body'], created.activity_points),
+                    text=author_message,
                 )
             except TelegramForbiddenError:
                 payload['author_notification_delivered'] = False
@@ -754,6 +904,15 @@ class QuestionService(BaseService):
             updated_value = value.strip()
         elif field == 'description':
             updated_value = None if value.strip() == '-' else value.strip()
+        elif field == 'difficulty':
+            try:
+                updated_value = int(value.strip())
+            except ValueError:
+                raise QuestionDifficultyError()
+            if not 1 <= updated_value <= 10:
+                raise QuestionDifficultyError()
+        elif field == 'tags':
+            updated_value = None if value.strip() in ('', '-') else [tag.strip() for tag in value.splitlines() if tag.strip()]
         elif field in ('correct_answers', 'incorrect_answers'):
             updated_value = [line.strip() for line in value.splitlines() if line.strip()]
             if field == 'correct_answers' and not updated_value:
@@ -766,16 +925,12 @@ class QuestionService(BaseService):
         updated_question = request.question.model_copy(
             update={field: updated_value},
         )
+        if field in ('correct_answers', 'incorrect_answers') and payload.get('operation') == 'update':
+            payload.setdefault('answer_ids', {})[field] = payload.get('answer_ids', {}).get(field, [])[:len(updated_value)]
         updated_request = request.model_copy(update={'question': updated_question})
-        payload['request'] = updated_request.model_dump(mode='json')
-        await self.store.client.set(
-            self.moderation_storage_key(
-                int(payload['author_tg_id']),
-                int(payload['moderation_message_id']),
-            ),
-            json.dumps(payload, ensure_ascii=False),
-            ex=self.settings.data_ttl,
-        )
+        payload['request'] = updated_request.model_dump(mode='json', exclude_unset=True)
+        namespace = self.question_update_namespace if payload.get('operation') == 'update' else self.question_create_namespace
+        await self.store.question.save_moderation(namespace, self.settings.question_moderation_chat_id, payload, self.settings.data_ttl)
         await self.bot.edit_message_text(
             text=self.text.moderation_payload(payload),
             chat_id=chat_id,
@@ -783,6 +938,7 @@ class QuestionService(BaseService):
             reply_markup=self.IKB.moderation_request(
                 int(payload['author_tg_id']),
                 self.tg_id,
+                payload.get('operation', 'create'),
             ),
         )
         await self.clear_moderation_state()
@@ -806,14 +962,9 @@ class QuestionService(BaseService):
 
         payload['status'] = 'rejected'
         payload['reason'] = reason.strip()
-        await self.store.client.set(
-            self.moderation_storage_key(
-                int(payload['author_tg_id']),
-                int(message_id),
-            ),
-            json.dumps(payload, ensure_ascii=False),
-            ex=self.settings.data_ttl,
-        )
+        namespace = self.question_update_namespace if payload.get('operation') == 'update' else self.question_create_namespace
+        payload['moderation_message_id'] = int(message_id)
+        await self.store.question.save_moderation(namespace, self.settings.question_moderation_chat_id, payload, self.settings.data_ttl)
         try:
             await self.bot.send_message(
                 chat_id=int(payload['author_tg_id']),

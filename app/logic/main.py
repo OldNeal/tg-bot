@@ -15,13 +15,13 @@ class MainLogic(BaseLogic):
             body.model_dump() | {'parametrs': data}
         ))
 
-    async def user_settings_default(self, parametr: str | None = None, is_all: bool = False):
+    async def user_settings_default(self, parametr: str | None = None, is_all: bool = False, group: str | None = None):
         body = await self.body
         return await self.client.user_settings_default(self.schemas.QueryUserSettingDefault.model_validate(
             body.model_dump() | {
                 'to_default': self.schemas.UserSettingDefault(
                     parametr=parametr,
-                    group=None,
+                    group=group,
                     is_all=is_all,
                 )
             }

@@ -25,6 +25,10 @@ class QuestionText(BaseText):
         return '❔ Меню вопросов'
 
     @classmethod
+    def random_difficulty(cls):
+        return '⚖️ Выберите сложность вопроса от 1 до 10'
+
+    @classmethod
     def limits(cls, data: AnswerQuestionLimit):
         return '❔ Лимиты ответов на вопросы' + cls.html.separator().join([
             (
@@ -48,10 +52,28 @@ class QuestionText(BaseText):
         return cls.html('❌ Неизвестная подкоманда: ') + cls.html(subcommand).escape()
 
     @classmethod
-    def question(cls, question: Question):
-        text = cls.html('❔ ') + cls.html(question.body).escape()
+    def question(cls, question: Question, include_metadata: bool = True):
+        sections = [cls.html('❔ ') + cls.html(question.body).escape()]
         if question.description:
-            text += cls.html.separator(n=2) + '📜 Описание' + cls.html(question.description).escape().blockquote(True)
+            sections.append(
+                cls.html('📜 Описание')
+                + cls.html.separator()
+                + cls.html(question.description).escape().blockquote(True)
+            )
+        if include_metadata:
+            sections.append(cls.question_metadata(question))
+        return cls.html.separator(n=2).join(sections)
+
+    @classmethod
+    def question_metadata(cls, question: Question):
+        difficulty = getattr(question, 'difficulty', None)
+        tags = getattr(question, 'tags', None)
+        text = f'⚖️ Сложность: {difficulty if difficulty is not None else "не указана"}'
+        text += cls.html.separator(n=2) + '🏷 Теги:'
+        if tags:
+            text += cls.html.separator() + cls.html('\n').join([cls.html(tag).escape() for tag in tags]).blockquote(True)
+        else:
+            text += ' ❌'
         return text
 
     @classmethod
@@ -100,6 +122,8 @@ class QuestionText(BaseText):
         prompts = {
             'body': '✒️ Введите текст вопроса',
             'description': '📝 Введите описание или отправьте «-», чтобы пропустить',
+            'difficulty': '⚖️ Введите сложность целым числом от 1 до 10',
+            'tags': '🏷 Введите теги, каждый с новой строки, или отправьте «-», чтобы пропустить',
             'correct': '✅ Введите правильные варианты ответа, каждый с новой строки',
             'incorrect': '❌ Введите неправильные варианты ответа, каждый с новой строки',
         }
@@ -133,11 +157,18 @@ class QuestionText(BaseText):
                 cls.html(answer.body).escape()
                 + f': {answer.count} ({percent:.1f}%)'
             )
-        return cls.html(f'🧮 Всего ответов на вопрос: {data.statistics.total}') + cls.html.separator(n=2) + cls.html('📊 Статистика ответов') + cls.html.separator().join(lines).blockquote()
+        return (
+            cls.question_metadata(question)
+            + cls.html.separator(n=2)
+            + cls.html(f'🧮 Всего ответов на вопрос: {data.statistics.total}')
+            + cls.html.separator(n=2)
+            + cls.html('📊 Статистика ответов')
+            + cls.html.separator().join(lines).blockquote()
+        )
 
     @classmethod
     def question_card(cls, question: Question, statistics: AnswerQuestionStatistics):
-        return f'{cls.question(question)}{cls.html.separator(n=2)}{cls.statistics(statistics, question)}'
+        return f'{cls.question(question, include_metadata=False)}{cls.html.separator(n=2)}{cls.statistics(statistics, question)}'
 
     @classmethod
     def quiz(cls, question: Question, answers: list[QuestionAnswer], limit_min: int = 1):
@@ -172,6 +203,10 @@ class QuestionText(BaseText):
           )
 
     @classmethod
+    def edit_confirmation(cls, data: dict):
+        return cls.html('📝 Проверьте изменения вопроса').bold() + cls.html.separator(n=2) + cls.create_text(data)
+
+    @classmethod
     def create_text(cls, data: dict):
         description = data.get('description')
         correct_answers = cls.html.to_list(
@@ -185,6 +220,11 @@ class QuestionText(BaseText):
         return cls.html.separator().join([
             cls.html('❔ ') + cls.html(data['body']).escape().code() + cls.html.separator(),
             cls.html('📜 Описание:') + (cls.html(description).escape().code().blockquote() if description else cls.html(' ❌') + cls.html.separator()),
+            cls.html(f"⚖️ Сложность: {data.get('difficulty') if data.get('difficulty') is not None else 'не указана'}") + cls.html.separator(),
+            cls.html('🏷 Теги:') + (
+                cls.html('\n').join([cls.html(tag).escape() for tag in data.get('tags') or []]).blockquote(True)
+                if data.get('tags') else cls.html(' ❌')
+            ),
             cls.html('✅ Правильные варианты:') + correct_answers.code().blockquote(True),
             cls.html('❌ Неправильные варианты:') + incorrect_answers.code().blockquote(True),
         ])
@@ -193,20 +233,21 @@ class QuestionText(BaseText):
     def moderation_payload(cls, data: dict):
         request = data['request']['question']
         text = ''
+        heading = '✏️ Изменение вопроса от ' if data.get('operation') == 'update' else '📝 Новый вопрос от '
         if not data.get('is_anonim', False):
             text = (
-            cls.html('📝 Новый вопрос от ')
+            cls.html(heading)
             + cls.html(data.get('author_name', 'Пользователь'))
             .escape()
             .openmessage(int(data['author_tg_id'])))
         else:
-            text = cls.html('📝 Новый вопрос')
+            text = cls.html('✏️ Изменение вопроса' if data.get('operation') == 'update' else '📝 Новый вопрос')
         text += cls.html.separator(n=2)
         text += cls.create_text(request)
         
         status = data.get('status', 'pending')
         if status == 'approved':
-            text += cls.html.separator(n=2) + '✅ Вопрос создан'
+            text += cls.html.separator(n=2) + ('✅ Изменения опубликованы' if data.get('operation') == 'update' else '✅ Вопрос создан')
         elif status == 'rejected':
             text += (
                 cls.html.separator(n=2)
@@ -220,6 +261,8 @@ class QuestionText(BaseText):
         labels = {
             'body': 'текст вопроса',
             'description': 'описание (или «-», чтобы очистить)',
+            'difficulty': 'сложность от 1 до 10',
+            'tags': 'теги, каждый с новой строки (или «-», чтобы очистить)',
             'correct_answers': 'правильные ответы, каждый с новой строки',
             'incorrect_answers': 'неправильные ответы, каждый с новой строки',
         }
@@ -230,11 +273,11 @@ class QuestionText(BaseText):
             + cls.html(str(current_value if current_value is not None else '❌'))
             .escape()
             .blockquote()
-            if field in ('body', 'description')
+            if field in ('body', 'description', 'difficulty')
             else cls.html.separator(n=2)
             + 'Текущие варианты:'
             + cls.html.separator()
-            + cls.html('\n').join(current_value or ['❌']).escape().blockquote()
+            + cls.html('\n').join([cls.html(str(item)).escape() for item in (current_value or ['❌'])]).blockquote()
         )
         return cls.html(
             f'✒️ Отправьте новое {labels[field]} отдельным сообщением в группе.'
@@ -247,6 +290,10 @@ class QuestionText(BaseText):
     @classmethod
     def moderation_author_approved(cls, question: str, activity_points: int):
         return f'✅ Ваш вопрос "{cls.html(question).escape()}" прошёл модерацию и создан. Вы получили {activity_points} {Emodzi.activity_point_emodzi()}'
+
+    @classmethod
+    def moderation_author_updated(cls, question: str):
+        return f'✅ Изменения вопроса «{cls.html(question).escape()}» прошли модерацию и опубликованы.'
 
     @classmethod
     def moderation_author_rejected(cls, question: str, reason: str):

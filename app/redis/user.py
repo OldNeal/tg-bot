@@ -1,6 +1,14 @@
 from app.redis.base import BaseStore, BaseHashs
 
 USER_UPDATE_TTL = 60 * 60 * 24
+USER_UPDATE_LOCK_TTL = 60
+
+RELEASE_USER_UPDATE_LOCK = """
+if redis.call('get', KEYS[1]) == ARGV[1] then
+    return redis.call('del', KEYS[1])
+end
+return 0
+"""
 
 class UserHashs(BaseHashs):
     TG_HASH = "telegram_id"
@@ -34,3 +42,17 @@ class UserStore(BaseStore):
             '1',
             ex=USER_UPDATE_TTL,
         )
+
+    async def is_user_updated(self, tg_id: int) -> bool:
+        return bool(await self.client.get(self.hashs.user_update_hash(tg_id)))
+
+    async def acquire_user_update_lock(self, tg_id: int, token: str) -> bool:
+        lock_key = f'{self.hashs.user_update_hash(tg_id)}:lock'
+        return bool(await self.client.set(lock_key, token, nx=True, ex=USER_UPDATE_LOCK_TTL))
+
+    async def mark_user_updated(self, tg_id: int):
+        return await self.client.set(self.hashs.user_update_hash(tg_id), '1', ex=USER_UPDATE_TTL)
+
+    async def release_user_update_lock(self, tg_id: int, token: str):
+        lock_key = f'{self.hashs.user_update_hash(tg_id)}:lock'
+        return await self.client.eval(RELEASE_USER_UPDATE_LOCK, 1, lock_key, token)

@@ -14,6 +14,7 @@ from app.tg.middlewares import (BotLogMessageMiddleware,
 from app.logic.base import BaseLogic as logic
 from app.logging.base import botlog
 from app.redis.store import store
+from app.service.message import message_sender
 
 async def update_bot_info():
     try:
@@ -44,6 +45,7 @@ async def main():
             dp.callback_query.middleware(CommandUnavailableMiddleware())
             await Sentinel().setup(dp, sentinel_config, base_router)
             botlog.start()
+            message_sender.start()
             if not scheduler.running:
                 scheduler.start()
             await bot.delete_webhook(drop_pending_updates=True)

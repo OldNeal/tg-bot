@@ -9,7 +9,7 @@ from app.tg.fsm.utils import OrganFSM
 from app.tg.callback.back_values import OrganBackValues
 from app.exception.organ import OrganPermissioError
 from app.exception.base import JSONEnterError
-from app.tg.settings import coerce_setting_input, is_setting_available, values_by_tag
+from app.tg.settings import coerce_setting_input, is_setting_available, selected_setting_group, values_by_tag
 
 class OrganService(BaseService):
     logic_class: type[OrganLogic] = OrganLogic
@@ -82,7 +82,7 @@ class OrganService(BaseService):
 
     async def search(self, value: str | None = None, is_new_search: bool = False, page: int | None = None):
         page = page if page is not None else await self.fsm.get_value('page', 0)
-        value = await self.fsm.get_value('search_value', value)
+        value = await self.fsm.pop_value('search_value', value)
         if value and not is_new_search:
             data = await self.logic.search(value=value, page=page)
         else:
@@ -253,7 +253,7 @@ class OrganService(BaseService):
     async def enter_name_for_create(self):
         return await self.create(self.message.text)
 
-    async def get_settings(self, is_json: bool | None = None):
+    async def get_settings(self, is_json: bool | None = None, group_tag: str | None = None):
         await self.fsm.set_state()
         await self.fsm.remove_value('setting_tag')
         if is_json is None:
@@ -274,11 +274,16 @@ class OrganService(BaseService):
                     is_rich_text=True,
                 )
             ])
+        if group_tag is None:
+            group_tag = await self.fsm.get_value('organ_settings_group')
+        selected = selected_setting_group(data.settings.groups, group_tag)
+        group_tag = selected.tag if selected else None
+        await self.fsm.update_data(organ_settings_group=group_tag)
         return await self.answer([
             AnswerBody(
-                text=self.text.settings_editor(data.settings.groups),
+                text=self.text.settings_editor(data.settings.groups, group_tag),
                 data=data,
-                reply_markup=self.IKB.settings_values(self.is_bot_message, data.settings.groups)
+                reply_markup=self.IKB.settings_values(self.is_bot_message, data.settings.groups, group_tag)
             )
         ])
 
@@ -384,6 +389,11 @@ class OrganService(BaseService):
         await self.fsm.remove_value('setting_subtag')
         await self.fsm.remove_message()
         return await self.setting_subparameters(tag)
+
+    async def default_settings_group(self, group_tag: str):
+        await self.logic.settings_default(group=group_tag, is_all=False)
+        await self.callback.answer('⚙️ Настройки группы сброшены')
+        return await self.get_settings(is_json=False, group_tag=group_tag)
 
     async def default_settings(
         self,

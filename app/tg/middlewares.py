@@ -28,18 +28,8 @@ from app.exception.base import (
 )
 from app.exception.question import QuestionPrivateChatError
 from app.logic.base import BaseLogic
-from app.redis.store import store, redis_client
-from app.redis.user import USER_UPDATE_TTL
+from app.redis.store import store
 from app.service.base import BaseService
-
-USER_UPDATE_LOCK_TTL = 60
-RELEASE_USER_UPDATE_LOCK = """
-if redis.call('get', KEYS[1]) == ARGV[1] then
-    return redis.call('del', KEYS[1])
-end
-return 0
-"""
-
 
 class UserUpdateMiddleware(BaseMiddleware):
     async def __call__(
@@ -57,20 +47,13 @@ class UserUpdateMiddleware(BaseMiddleware):
                 and event.text.split(maxsplit=1)[0].split('@', 1)[0] == '/update'
             )
             if user is not None and not user.is_bot and not is_manual_update:
-                update_key = store.user.hashs.user_update_hash(user.id)
-                lock_key = f'{update_key}:lock'
                 lock_token = uuid.uuid4().hex
 
-                if not await redis_client.get(update_key):
-                    locked = await redis_client.set(
-                        lock_key,
-                        lock_token,
-                        nx=True,
-                        ex=USER_UPDATE_LOCK_TTL,
-                    )
+                if not await store.user.is_user_updated(user.id):
+                    locked = await store.user.acquire_user_update_lock(user.id, lock_token)
                     if locked:
                         try:
-                            if not await redis_client.get(update_key):
+                            if not await store.user.is_user_updated(user.id):
                                 logic = BaseLogic(
                                     tg_id=user.id,
                                     username=user.username,
@@ -78,7 +61,7 @@ class UserUpdateMiddleware(BaseMiddleware):
                                     request_id=data.get('request_id'),
                                 )
                                 await logic.update_user()
-                                await redis_client.set(update_key, '1', ex=USER_UPDATE_TTL)
+                                await store.user.mark_user_updated(user.id)
                         except (CoreError, CoreTimeoutError) as error:
                             botlog.logger.warning(
                                 'Не удалось обновить профиль пользователя',
@@ -86,12 +69,7 @@ class UserUpdateMiddleware(BaseMiddleware):
                                 error=str(error),
                             )
                         finally:
-                            await redis_client.eval(
-                                RELEASE_USER_UPDATE_LOCK,
-                                1,
-                                lock_key,
-                                lock_token,
-                            )
+                            await store.user.release_user_update_lock(user.id, lock_token)
         return await handler(event, data)
 
 

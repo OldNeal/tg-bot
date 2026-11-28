@@ -69,7 +69,7 @@ class AnswerAllPathInfo(pydantic.BaseModel):
 
 
 class AnswerAllQuestions(pydantic.BaseModel):
-    questions: list["Question"]
+    questions: list["QuestionSummary"]
     page: typing.Optional[typing.Union["Page", None]] = None
     count: int = 0
 
@@ -189,6 +189,12 @@ class AnswerMemberInfo(pydantic.BaseModel):
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     member: typing.Optional[typing.Union["MemberInfo", None]] = None
     for_buttons: typing.Optional[typing.Union["ForButtons", None]] = None
+
+
+class AnswerMyQuestions(pydantic.BaseModel):
+    questions: list["Question"]
+    page: typing.Optional[typing.Union["Page", None]] = None
+    count: int = 0
 
 
 class AnswerNewsPaperGive(pydantic.BaseModel):
@@ -324,7 +330,7 @@ class AnswerQuestionLimit(pydantic.BaseModel):
 
 
 class AnswerQuestionSearch(pydantic.BaseModel):
-    questions: list["Question"]
+    questions: list["QuestionSummary"]
     page: typing.Optional[typing.Union["Page", None]] = None
     count: int = 0
     search_value: str
@@ -334,6 +340,8 @@ class AnswerQuestionStatistics(pydantic.BaseModel):
     user: "AnswerUserBody"
     purpose: typing.Optional[typing.Union["AnswerUserBody", None]] = None
     question_id: int
+    difficulty: int
+    tags: typing.Optional[list[str]] = None
     answers: list["QuestionAnswerStatistics"]
     statistics: "UserQuestionStatistics"
 
@@ -631,6 +639,8 @@ class QueryUserUpdate(pydantic.BaseModel):
 class Question(pydantic.BaseModel):
     body: str
     description: typing.Optional[str | None] = None
+    difficulty: int = 1
+    tags: typing.Optional[list[str]] = None
     question_id: int
     answers: list["QuestionAnswer"]
 
@@ -657,8 +667,19 @@ class QuestionAnswerUpdate(pydantic.BaseModel):
 class QuestionCreate(pydantic.BaseModel):
     body: str
     description: typing.Optional[str | None] = None
+    difficulty: int = 1
+    tags: typing.Optional[list[str]] = None
     correct_answers: list[str]
     incorrect_answers: list[str]
+
+
+class QuestionSummary(pydantic.BaseModel):
+    body: str
+    description: typing.Optional[str | None] = None
+    difficulty: int = 1
+    tags: typing.Optional[list[str]] = None
+    question_id: int
+    total_answers: int
 
 
 class QuestionUpdate(pydantic.BaseModel):
@@ -834,6 +855,10 @@ class UserSettingDefault(pydantic.BaseModel):
 class UserSettingValidate(pydantic.BaseModel):
     hidden_top: bool
     get_notify: bool
+    notify_activity_points: bool = True
+    notify_item_give: bool = True
+    notify_item_take: bool = True
+    notify_organ: bool = True
     notify_platform: str
     notify_type: str
     use_ephemeral_message: bool

@@ -44,5 +44,11 @@ class MainUserSettingsDefaultCall(MainCall, prefix='main_user_settings_default')
 class MainUserSettingsModeCall(MainCall, prefix='main_user_settings_mode'):
     is_json: bool = False
 
+class MainUserSettingsGroupCall(MainCall, prefix='main_user_settings_group'):
+    tag: str
+
+class MainUserSettingsGroupDefaultCall(MainUserSettingsGroupCall, prefix='user_group_default'):
+    pass
+
 class MainUserSettingEditCall(MainCall, prefix='main_user_setting_edit'):
     tag: str

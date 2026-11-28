@@ -2,7 +2,7 @@ import json
 
 from app.tg.text.base import BaseText
 from app.validate.core import AnswerNewsPaperGive, AnswerNewsPaperInfoDescription, AnswerNewsPaperInfoReaders, AnswerReaderInfo, NewsPaperInfo
-from app.tg.settings import is_setting_available, values_by_tag
+from app.tg.settings import is_setting_available, selected_setting_group, values_by_tag
 
 class NewsPaperText(BaseText):
     @classmethod
@@ -91,10 +91,11 @@ class NewsPaperText(BaseText):
         return '⚙️ Настройки газеты' + cls.html.json_format(values, indent=4).escape().code().pre('json')   
 
     @classmethod
-    def settings_editor(cls, groups):
+    def settings_editor(cls, groups, group_tag: str | None = None):
         values = values_by_tag(groups)
         lines = []
-        for group in groups:
+        selected = selected_setting_group(groups, group_tag)
+        for group in [selected] if selected else []:
             for parameter in group.parametrs:
                 if parameter.is_hidden or not is_setting_available(parameter, values):
                     continue
@@ -108,7 +109,9 @@ class NewsPaperText(BaseText):
                     value = '❌'
                 emoji = parameter.emodzi or group.emodzi or '⚙️'
                 lines.append(f'{emoji} {parameter.name}: {value}')
-        return '⚙️ Настройки газеты' + cls.html.joined(lines).blockquote()
+        group_name = f' ({selected.name})' if selected else ''
+        title = cls.html(f'⚙️ Настройки газеты{group_name}').escape().bold()
+        return title + cls.html.joined(lines).blockquote()
 
     @classmethod
     def to_enter_settings(cls):

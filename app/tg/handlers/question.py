@@ -1,5 +1,5 @@
 from telegram_click_aio.decorator import command
-from aiogram import F, Router
+from aiogram import F, Router, flags
 from aiogram.filters import Command, CommandStart
 from aiogram.types import CallbackQuery, Message
 
@@ -11,6 +11,11 @@ from app.tg.callback.question import (
     QuestionCreateCall,
     QuestionModerationCall,
     QuestionMenuCall,
+    QuestionMineCall, QuestionRandomCall, QuestionStartCreateCall,
+    QuestionRandomDifficultyCall,
+    QuestionStartJsonCreateCall, QuestionUserStatsCall, QuestionLimitsCall,
+    QuestionLeaveQuizCall,
+    QuestionEditCall,
     QuestionPageCall,
     QuestionQuizAnswerCall,
     QuestionSelectCall,
@@ -89,28 +94,63 @@ async def pending_questions_refresh_call(
     await callback.answer('Список обновлён')
 
 
+@question_router.callback_query(QuestionMineCall.filter())
+async def mine_call(callback: CallbackQuery, callback_data: QuestionMineCall, service: QuestionService):
+    await service.questions(callback_data.page)
+
+@question_router.callback_query(QuestionRandomCall.filter())
+async def random_call(callback: CallbackQuery, callback_data: QuestionRandomCall, service: QuestionService):
+    await service.random_question()
+
+@question_router.callback_query(QuestionRandomDifficultyCall.filter())
+async def random_difficulty_call(
+    callback: CallbackQuery,
+    callback_data: QuestionRandomDifficultyCall,
+    service: QuestionService,
+):
+    await service.random_question(callback_data.difficulty)
+
+@question_router.callback_query(QuestionStartCreateCall.filter())
+async def start_create_call(callback: CallbackQuery, callback_data: QuestionStartCreateCall, service: QuestionService):
+    await service.start_create()
+
+@question_router.callback_query(QuestionStartJsonCreateCall.filter())
+@flags.is_unavailable(True)
+async def start_json_create_call(callback: CallbackQuery, callback_data: QuestionStartJsonCreateCall, service: QuestionService):
+    await service.start_json_create()
+
+@question_router.callback_query(QuestionUserStatsCall.filter())
+async def user_stats_call(callback: CallbackQuery, callback_data: QuestionUserStatsCall, service: QuestionService):
+    await service.user_statistics()
+
+@question_router.callback_query(QuestionLimitsCall.filter())
+async def limits_call(callback: CallbackQuery, callback_data: QuestionLimitsCall, service: QuestionService):
+    await service.limits()
+
+@question_router.callback_query(QuestionLeaveQuizCall.filter())
+async def leave_quiz_call(callback: CallbackQuery, callback_data: QuestionLeaveQuizCall, service: QuestionService):
+    await service.leave_quiz()
+
+@question_router.callback_query(QuestionEditCall.filter())
+async def edit_call(callback: CallbackQuery, callback_data: QuestionEditCall, service: QuestionService):
+    if callback_data.action == 'field':
+        await service.edit_field(callback_data.question_id, callback_data.field)
+    elif callback_data.action == 'submit':
+        await service.submit_edit(callback_data.question_id)
+    elif callback_data.action == 'review':
+        await service.edit_review(callback_data.question_id)
+    elif callback_data.action == 'cancel':
+        await service.cancel_edit()
+    else:
+        await service.start_edit(callback_data.question_id)
+
 @question_router.callback_query(QuestionMenuCall.filter())
 async def menu_action_call(
     callback: CallbackQuery,
     callback_data: QuestionMenuCall,
     service: QuestionService,
 ):
-    if callback_data.action == 'mine':
-        await service.questions(callback_data.page)
-    elif callback_data.action == 'random':
-        await service.random_question()
-    elif callback_data.action == 'create':
-        await service.start_create()
-    elif callback_data.action == 'json':
-        await service.start_json_create()
-    elif callback_data.action == 'userstats':
-        await service.user_statistics()
-    elif callback_data.action == 'limits':
-        await service.limits()
-    elif callback_data.action == 'leave_quiz':
-        await service.leave_quiz()
-    else:
-        await service.menu()
+    await service.menu()
 
 
 @question_router.callback_query(QuestionPageCall.filter())
@@ -177,9 +217,13 @@ async def moderation_call(
 
 @question_router.message(QuestionState.create, F.text, ~F.text.startswith('/'))
 async def create_text(message: Message, service: QuestionService):
-    msg0 = await service.fsm.get_message()
     await service.create_input()
-    await service.bot.delete_message(*msg0)
+    await service.bot.delete_message(message.chat.id, message.message_id)
+
+@question_router.message(QuestionState.edit, F.text, ~F.text.startswith('/'))
+async def edit_text(message: Message, service: QuestionService):
+    await service.edit_input()
+    await service.bot.delete_message(message.chat.id, message.message_id)
 
 
 @question_router.message(QuestionState.json_create, F.text, ~F.text.startswith('/'))

@@ -12,6 +12,8 @@ from app.tg.callback.main import (
     MainUserSettingsRedactCall,
     MainUserSettingsDefaultCall,
     MainUserSettingsModeCall,
+    MainUserSettingsGroupCall,
+    MainUserSettingsGroupDefaultCall,
     MainUserSettingEditCall,
     MainUsersCall,
     MainUsersPageCall,
@@ -23,7 +25,7 @@ from app.tg.callback.organ import OrganMemberCall
 from app.tg.callback.items import ItemInventoryCall
 from app.tg.text.base import BaseText
 from app.validate.core import AnswerBaseInfo, AnswerUserBody
-from app.tg.settings import is_setting_available, values_by_tag
+from app.tg.settings import is_setting_available, selected_setting_group, values_by_tag
 
 class MainIKB(BotIKB):    
     search_fields = {
@@ -92,9 +94,10 @@ class MainIKB(BotIKB):
                         )
         return self.builder.adjust(1).as_markup()
 
-    def user_settings_editor(self, groups):
+    def user_settings_editor(self, groups, group_tag: str | None = None):
         values = values_by_tag(groups)
-        for group in groups:
+        selected = selected_setting_group(groups, group_tag)
+        for group in [selected] if selected else []:
             for parameter in group.parametrs:
                 if parameter.is_hidden or not parameter.is_redact or not is_setting_available(parameter, values):
                     continue
@@ -106,6 +109,11 @@ class MainIKB(BotIKB):
                     callback_data=MainUserSettingEditCall(tag=parameter.tag, tg_id=self.tg_id),
                 )
         self.builder.adjust(2)
+        self.setting_groups(
+            groups, selected.tag if selected else None,
+            lambda tag: MainUserSettingsGroupCall(tag=tag, tg_id=self.tg_id),
+            reset_callback=MainUserSettingsGroupDefaultCall(tag=selected.tag, tg_id=self.tg_id) if selected else None,
+        )
         self.builder.row(InlineKeyboardButton(text='🔩 Сбросить по умолчанию', callback_data=MainUserSettingsDefaultCall(is_all=True, tg_id=self.tg_id).pack()))
         self.builder.row(InlineKeyboardButton(text='🧾 Редактировать через JSON', callback_data=MainUserSettingsModeCall(is_json=True, tg_id=self.tg_id).pack()))
         self.builder.row(InlineKeyboardButton(text='↩️ К аккаунту', callback_data=MenuCall(where='user', tg_id=self.tg_id).pack()))

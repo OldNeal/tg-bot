@@ -1,7 +1,9 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.types import InlineKeyboardButton
 
 from app.tg.callback.base import MenuCall, CancelCall, BackCall, MessageDeleteCall
 from app.tg.deep.base import MenuDeep
+from app.tg.settings import visible_setting_groups
 
 class BotIKB:
     def __init__(self, tg_id: int):
@@ -11,6 +13,23 @@ class BotIKB:
     def another_tg_id(self, tg_id: int):
         self.tg_id = tg_id
         return self
+
+    def setting_groups(self, groups, group_tag: str | None, callback_factory, reset_callback=None):
+        if reset_callback is not None:
+            self.builder.row(InlineKeyboardButton(
+                text='🔩 Сбросить группу',
+                callback_data=reset_callback.pack(),
+            ))
+        buttons = []
+        for group in visible_setting_groups(groups):
+            marker = '✅ ' if group.tag == group_tag else ''
+            buttons.append(InlineKeyboardButton(
+                text=f'{marker}{group.emodzi or "⚙️"} {group.name}'[:60],
+                icon_custom_emoji_id=group.custom_emodzi_id,
+                callback_data=callback_factory(group.tag).pack(),
+            ))
+        if buttons:
+            self.builder.row(*buttons, width=4)
 
     def cancel(self):
         self.builder.button(text='❌ Отменить', callback_data=CancelCall(tg_id=self.tg_id))

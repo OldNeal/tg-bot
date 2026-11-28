@@ -20,12 +20,14 @@ from app.tg.callback.news_paper import (
     NewsPaperSettingsDefaultCall,
     NewsPaperSettingsRedactCall,
     NewsPaperSettingsModeCall,
+    NewsPaperSettingsGroupCall,
+    NewsPaperSettingsGroupDefaultCall,
     NewsPaperSettingEditCall,
     NewsPaperUnsubscribeCall,
     NewsPaperDeleteCall,
     ReaderCall,
 )
-from app.tg.settings import is_setting_available, values_by_tag
+from app.tg.settings import is_setting_available, selected_setting_group, values_by_tag
 
 
 class NewsPaperIKB(BotIKB):
@@ -184,9 +186,10 @@ class NewsPaperIKB(BotIKB):
             ),
         ).as_markup()
 
-    def settings_values(self, news_paper_id: int, groups):
+    def settings_values(self, news_paper_id: int, groups, group_tag: str | None = None):
         values = values_by_tag(groups)
-        for group in groups:
+        selected = selected_setting_group(groups, group_tag)
+        for group in [selected] if selected else []:
             for parameter in group.parametrs:
                 if parameter.is_hidden or not parameter.is_redact or not is_setting_available(parameter, values):
                     continue
@@ -201,6 +204,11 @@ class NewsPaperIKB(BotIKB):
                     ),
                 )
         self.builder.adjust(2)
+        self.setting_groups(
+            groups, selected.tag if selected else None,
+            lambda tag: NewsPaperSettingsGroupCall(news_paper_id=news_paper_id, tag=tag, tg_id=self.tg_id),
+            reset_callback=NewsPaperSettingsGroupDefaultCall(news_paper_id=news_paper_id, tag=selected.tag, tg_id=self.tg_id) if selected else None,
+        )
         self.builder.row(InlineKeyboardButton(text='🔩 Сбросить', callback_data=NewsPaperSettingsDefaultCall(news_paper_id=news_paper_id, is_all=True, tg_id=self.tg_id).pack()))
         self.builder.row(InlineKeyboardButton(text='🧾 Редактировать через JSON', callback_data=NewsPaperSettingsModeCall(news_paper_id=news_paper_id, is_json=True, tg_id=self.tg_id).pack()))
         self.builder.row(InlineKeyboardButton(text='↩️ Назад', callback_data=NewsPaperInfoCall(news_paper_id=news_paper_id, tg_id=self.tg_id).pack()))
