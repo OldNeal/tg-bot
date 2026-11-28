@@ -217,8 +217,11 @@ class TextHTMLBase(str):
         sep = cls.separator(sep=sep)
         return cls(sep.join(iter))
 
-    def to_markered(self, value: str | None):
-        return TextHTML(value).underline().join(self.split(value)) if value else TextHTML(self)
+    def message_href(self, message_id: int, username: str | None = None, chat_id: int | None = None):
+        if username:
+            return self.href(f'https://t.me/{username}/{message_id}')
+        elif str(chat_id).startswith('-100'):
+            return self.href(f'https://t.me/c/{str(chat_id)[4:]}/{message_id}')
 
 class TextHTML(TextHTMLBase):
     # ─── Методы изменения регистра ──────────────────────────────────

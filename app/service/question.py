@@ -53,6 +53,36 @@ class QuestionService(BaseService):
         ):
             raise QuestionModerationPermissionError()
 
+    async def pending_questions(self):
+        await self.require_moderator()
+        payloads = []
+        pattern = f'question_moderation:{self.settings.question_moderation_chat_id}:*'
+        async for key in self.store.client.scan_iter(match=pattern):
+            # The legacy key has no message id and is not a separate request.
+            if key.count(':') < 3:
+                continue
+            payload_text = await self.store.client.get(key)
+            if not payload_text:
+                continue
+            try:
+                payload = json.loads(payload_text)
+                if (
+                    payload.get('status', 'pending') == 'pending'
+                    and payload['request']['question']['body']
+                ):
+                    payloads.append(payload)
+            except (KeyError, TypeError, json.JSONDecodeError):
+                continue
+
+        payloads.sort(key=lambda item: int(item.get('moderation_message_id', 0)))
+        print(payloads)
+        return await self.answer([
+            AnswerBody(
+                text=self.text.pending_questions(payloads, self.settings.question_moderation_chat_id),
+                reply_markup=self.IKB.new.pending_questions_refresh()
+            )
+        ])
+
     def moderation_storage_key(
         self,
         author_tg_id: int,

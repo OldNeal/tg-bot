@@ -53,7 +53,7 @@ class OrganIKB(BotIKB):
         self.builder.button(text='👥 Участники', callback_data=OrganInfoMembersCall(organ_id=data.organ.id, tg_id=self.tg_id))
         if data.for_buttons.is_redact_setting and data.organ.id == data.for_buttons.organ_id:
             self.builder.button(text='⚙️ Настройки', callback_data=OrganSettingCall(tg_id=self.tg_id))
-        if data.for_buttons.is_delete:
+        if data.for_buttons.is_delete and data.organ.member_counts == 1:
             self.builder.button(text='🗑️ Удалить организацию', callback_data=OrganDeleteCall(organ_id=data.organ.id, tg_id=self.tg_id))
         if data.for_buttons.is_capture and data.for_buttons.is_member and data.organ.id == data.for_buttons.organ_id:
             self.builder.button(text='👑 Захватить власть', callback_data=OrganCaptureCall(tg_id=self.tg_id))

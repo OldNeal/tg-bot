@@ -12,6 +12,15 @@ from app.tg.text.emodzi import Emodzi
 
 class QuestionText(BaseText):
     @classmethod
+    def pending_questions(cls, payloads: list[dict], moderation_chat_id: int):
+        lines = []
+        for index, payload in enumerate(payloads, start=1):
+            question = payload['request']['question']['body']
+            author_name = payload.get('author_name') or f'Пользователь'
+            lines.append(cls.html(f'{index}. {question}').escape().message_href(int(payload['moderation_message_id']), chat_id=moderation_chat_id))
+        return cls.html(f'❔ Необработанные вопросы ({len(payloads)} шт.)').bold() + cls.html.separator(n=2).join(lines).blockquote(expandable=True)
+
+    @classmethod
     def menu(cls):
         return '❔ Меню вопросов'
 

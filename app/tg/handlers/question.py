@@ -14,6 +14,7 @@ from app.tg.callback.question import (
     QuestionPageCall,
     QuestionQuizAnswerCall,
     QuestionSelectCall,
+    PendingQuestionsRefreshCall,
 )
 from app.tg.deep.base import QuestionDeep
 from app.tg.fsm.state import QuestionState
@@ -66,6 +67,26 @@ async def question_command(
         await service.user_statistics()
     else:
         await service.invalid_subcommand(question_mode)
+
+
+@question_router.message(Command('pending_questions'))
+@command(
+    name='pending_questions',
+    description='Показать необработанные вопросы',
+    error_handler=DEFAULT_BOT_ERROR_HANDLER,
+)
+async def pending_questions_command(message: Message, service: QuestionService):
+    await service.pending_questions()
+
+
+@question_router.callback_query(PendingQuestionsRefreshCall.filter())
+async def pending_questions_refresh_call(
+    callback: CallbackQuery,
+    callback_data: PendingQuestionsRefreshCall,
+    service: QuestionService,
+):
+    await service.pending_questions()
+    await callback.answer('Список обновлён')
 
 
 @question_router.callback_query(QuestionMenuCall.filter())

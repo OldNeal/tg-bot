@@ -28,5 +28,9 @@ class QuestionModerationCall(BaseCall, prefix='question_moderation'):
     is_check: bool = False
 
 
+class PendingQuestionsRefreshCall(BaseCall, prefix='pending_questions_refresh'):
+    is_check: bool = False
+
+
 class QuestionPageCall(PageCall, prefix='question_page'):
     pass

@@ -6,6 +6,7 @@ from app.tg.deep.base import QuestionDeep
 from app.tg.callback.question import (
     QuestionCreateCall,
     QuestionModerationCall,
+    PendingQuestionsRefreshCall,
     QuestionMenuCall,
     QuestionPageCall,
     QuestionQuizAnswerCall,
@@ -15,6 +16,13 @@ from app.validate.core import Question, QuestionAnswer
 
 
 class QuestionIKB(BotIKB):
+    def pending_questions_refresh(self):
+        self.builder.button(
+            text='🔄 Обновить список',
+            callback_data=PendingQuestionsRefreshCall(tg_id=self.tg_id),
+        )
+        return self.builder.as_markup()
+
     def menu(self):
         self.builder.button(
             text='🎲 Ответить на случайный вопрос',
